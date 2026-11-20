@@ -46,6 +46,12 @@ typedef struct {
     // counters
     int     alive, upper, pads, hooks, hookframes, climbs, lives, contacts, contactframes;
     float   hookz;              // feet height when the current hook was fired
+    vec3_t  hookstart, hookanchor;  // the current hook: where it was fired, where it held
+    int     hookpull, hookhang;     // ...and its frames pulling and hanging
+    // a finished hook's line waits IG_LAND_FRAMES for where the bot came down
+    bool    pend;
+    int     pend_frame, pend_pull, pend_hang;
+    vec3_t  pend_start, pend_anchor, pend_end;
     float   dist;
     int     shots0;             // p_acc rail shots when the window opened
     // per-frame state
@@ -115,6 +121,31 @@ static void IG_StatsReset(void)
     }
 }
 
+#define IG_LAND_FRAMES  10      // where a bot is a second after letting go
+
+/*
+One line per hook, for finding where hooks fail: fired at `start`, held at
+`anchor` (0 0 0: never attached), let go at `end`, and `land` a second later
+(`dead` if it died first).
+*/
+static void IG_StatsHookLine(int i, ig_cl_t *c, const edict_t *ent)
+{
+    char land[64];
+
+    if (!c->pend)
+        return;
+    if (ent)
+        Q_snprintf(land, sizeof(land), "%.0f %.0f %.0f", ent->s.origin[0], ent->s.origin[1], ent->s.origin[2]);
+    else
+        Q_strlcpy(land, "dead", sizeof(land));
+    gi.dprintf("igstats hook %d frame %d pull %d hang %d start %.0f %.0f %.0f "
+               "anchor %.0f %.0f %.0f end %.0f %.0f %.0f land %s\n", i, level.framenum,
+               c->pend_pull, c->pend_hang, c->pend_start[0], c->pend_start[1], c->pend_start[2],
+               c->pend_anchor[0], c->pend_anchor[1], c->pend_anchor[2],
+               c->pend_end[0], c->pend_end[1], c->pend_end[2], land);
+    c->pend = false;
+}
+
 /*
 =================
 IG_StatsFrame
@@ -170,13 +201,34 @@ void IG_StatsFrame(void)
                 if (!c->had_hook) {
                     c->hooks++;
                     c->hookz = ent->s.origin[2];
+                    VectorCopy(ent->s.origin, c->hookstart);
+                    c->hookpull = c->hookhang = 0;
                 }
                 if (ent->client->ctf_grapplestate == CTF_GRAPPLE_STATE_PULL ||
-                    ent->client->ctf_grapplestate == CTF_GRAPPLE_STATE_HANG)
+                    ent->client->ctf_grapplestate == CTF_GRAPPLE_STATE_HANG) {
                     c->hookframes++;
+                    VectorCopy(ent->client->ctf_grapple->s.origin, c->hookanchor);
+                    if (ent->client->ctf_grapplestate == CTF_GRAPPLE_STATE_HANG)
+                        c->hookhang++;
+                    else
+                        c->hookpull++;
+                }
             }
-            else if (c->had_hook && ent->s.origin[2] - c->hookz > 32)
-                c->climbs++;
+            else if (c->had_hook) {
+                if (ent->s.origin[2] - c->hookz > 32)
+                    c->climbs++;
+                IG_StatsHookLine(i, c, ent);    // a previous one still waiting
+                c->pend = true;
+                c->pend_frame = level.framenum + IG_LAND_FRAMES;
+                c->pend_pull = c->hookpull;
+                c->pend_hang = c->hookhang;
+                VectorCopy(c->hookstart, c->pend_start);
+                VectorCopy(c->hookanchor, c->pend_anchor);
+                VectorCopy(ent->s.origin, c->pend_end);
+                VectorClear(c->hookanchor);
+            }
+            if (c->pend && level.framenum >= c->pend_frame)
+                IG_StatsHookLine(i, c, ent);
             c->had_hook = ent->client->ctf_grapple != NULL;
 
             if (!c->contacted && (shots > c->shots_seen || ent->health < c->health)) {
@@ -186,6 +238,8 @@ void IG_StatsFrame(void)
             }
             c->health = ent->health;
         } else {
+            if (c->pend)
+                IG_StatsHookLine(i, c, NULL);
             // killed before it fired or was hurt: the death is the contact
             if (c->was_alive && !c->contacted) {
                 c->contacted = true;

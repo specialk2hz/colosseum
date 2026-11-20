@@ -15,6 +15,9 @@ of the License, or (at your option) any later version.
 //                        when the hook is on (OSP rulesets, hook_enable)
 //   ig_bothook_cost  150 the fixed cost of a grapple route, in 1/100 s of
 //                        route time (bspc bakes in 500); read at map load
+//   ig_botlibvars    ""  "name value name value ...": any further libvars for
+//                        the Q3 brain, pushed after the above.  For tuning and
+//                        A/B tests (igbench --set ig_botlibvars ...), not play
 //
 // With ig_bothook 0 the brain gets its own defaults back (bot_grapple 0,
 // offhandgrapple 0, no hook detection, the AAS file's costs): upstream.
@@ -43,5 +46,21 @@ void IG_BotLibVars(struct bot_library_s *lib)
     if (use) {
         lib->funcs.BotLibVarSet("cmd_grappleon", "hook");
         lib->funcs.BotLibVarSet("cmd_grappleoff", "unhook");
+    }
+    {
+        cvar_t *extra = gi.cvar("ig_botlibvars", "", 0);
+        char buf[MAX_STRING_CHARS], *name, *value;
+        const char *p = buf;
+
+        Q_strlcpy(buf, extra->string, sizeof(buf));
+        while ((name = COM_Parse(&p)) && *name) {
+            char n[MAX_QPATH];
+
+            Q_strlcpy(n, name, sizeof(n));
+            value = COM_Parse(&p);
+            if (!*value)
+                break;
+            lib->funcs.BotLibVarSet(n, value);
+        }
     }
 }
