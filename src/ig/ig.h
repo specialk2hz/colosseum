@@ -15,4 +15,9 @@ of the License, or (at your option) any later version.
 // IG-1: 1 if an OSP loadout includes the blaster, 0 under `ig_noblaster 1`.
 int IG_StartBlaster(void);
 
+// IG-4: `sv igstats` (ig_stats.c).
+bool IG_ServerCommand(const char *cmd);
+void IG_StatsFrame(void);
+void IG_StatsPush(edict_t *other);
+
 #endif

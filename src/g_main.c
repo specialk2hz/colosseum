@@ -26,6 +26,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "bot/bl_redirgi.h"
 #include "bot/bl_botcfg.h"
 #include "bot/p_botmenu.h"
+#include "ig/ig.h" // IG:
 
 game_locals_t   game;
 level_locals_t  level;
@@ -1172,6 +1173,7 @@ static void G_RunFrame(void)
 
     // build the playerstate_t structures for all players
     ClientEndServerFrames();
+    IG_StatsFrame(); // IG: sv igstats (IG-4)
 
     // A pause asked for during this frame takes effect after it: freezing
     // mid-frame would leave half the entities thought and half not.

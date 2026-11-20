@@ -40,3 +40,36 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
   (`BotInitLibrary`), which happens every map, so it applies from the next map.
   Q3 bots read it as `bot_nochat` (be_interface_q2.c remap, ai_chat.c).
 - **Tested:** `exec configs/dm.cfg` reads back `nochat 1`.
+
+## IG-4: `sv igstats` -- movement and engagement counters
+
+- **Requirement:** a measurement window, like upstream's `sv botstats`, that reports per client:
+  frames alive, frames on upper levels, distance travelled, jump pad launches, hook shots, frames
+  on the hook, lives, time from spawn to first contact, and rail shots. `reset` opens it, `off`
+  closes it. It counts and never acts, so it needs no switch.
+- **Why:** the planned bot work (hook routes, slingshots, purposeful roaming) is judged by these
+  numbers, which `sv botstats` does not have.
+- **Definitions:** "upper" = feet more than 96 units above the mean height of the map's
+  `info_player_deathmatch` points. "First contact" = the first rail shot, damage taken or death
+  after a spawn inside the window (lives already running when it opens are not timed). A pad
+  launch is debounced over 5 frames. A hook shot is the client's hook entity appearing. Rail shots
+  come from OSP's accuracy table, so they read 0 outside the four OSP rulesets.
+- **Where:** `src/ig/ig_stats.c`; `// IG:` calls in `g_svcmds.c` (command), `g_main.c` (end of
+  `G_RunFrame`), `g_trigger.c` (`trigger_push_touch`).
+- **Tested:** igbench smoke runs on q2dm1 and q2rdm11: every bot reported, pads counted on
+  q2rdm11 and none on q2dm1, contacts close to lives. The same seed replays identically.
+
+## IG-5: `tools/igbench.py` -- seeded bot matches under a server config
+
+- **Requirement:** play N seeded, frame-counted matches of one botlib's bots under a server config
+  (default `instagib.cfg`) on installed maps, read `sv botstats` and `sv igstats`, and report
+  per map with 95% bootstrap intervals; compare a run against a base run (feature on vs off via
+  `--set`). Optional server-side demos (`--demo`).
+- **Why:** project rule: every AI change ships with a feature on vs off report. botduel.py compares
+  two botlibs on stock maps and cannot run a server config or custom maps.
+- **Where:** `tools/igbench.py`, reusing botduel.py's seed shim, waits and parsers. It builds a
+  throwaway tree linking the install ($Q2) with the library under test (LIB) and copies the map's
+  Q3 .aas; nothing is written into the install.
+- **Tested:** the same seed replays a match identically (igstats, botstats and kill lines) and
+  another seed differs; demo recording on vs off gives an identical match; skill 1 vs skill 5
+  shows a difference (sensitivity control, see the baseline commit).

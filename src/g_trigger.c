@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #include "g_local.h"
 #include "arena/arena.h"
+#include "ig/ig.h" // IG:
 
 //PGM - some of these are mine, some id's. I added the define's.
 #define TRIGGER_MONSTER     0x01
@@ -420,6 +421,7 @@ void trigger_push_touch(edict_t *self, edict_t *other, cplane_t *plane, csurface
         VectorScale(self->movedir, self->speed * 10, other->velocity);
 
         if (other->client) {
+            IG_StatsPush(other); // IG: sv igstats (IG-4)
             // don't take falling damage immediately from this
             VectorCopy(other->velocity, other->client->oldvelocity);
             if (!(self->spawnflags & PUSH_SILENT) && (other->fly_sound_debounce_framenum < level.framenum)) {

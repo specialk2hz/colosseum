@@ -154,6 +154,7 @@ colosseum_src = files(
   'src/tourney/sl_write.c',
   'src/tourney/stdlog.c',
   'src/ig/ig_main.c',
+  'src/ig/ig_stats.c',
 )
 
 # `src/` on the include path, which q2pro/src/ctf does not need and this tree

@@ -2,7 +2,7 @@
 
 Every client and server command Colosseum accepts, what it does, which ruleset it belongs to, and whether it is server-only.
 
-Generated from `tools/counts.py --list commands` and annotated. **The counts accrue by layer**, in the order the donors were merged; `tools/counts.py` measures the finished tree, so what it prints today is the last of them: **106**.
+Generated from `tools/counts.py --list commands` and annotated. **The counts accrue by layer**, in the order the donors were merged; `tools/counts.py` measures the finished tree, so what it prints today is the last of them: **107** (106 upstream plus the fork's `sv igstats`).
 
 ## Inherited from baseq2
 
@@ -161,7 +161,7 @@ The bot command set, reachable from the console as `sv <cmd>`. The five marked `
 
 ## The Gladiator extras' commands, and three diagnostics
 
-**106 client commands** (`tools/counts.py`).  The figure counts every literal the dispatchers compare against, so the `sv` diagnostics -- `arenadump`, `botinv` and `botstats` among them -- are in it.
+**107 client commands** (`tools/counts.py`; 106 upstream plus the fork's `sv igstats`).  The figure counts every literal the dispatchers compare against, so the `sv` diagnostics -- `arenadump`, `botinv` and `botstats` among them -- are in it.
 
 | command | who | what |
 |---|---|---|
@@ -182,3 +182,9 @@ The bot command set, reachable from the console as `sv <cmd>`. The five marked `
 | `sv census <classname-or-prefix>` | console | How many entities of that class are spawned, in the world, and taken-and-waiting on their own think, with the frame the count was taken on. A prefix, so `sv census weapon_` answers about every weapon on the map. `sv ruleset` cannot: an item that has been picked up is still `inuse`, still counted and still at the same origin -- what changed is `solid` |
 | `sv botperf [reset]` | console | Frames measured, mean and worst cost of the bot section of `G_RunFrame` in microseconds, and the budget. `reset` starts a fresh window so a map load and thirty-two connects are not averaged into the steady state |
 | `sv botstats [reset\|off]` | console | What each client did in a measurement window (R-BOT-36): per client its botlib, skill, team, the ruleset's score, kills, deaths, suicides, team kills, damage given, taken, to itself and to team-mates, hits, and pickups by kind. `reset` opens a fresh window and, while it is open, prints a `botstats kill` line per death; `off` closes it. Closed by default, and closed it counts and prints nothing. `tools/botduel.py` reads it |
+
+## Instagib fork (`src/ig/`)
+
+| command | who | what it does |
+|---|---|---|
+| `sv igstats [reset\|off]` | console | Movement and engagement in a measurement window (IG-4, `IG-SPECS.md`): per client, frames alive, frames on upper levels (feet more than 96 units above the mean deathmatch spawn height), units travelled, jump pad launches, hook shots, frames pulling or hanging on the hook, lives, lives that reached first contact and the frames it took, and rail shots (OSP rulesets only). Counts and never acts; closed by default. `tools/igbench.py` reads it beside `sv botstats` |

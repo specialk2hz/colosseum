@@ -20,6 +20,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "arena/arena.h"
 #include "tourney/osp_hooks.h"
 #include "bot/bl_cmd.h"
+#include "ig/ig.h" // IG:
 
 static void Svcmd_Test_f(void)
 {
@@ -321,6 +322,8 @@ void    ServerCommand(void)
     // the same place and in the same shape -- a predicate that says whether it
     // recognised the name.
     else if (LogCmd(cmd))
+        ;
+    else if (IG_ServerCommand(cmd)) // IG: sv igstats (IG-4)
         ;
     else
         gi.cprintf(NULL, PRINT_HIGH, "Unknown server command \"%s\"\n", cmd);
