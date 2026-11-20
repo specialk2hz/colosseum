@@ -73,3 +73,21 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
 - **Tested:** the same seed replays a match identically (igstats, botstats and kill lines) and
   another seed differs; demo recording on vs off gives an identical match; skill 1 vs skill 5
   shows a difference (sensitivity control, see the baseline commit).
+
+## IG-6: `ig_bothook` -- the Quake III bots use the offhand hook
+
+- **Requirement:** with `ig_bothook 1` (default 0) and the OSP hook on, Quake III bots take grapple
+  routes in the AAS file: walk to the route's start, aim at the anchor, `hook`, ride the pull, and
+  `unhook` on arrival or when the pull stops gaining ground. `ig_bothook_cost` (default 150 =
+  1.5 s) is a grapple route's fixed cost. Off, the brain gets its own defaults: upstream.
+- **Why:** stock Q3 bots never hook (0 hooks/min in `ig-0.1-baseline`): grapple routes need
+  `bspc -grapplereach`, the AI's `bot_grapple`, an offhand command, and a hook entity the brain
+  can see -- none of which existed for Q2. First step of the bots' hook work.
+- **Where:** game: `src/ig/ig_bot.c`, one `// IG:` call at the start of `BotRulesetLibVars`
+  (`bl_main.c`). Brain (backport fork): `botlib/be_ig_hook.c` -- hook entities classified in
+  `Q2BotUpdateEntity`, the bot's OWN hook judged by its position on the bot-to-anchor line in
+  `GrappleState` (stock Q3 counts any visible hook), grapple costs rewritten after the AAS file
+  loads. Contract: `docs/botlib-contract.md`, "Instagib fork". AAS files: `bspc -grapplereach`
+  (server repo, `tools/build-aas.sh`).
+- **Tested:** igbench, feature off vs `ig-0.1-baseline` and feature on vs off, on q2dm1, q2rdm11,
+  ztn2dm3 (report in the server repo, bench/ig-0.2-hook-climb).

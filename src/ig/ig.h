@@ -20,4 +20,8 @@ bool IG_ServerCommand(const char *cmd);
 void IG_StatsFrame(void);
 void IG_StatsPush(edict_t *other);
 
+// IG-6: the Q3 bots' hook (ig_bot.c).  bot_library_t is bot/bl_main.h's.
+struct bot_library_s;
+void IG_BotLibVars(struct bot_library_s *lib);
+
 #endif

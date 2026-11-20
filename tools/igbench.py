@@ -73,7 +73,7 @@ class Paths:
                 sys.exit('igbench: missing %s' % p)
 
 
-def make_tree(paths, d, m):
+def make_tree(paths, d, m, aasdir=None):
     """A worker's game tree: the install linked, the library under test copied in."""
     shutil.rmtree(d, ignore_errors=True)
     g = os.path.join(d, 'colosseum')
@@ -89,7 +89,7 @@ def make_tree(paths, d, m):
     q3 = os.path.join(paths.gamedir, 'q3bot')
     for f in ('botfiles', 'bots.cfg'):
         os.symlink(os.path.join(q3, f), os.path.join(g, 'q3bot', f))
-    aas = os.path.join(q3, 'maps', m + '.aas')
+    aas = os.path.join(aasdir or os.path.join(q3, 'maps'), m + '.aas')
     if not os.path.exists(aas):
         raise RuntimeError('no Q3 navigation file for %s (%s)' % (m, aas))
     shutil.copy(aas, os.path.join(g, 'q3bot', 'maps', m + '.aas'))
@@ -118,7 +118,7 @@ def match_id(spec):
 
 def play(paths, so, wdir, spec, args):
     m, seed = spec['map'], spec['seed']
-    make_tree(paths, wdir, m)
+    make_tree(paths, wdir, m, args.aasdir)
     with open(os.path.join(wdir, 'colosseum', 'igbench.cfg'), 'w') as f:
         f.write(bench_cfg(args))
     names = lineup(paths, spec)
@@ -228,7 +228,7 @@ def cmd_run(args, paths):
     so = botduel.shim(paths)
     seeds = list(range(1, int(args.seeds) + 1)) if args.seeds.isdigit() else [int(s) for s in args.seeds.split(',')]
     args.seeds = seeds
-    meta = {'cfg': args.cfg, 'set': args.set, 'maps': args.maps, 'seeds': seeds, 'frames': args.frames,
+    meta = {'cfg': args.cfg, 'set': args.set, 'aasdir': args.aasdir, 'maps': args.maps, 'seeds': seeds, 'frames': args.frames,
             'bots': args.bots, 'skill': args.skill, 'lib': paths.lib,
             'git': subprocess.run(['git', '-C', ROOT, 'describe', '--always', '--dirty'],
                                   capture_output=True, text=True).stdout.strip(),
@@ -280,6 +280,7 @@ METRICS = [
     ('acc', 'rail acc %', lambda c, fr: 100.0 * c['hits'] / c['shots'] if c['shots'] else None),
     ('pads', 'pads/min', lambda c, fr: c['pads'] / (c['alive'] * FRAME_S / 60) if c['alive'] else None),
     ('hooks', 'hooks/min', lambda c, fr: c['hooks'] / (c['alive'] * FRAME_S / 60) if c['alive'] else None),
+    ('climbs', 'hooks that climbed %', lambda c, fr: 100.0 * c.get('climbs', 0) / c['hooks'] if c['hooks'] else None),
     ('hooktime', 'on hook %', lambda c, fr: 100.0 * c['hookframes'] / c['alive'] if c['alive'] else None),
     ('upper', 'upper %', lambda c, fr: 100.0 * c['upper'] / c['alive'] if c['alive'] else None),
     ('speed', 'units/s', lambda c, fr: c['dist'] / (c['alive'] * FRAME_S) if c['alive'] else None),
@@ -333,6 +334,7 @@ def cmd_report(args, paths):
                  meta['bots'], meta['skill'], meta['frames'], meta['frames'] * FRAME_S / 60,
                  ','.join(map(str, meta['seeds']))),
              '- colosseum `%s`, q3 backport `%s`' % (meta['git'], meta['q3git']),
+             '- navigation files: %s' % (meta.get('aasdir') or 'the install\'s q3bot/maps'),
              '- %d valid matches' % len(rs)]
     if base:
         lines.append('- compared with `%s` (%s)' % (args.base, bmeta.get('label') or ''))
@@ -373,7 +375,7 @@ def cmd_report(args, paths):
     with open(os.path.join(args.out, 'matches.csv'), 'w', newline='') as f:
         w = csv.writer(f)
         cols = ['kills', 'deaths', 'suicides', 'hits', 'shots', 'alive', 'upper', 'dist', 'pads', 'hooks',
-                'hookframes', 'lives', 'contacts', 'contactframes']
+                'hookframes', 'climbs', 'lives', 'contacts', 'contactframes']
         w.writerow(['map', 'seed', 'frames', 'slot', 'name', 'skill'] + cols)
         for r in sorted(rs, key=lambda r: match_id(r['spec'])):
             for c in r['clients']:
@@ -397,6 +399,7 @@ def main():
     p.add_argument('--set', nargs=2, action='append', default=[], metavar=('CVAR', 'VALUE'),
                    help='set after the config (repeatable): the feature switch under test')
     p.add_argument('--label', default='')
+    p.add_argument('--aasdir', help='take the maps\' Q3 .aas files from here (default: the install\'s q3bot/maps)')
     p.add_argument('--demo', action='store_true', help='record a server-side demo of each window')
     p.add_argument('-j', '--jobs', type=int, default=max(1, (os.cpu_count() or 2) - 1))
     p = sub.add_parser('report', help='report.md and matches.csv for a run')

@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ctf/g_ctf.h"
 #include "tourney/osp_hooks.h"
 #include "arena/arena.h"
+#include "ig/ig.h" // IG:
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -1665,6 +1666,7 @@ static void BotSetPathVars(bot_library_t *lib)
 //===========================================================================
 static void BotRulesetLibVars(bot_library_t *lib)
 {
+    IG_BotLibVars(lib); // IG: the Q3 bots' hook (IG-6); first, the OSP arm returns early
     //
     // The libvar block.  Under the OSP four these come from hook_enable and
     // rune_stat; under ctf from Threewave's own `ctf_hook` -- and not from
@@ -1782,7 +1784,6 @@ static void BotRulesetLibVars(bot_library_t *lib)
         lib->funcs.BotLibVarSet("techs", "0");
         break;
     }
-
 }
 
 static int BotInitLibrary(bot_library_t *lib)

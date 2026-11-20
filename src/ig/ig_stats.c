@@ -26,6 +26,8 @@ of the License, or (at your option) any later version.
 //                every frame the player is inside it)
 //   hooks        hook shots (the client's hook entity appearing)
 //   hookframes   frames pulling or hanging on the hook
+//   climbs       hooks that ended with the bot more than 32 units higher than
+//                where it fired (a hook that got it somewhere up)
 //   lives        spawns inside the window
 //   contacts     lives (spawned inside the window) that reached first contact:
 //                the first rail shot it fires, the first damage it takes, or
@@ -42,7 +44,8 @@ of the License, or (at your option) any later version.
 
 typedef struct {
     // counters
-    int     alive, upper, pads, hooks, hookframes, lives, contacts, contactframes;
+    int     alive, upper, pads, hooks, hookframes, climbs, lives, contacts, contactframes;
+    float   hookz;              // feet height when the current hook was fired
     float   dist;
     int     shots0;             // p_acc rail shots when the window opened
     // per-frame state
@@ -164,12 +167,16 @@ void IG_StatsFrame(void)
             // A hook is out while ctf_grapple is set (OSP and Threewave alike);
             // FLY is state 0, so the state alone cannot say "no hook".
             if (ent->client->ctf_grapple) {
-                if (!c->had_hook)
+                if (!c->had_hook) {
                     c->hooks++;
+                    c->hookz = ent->s.origin[2];
+                }
                 if (ent->client->ctf_grapplestate == CTF_GRAPPLE_STATE_PULL ||
                     ent->client->ctf_grapplestate == CTF_GRAPPLE_STATE_HANG)
                     c->hookframes++;
             }
+            else if (c->had_hook && ent->s.origin[2] - c->hookz > 32)
+                c->climbs++;
             c->had_hook = ent->client->ctf_grapple != NULL;
 
             if (!c->contacted && (shots > c->shots_seen || ent->health < c->health)) {
@@ -229,10 +236,10 @@ static void IG_StatsReport(void)
         if (!ent->inuse || !ent->client)
             continue;
         gi.dprintf("igstats client %d alive %d upper %d dist %d pads %d hooks %d "
-                   "hookframes %d lives %d contacts %d contactframes %d shots %d "
+                   "hookframes %d climbs %d lives %d contacts %d contactframes %d shots %d "
                    "name %s\n",
                    i, c->alive, c->upper, (int)c->dist, c->pads, c->hooks,
-                   c->hookframes, c->lives, c->contacts, c->contactframes,
+                   c->hookframes, c->climbs, c->lives, c->contacts, c->contactframes,
                    IG_RailShots(ent) - c->shots0, ent->client->pers.netname);
     }
 }

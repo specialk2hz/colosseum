@@ -173,3 +173,18 @@ This is the tourney rule surviving its own cvar. It used to read `m_mode == MODE
 ## Physics libvars the botlib expects
 
 Defaults from `botlib.h`: `sv_friction` 6, `sv_stopspeed` 100, `sv_gravity` 800, `sv_waterfriction` 1, `sv_watergravity` 400, `sv_maxvelocity` 300, `sv_maxwalkvelocity` 300, `sv_maxcrouchvelocity` 100, `sv_maxswimvelocity` 150, `sv_maxacceleration` 2200, `sv_airaccelerate` 0, `sv_maxstep` 18, `sv_maxbarrier` 50, `sv_maxsteepness` 0.7, `sv_jumpvel` 224, `sv_maxwaterjump` 20.
+
+## Instagib fork: libvars for the Quake III botlib only
+
+The fork (specialk2hz/colosseum and specialk2hz/q3a_bot_backport_for_q2) pushes these to the Quake
+III botlib alone, with the ruleset's libvars (first thing in `BotRulesetLibVars`, which `IG_BotLibVars` is, so at
+library init and every frame). Gladiator is never sent them. Each pair is off unless `ig_bothook 1`
+and the OSP hook is on; off, every one is the brain's own default (IG-6 in `IG-SPECS.md`).
+
+| libvar | on | off | read by |
+|---|---|---|---|
+| `bot_grapple` | `1` | `0` | game_q3/ai_dmnet.c: routes may use `TFL_GRAPPLEHOOK` |
+| `offhandgrapple` | `1` | `0` | botlib/be_ai_move.c: the hook is a command, not a weapon |
+| `cmd_grappleon`, `cmd_grappleoff` | `hook`, `unhook` | (not pushed) | be_ai_move.c, through BotClientCommand to OSP's client commands |
+| `ig_hookdetect` | `1` | `0` | botlib/be_ig_hook.c: Q2 hook entities (solid beams, Threewave's hook model) become ET_MISSILE with weapon `IG_GRAPPLE_WEAPON`, and the grapple state is the bot's own hook's |
+| `ig_rs_startgrapple` | `ig_bothook_cost` | `0` | be_ig_hook.c at AAS load: a grapple reachability's fixed cost, replacing the file's |
