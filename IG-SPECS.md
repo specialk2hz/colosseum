@@ -26,7 +26,7 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
 - **Why:** cvars persist across configs; without this a vote from instagib to `dm` stays railgun-only.
 - **Where:** the "instagib fork" block at the end of `colosseum/server.cfg`, which every mode config
   execs first. Values are the library defaults (engine default 16 for `dmflags`). `nochat` reaches the
-  bot library only when it loads, so bots stay quiet until the next restart.
+  bot library when it loads, which is every map, so it applies from the next map.
   `tools/cfgcvars.py` lists `nochat` and the `allow_*` table names as registered indirectly.
 - **Tested:** `+exec instagib.cfg +map q2dm1`, then `exec configs/dm.cfg`: all of the above read back at
   their defaults (2026-11-20). `make check`: cfgcvars clean.
