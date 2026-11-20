@@ -2,7 +2,7 @@
 
 The merged, deduplicated cvar inventory: every cvar Colosseum registers, its default, its flags, the donor that introduced it, and -- where section 7 rule 4 applied -- which ruleset owns the bare name and what the prefixed alias is. **Three sets are counted here and listed by the tool rather than transcribed**, because none of them carries a decision: baseq2's own 37; the loadout family, which is a matrix (`start_`/`max_`/`pack_`/`warmup_` x the ammo and armour rows) rather than a list; and the engine's own cvars the library only re-obtains to read (`basedir`, `gamedir`, `homedir`, `libdir`, `m_pitch`, `rcon_password`), which are registered by whoever asks first and are owned by nobody here -- `g_fs.c` holds the defaults for `basedir`, `gamedir` and `homedir` so that the order cannot decide them, and `libdir` has one reader, the botlib search. Everything else has a row.
 
-Generated from `tools/counts.py --list cvars` and annotated. **The counts accrue by layer**, in the order the donors were merged; `tools/counts.py` measures the finished tree, so what it prints today is the last of them: **340**. Regenerate rather than hand-edit the counts -- and the total is enforced: `counts.py --docs` compares the figure above, and `docs/commands.md`'s, with what the tree measures, and runs in `make check` with `--duplicates` and the extraction controls, so a total the tree has moved away from fails the build rather than sitting in a document. It said that before it was true -- `--duplicates` checks duplicates, not this page -- and this page said 326 while the tree had 327.
+Generated from `tools/counts.py --list cvars` and annotated. **The counts accrue by layer**, in the order the donors were merged; `tools/counts.py` measures the finished tree, so what it prints today is the last of them: **341** (340 upstream plus the fork's `ig_noblaster`). Regenerate rather than hand-edit the counts -- and the total is enforced: `counts.py --docs` compares the figure above, and `docs/commands.md`'s, with what the tree measures, and runs in `make check` with `--duplicates` and the extraction controls, so a total the tree has moved away from fails the build rather than sitting in a document. It said that before it was true -- `--duplicates` checks duplicates, not this page -- and this page said 326 while the tree had 327.
 
 ## Inherited from baseq2
 
@@ -479,3 +479,11 @@ The rule is that each of the 1999 module's `#define`s is kept, becomes a cvar an
 **Off means the entity is not created**, for the three that gate a spawn function -- not created-and-inert. An inert trigger still occupies an edict slot and still shows in every census. The **classnames stay registered either way**, so a map that uses one loads without `doesn't have a spawn function`.
 
 **`netlog` still resolves and no longer does anything.** It named the remote host RA2 forwarded its event log to over UDP; that is not allowed, so the forwarding is gone. The name stays registered so a 1999 config still parses, under `arena` `InitGame` says once that setting it does nothing, and `logfile 2` writes the same lines to the local log.
+
+## Instagib fork (`src/ig/`)
+
+The fork's own cvars (specialk2hz/colosseum). Each defaults to upstream behaviour; the requirement is in `IG-SPECS.md`.
+
+| cvar | default | what it does |
+|---|---|---|
+| `ig_noblaster` | `0` | `1` leaves the blaster out of the OSP loadout, so a railgun-only `weapon_have` really is railgun only (IG-1). Read where the loadout is built, at game start and on a config reload. Set it only alongside infinite ammo: `NoAmmoWeaponChange` falls back to the blaster |

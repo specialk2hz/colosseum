@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "tourney/osp_stats.h"
 #include "bot/bl_main.h"
 #include "bot/bl_botcfg.h"
+#include "ig/ig.h" // IG:
 // The two bot entry points.
 void BotServerCommand(char *str, ...);
 void BotDestroy(edict_t *bot);
@@ -1230,7 +1231,7 @@ void OSP_initWeapItem(void)
     if (initial & 0x20000)
         osp_initial_rank = 18;
 
-    start_weap[0] = 1;
+    start_weap[0] = IG_StartBlaster(); // IG: ig_noblaster (IG-1)
     start_weap[1] = (have & 0x1) != 0;
     start_weap[2] = (have & 0x2) != 0;
     start_weap[3] = (have & 0x4) != 0;

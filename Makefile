@@ -309,6 +309,11 @@ BOT_SRC = \
 	bot/bl_redirgi.c bot/bl_spawn.c \
 	bot/p_botmenu.c bot/p_menulib.c bot/p_observer.c
 
+# src/ig/ -- the instagib fork's own code (IG-SPECS.md).  Appended last so
+# a rebase onto upstream touches nothing above.  // IG:
+IG_SRC = \
+	ig/ig_main.c
+
 GAME_SRC = \
 	g_ai.c g_chase.c g_cmds.c g_combat.c g_func.c g_items.c g_main.c \
 	g_misc.c g_monster.c g_phys.c g_ptrs.c g_save.c g_spawn.c g_svcmds.c \
@@ -335,7 +340,9 @@ GAME_SRC = \
 	\
 	$(BOT_SRC) \
 	\
-	$(TOURNEY_SRC)
+	$(TOURNEY_SRC) \
+	\
+	$(IG_SRC)
 
 # Every .c that genptr.py must scan.  The generated g_ptrs.c is not an input to
 # itself.
@@ -533,7 +540,8 @@ bothapis:
 # the way a warning does.  They run once per invocation, before compiling.
 _build: check
 	@mkdir -p $(BUILDDIR)/shared $(BUILDDIR)/xatrix $(BUILDDIR)/rogue \
-		$(BUILDDIR)/ctf $(BUILDDIR)/arena $(BUILDDIR)/tourney $(BUILDDIR)/bot
+		$(BUILDDIR)/ctf $(BUILDDIR)/arena $(BUILDDIR)/tourney $(BUILDDIR)/bot \
+		$(BUILDDIR)/ig  # IG:
 	$(MAKE) $(TARGET) BUILDDIR=$(BUILDDIR) CC=$(CC) CPU=$(CPU) \
 		SHLIBEXT=$(SHLIBEXT) CFLAGS="$(CFLAGS)" KIND=$(KIND)
 	@if [ ! -f $(GLADDIR)/Makefile ]; then \

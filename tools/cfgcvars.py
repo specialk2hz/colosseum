@@ -42,7 +42,19 @@ INDIRECT = {
     # BotSetVarIfSet(lib, "autolaunchbspc", ...) reads the game cvar of the
     # libvar's name and pushes it to the brain only when it is set.
     'autolaunchbspc': 'bot/bl_main.c BotSetVarIfSet()',
+    # IG: the fork's server.cfg resets these after instagib.cfg.  `nochat` is
+    # BotSetVarIfSet()'s too; the allow_* rows are osp_allow_items[], registered
+    # as gi.cvar(osp_allow_items[i].cvar, ...) and by osp_allowed().
+    'nochat': 'bot/bl_main.c BotSetVarIfSet()',
 }
+INDIRECT.update({name: 'tourney/osp_main.c osp_allow_items[]' for name in (  # IG:
+    'allow_shotgun', 'allow_supershotgun', 'allow_machinegun', 'allow_chaingun',
+    'allow_grenadelauncher', 'allow_rocketlauncher', 'allow_hyperblaster',
+    'allow_railgun', 'allow_bfg', 'allow_ammo_grenades', 'allow_item_powerscreen',
+    'allow_item_powershield', 'allow_item_quad', 'allow_item_invul',
+    'allow_ammo_cells', 'allow_item_pack', 'allow_ionripper', 'allow_phalanx',
+    'allow_ammo_trap', 'allow_etfrifle', 'allow_proxlauncher', 'allow_plasmabeam',
+    'allow_chainfist', 'allow_disruptor', 'allow_ammo_tesla', 'allow_item_nuke')})
 
 # Registered by the engine before the game library loads.  Only names a shipped
 # config actually sets belong here (see WHAT COUNTS AS REGISTERED).
