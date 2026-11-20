@@ -21,12 +21,22 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
 
 - **Requirement:** after `instagib.cfg`, a Config vote (or `exec`) to any shipped mode config puts back
   everything instagib changed that upstream's mode configs do not set: `dmflags`, `weapon_have`,
-  `weapon_initial`, `start_slugs`, `max_slugs`, `damage_railgun`, `motd_file`, all 26 `allow_*`,
-  `ig_noblaster` and `nochat`.
+  `weapon_initial`, `start_slugs`, `max_slugs`, `damage_railgun`, `motd_file`, all 26 `allow_*` and
+  `ig_noblaster`.
 - **Why:** cvars persist across configs; without this a vote from instagib to `dm` stays railgun-only.
 - **Where:** the "instagib fork" block at the end of `colosseum/server.cfg`, which every mode config
-  execs first. Values are the library defaults (engine default 16 for `dmflags`). `nochat` reaches the
-  bot library when it loads, which is every map, so it applies from the next map.
+  execs first. Values are the library defaults (engine default 16 for `dmflags`).
   `tools/cfgcvars.py` lists `nochat` and the `allow_*` table names as registered indirectly.
 - **Tested:** `+exec instagib.cfg +map q2dm1`, then `exec configs/dm.cfg`: all of the above read back at
   their defaults (2026-11-20). `make check`: cfgcvars clean.
+
+## IG-3: no bot chat in any mode
+
+- **Requirement:** bots never chat, whatever the mode (`nochat 1`). Upstream leaves `nochat` unset,
+  which is chat on; this is the server's choice, not a default.
+- **Why:** Billy wants quiet bots on every mode, including future ones.
+- **Where:** `colosseum/server.cfg`, which every shipped mode config execs first, so a new mode
+  config that follows the same pattern gets it too. Pushed to the bot library at load
+  (`BotInitLibrary`), which happens every map, so it applies from the next map.
+  Q3 bots read it as `bot_nochat` (be_interface_q2.c remap, ai_chat.c).
+- **Tested:** `exec configs/dm.cfg` reads back `nochat 1`.
