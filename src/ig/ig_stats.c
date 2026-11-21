@@ -34,6 +34,9 @@ of the License, or (at your option) any later version.
 //                its death, whichever comes first
 //   contactframes  frames from spawn to first contact, summed over those lives
 //   shots        rail shots (OSP's accuracy table, p_acc)
+//   nearest      units to the nearest other live player, summed over the
+//                frames it was alive with someone else alive (spread)
+//   crowd        frames with IG_CROWD_N or more others within IG_CROWD_DIST
 
 #include "g_local.h"
 #include "tourney/osp_types.h"
@@ -53,6 +56,8 @@ typedef struct {
     int     pend_frame, pend_pull, pend_hang;
     vec3_t  pend_start, pend_anchor, pend_end;
     float   dist;
+    float   nearest;
+    int     nearframes, crowd;
     int     shots0;             // p_acc rail shots when the window opened
     // per-frame state
     bool    was_alive, contacted, have_origin;
@@ -122,6 +127,36 @@ static void IG_StatsReset(void)
 }
 
 #define IG_LAND_FRAMES  10      // where a bot is a second after letting go
+#define IG_CROWD_DIST   512
+#define IG_CROWD_N      2
+
+// Spread: for a live client, the nearest other live client and how many are
+// within IG_CROWD_DIST.
+static void IG_StatsSpread(int i, ig_cl_t *c, const edict_t *ent)
+{
+    int j, near = 0;
+    float best = -1, d;
+    vec3_t v;
+
+    for (j = 0; j < game.maxclients && j < MAX_CLIENTS; j++) {
+        const edict_t *o = g_edicts + 1 + j;
+
+        if (j == i || !o->inuse || !o->client || o->deadflag || o->health <= 0 || o->solid == SOLID_NOT)
+            continue;
+        VectorSubtract(o->s.origin, ent->s.origin, v);
+        d = VectorLength(v);
+        if (best < 0 || d < best)
+            best = d;
+        if (d < IG_CROWD_DIST)
+            near++;
+    }
+    if (best >= 0) {
+        c->nearest += best;
+        c->nearframes++;
+    }
+    if (near >= IG_CROWD_N)
+        c->crowd++;
+}
 
 /*
 One line per hook, for finding where hooks fail: fired at `start`, held at
@@ -182,6 +217,7 @@ void IG_StatsFrame(void)
         }
         if (alive) {
             c->alive++;
+            IG_StatsSpread(i, c, ent);
             if (ent->s.origin[2] + ent->mins[2] > igs.upperz)
                 c->upper++;
             if (c->have_origin) {
@@ -291,10 +327,12 @@ static void IG_StatsReport(void)
             continue;
         gi.dprintf("igstats client %d alive %d upper %d dist %d pads %d hooks %d "
                    "hookframes %d climbs %d lives %d contacts %d contactframes %d shots %d "
+                   "nearest %d nearframes %d crowd %d "
                    "name %s\n",
                    i, c->alive, c->upper, (int)c->dist, c->pads, c->hooks,
                    c->hookframes, c->climbs, c->lives, c->contacts, c->contactframes,
-                   IG_RailShots(ent) - c->shots0, ent->client->pers.netname);
+                   IG_RailShots(ent) - c->shots0, (int)c->nearest, c->nearframes, c->crowd,
+                   ent->client->pers.netname);
     }
 }
 
