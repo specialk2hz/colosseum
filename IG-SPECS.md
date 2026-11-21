@@ -198,3 +198,23 @@ Results (30 matches, q2dm1/q2rdm11/ztn2dm3): hooks caught within 100 units of th
 never caught 14% -> 2%; slingshots 3.5 -> 9.1/bot/min; hooks 15.5/min; > 400 u/s 14% of the time.
 Also: igstats `railhits` (OSP's rail-only table). botstats' hits counted hook damage, so the
 "rail accuracy 47%" of ig-0.3 was hooks hitting players; real rail accuracy is ~35% before and after.
+
+### IG-9 addendum 2 (2026-11-21): longer chains
+
+A chain no longer ends where the route bends: from 200 u/s it goes on toward the route's nearer
+part (`IG_RouteNear`), and the anchor search, after the way the bot moves, also looks toward the
+route ahead (round the corner). 30 matches: chains of 3+ hooks 10% -> 16% of slingshots, single
+slingshots 54% -> 46%; hooks 15.5 -> 17.1/min (Billy 18); slingshots 9.1 -> 10.6/bot/min.
+
+## IG-13: `ig_botpadhook` -- hook to a jump pad's landing (experimental, off)
+
+- **Requirement:** `ig_botpadhook 1` (libvar `ig_padhook`): flying a jump pad (the brain notes the
+  pad reachability's landing spot each frame, `IG_NotePadFlight` in BotFinishTravel_JumpPad), the
+  bot hooks through a point above the landing (the whole body's path must clear the ledge lip) and
+  lets go within 110 units of it.
+- **Why:** Billy: "when a jump pad is taken, the bot uses the grappling hook to get to the intended
+  landing spot faster".
+- **Tested:** `igstats padflight` lines (game-side, pad touch to landing, hooked or not). On
+  q2rdm11/campgrounds/tltf2 (8 seeds each) it is not faster: flights of 500-800 units 1.44 s off,
+  1.58 s on (73% hooked). These pads launch at 650-950 u/s; OSP's 975 u/s pull replaces that
+  velocity rather than adding to it. Off until a variant beats the arc.

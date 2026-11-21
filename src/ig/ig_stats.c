@@ -65,6 +65,8 @@ typedef struct {
     float   dist;
     float   nearest;
     int     nearframes, crowd, fast, faster;
+    int     padflight, padhooked;   // frame a pad launched it (0: not flying one), a hook used since
+    vec3_t  padstart;
     int     shots0;             // p_acc rail shots when the window opened
     int     railhits0;          // p_acc rail hits when the window opened
     // per-frame state
@@ -234,6 +236,7 @@ void IG_StatsFrame(void)
             c->lives++;
             c->spawn_frame = level.framenum;
             c->contacted = false;
+            c->padflight = 0;
             c->have_origin = false;
             c->health = ent->health;
             c->shots_seen = shots;
@@ -249,6 +252,24 @@ void IG_StatsFrame(void)
             }
             if (ent->s.origin[2] + ent->mins[2] > igs.upperz)
                 c->upper++;
+            // a pad flight, launch to landing, and whether a hook was out on it
+            // (the pad hook, IG-13): "igstats padflight" lines
+            if (c->padflight) {
+                if (ent->client->ctf_grapple)
+                    c->padhooked = 1;
+                if (ent->groundentity && level.framenum - c->padflight > 2) {
+                    vec3_t d;
+
+                    VectorSubtract(ent->s.origin, c->padstart, d);
+                    d[2] = 0;
+                    gi.dprintf("igstats padflight %d frames %d hooked %d dist %.0f rise %.0f human %d\n", i,
+                               level.framenum - c->padflight, c->padhooked, VectorLength(d),
+                               ent->s.origin[2] - c->padstart[2], !(ent->flags & FL_BOT));
+                    c->padflight = 0;
+                }
+                else if (level.framenum - c->padflight > 100)
+                    c->padflight = 0;
+            }
             if (c->have_origin) {
                 vec3_t d;
 
@@ -344,6 +365,11 @@ void IG_StatsPush(edict_t *other)
     c = &igs.cl[i];
     if (level.framenum - c->last_pad > IG_PAD_DEBOUNCE)
         c->pads++;
+    if (!c->padflight) {
+        c->padflight = level.framenum;
+        c->padhooked = 0;
+        VectorCopy(other->s.origin, c->padstart);
+    }
     c->last_pad = level.framenum;
     if (c->pend)
         c->pend_pad = 1;        // the pad the hook was let go for
