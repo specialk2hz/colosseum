@@ -239,3 +239,12 @@ Billy, watching: "grapple far too close to themselves, not a proper slingshot". 
 under 200 units (the 24-30 degree pitches added with the wider search). Now 6-18 degrees down, 12
 first, and at least 250 units: anchors mean 329 (Billy 275), average speed +5.7 u/s, hooks
 17.1 -> 15.2/min, slingshots 10.6 -> 9.2/bot/min (30 matches).
+
+### IG-13 addendum (2026-11-21): a pad flight is the pad hook's alone
+
+Billy (q2rdm11 big room): bots hooked "below or before the landing point" in mid-air. Those were
+slingshot chains and combat hooks carrying on in the pad's arc (floor anchors along the current
+motion). While a pad flies the bot (`IG_InPadFlight`), a chain ends, strafing stops, and combat /
+reposition hooks wait for the landing; only the pad hook may fire. Also measured: on the twin pads
+of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than the planned
+(reach end) spot, sometimes the level below -- the end-of-arc hook is aimed at the planned spot.
