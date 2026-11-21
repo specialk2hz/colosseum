@@ -190,3 +190,4 @@ and the OSP hook is on; off, every one is the brain's own default (IG-6 in `IG-S
 | `ig_rs_startgrapple` | `ig_bothook_cost` | `0` | be_ig_hook.c at AAS load: a grapple reachability's fixed cost, replacing the file's |
 | `ig_roam` | `ig_botroam` | `0` | game_q3/ai_ig_roam.c: hunt goals replace the random fallback goal (IG-7) |
 | `ig_revenge`, `ig_revenge_window`, `ig_revenge_time` | `ig_botrevenge`, `ig_botrevenge_window`, `ig_botrevenge_time` | `0`, 60, 20 | game_q3/ai_ig_revenge.c (IG-8) |
+| `ig_hooksky` | the server's `hook_sky` | `0` | game_q3/ai_ig_sling.c: the lava escape may hook the sky (IG-9) |

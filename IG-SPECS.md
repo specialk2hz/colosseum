@@ -144,3 +144,24 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
 - **Tested:** igbench, on vs off (roam, slingshot on): 1.6 fight hooks per bot per minute, 53% latch;
   rail accuracy +2.0 points (borderline), frags/deaths unchanged -- symmetric between bots by design;
   harder-to-hit is judged against a person.
+
+### IG-10 addendum: reposition (2026-11-21)
+
+- **Requirement:** after a kill (40% of the time) or after two misses in a row (a shot with no kill
+  within 0.4 s -- exact in instagib), the bot hooks away at once, ignoring the combat hook's cooldown,
+  up to 90 degrees off its view; also from the route nodes, since a kill ends the fight node.
+- **Why:** Billy: "after a kill I will sometimes grapple away to reposition ... after 2 misses,
+  reposition with grapple quickly and try again".
+- **Tested:** igbench vs the combat hook alone: 3.4 repositions per bot per minute; rail accuracy
+  37.9% -> 47.1% (fewer shots from a spot that just missed twice), hooks 6.9 -> 10.4/min, speed +5.7;
+  frags/deaths unchanged.
+
+### IG-9 addendum: staying out of lava (2026-11-21)
+
+- Anchors are traced with lava and slime and refused through them; the slingshot and combat-hook jumps
+  check 500/400 units of safe floor first; the flight path is checked to the anchor and beyond. A bot
+  in lava or slime hooks nearly straight up (85-65 degrees, 55-45 as a fallback; the sky when
+  `hook_sky` allows, pushed as `ig_hooksky`), preferring an anchor with safe floor under it, and
+  re-hooks toward safe floor if it hangs over the pool. Hooks fire only after two aimed thinks.
+- **Tested:** q2rdm11, 10 matches: lava deaths 157 -> ~80; of escapes started, 66 of 67 ended over
+  safe floor.
