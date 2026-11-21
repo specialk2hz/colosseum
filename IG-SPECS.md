@@ -218,3 +218,24 @@ slingshots 54% -> 46%; hooks 15.5 -> 17.1/min (Billy 18); slingshots 9.1 -> 10.6
   q2rdm11/campgrounds/tltf2 (8 seeds each) it is not faster: flights of 500-800 units 1.44 s off,
   1.58 s on (73% hooked). These pads launch at 650-950 u/s; OSP's 975 u/s pull replaces that
   velocity rather than adding to it. Off until a variant beats the arc.
+- **Billy's trick, both halves** (2026-11-21, after he named q2rdm11's big room): (1) into the pad:
+  when the route takes a jump pad 200-700 units ahead (AAS_PredictRoute stopping at TFL_JUMPPAD),
+  jump, flick onto the pad's floor, pull, and let go 90 units short so the momentum carries the bot
+  onto the trigger; (2) mid-air: a short pull toward the landing (0.4 s from the fire), then let go.
+  q2rdm11 + campgrounds, 10 seeds: 268 into-pad hooks, 81% let go near the pad, 83% of those launched
+  by it. Averages unchanged (pads/min, speed): pad use follows goals, and the saved run-up (~0.5 s
+  per pad, 975 u/s pull against 300 u/s running) is too small a slice of a match to show. Still
+  off by default; on for Billy to judge on the 27913 test server.
+- **End of the arc** (Billy: "just before the landing, a slight advantage in speed, towards the end
+  of the arc"): the mid-air hook waits until the bot is near the top or coming down (vertical speed
+  under 100) within 450 units of the landing, and then, from above, hooks the floor just past the
+  landing (a pull down and forward), 0.35 s. Matched pads (same distance and rise), off vs on: the
+  big room's flights 1.40 vs 1.41 s (145/168 flights); other groups within noise. No cost in
+  suicides or speed.
+
+### IG-9 addendum 3 (2026-11-21): real slingshot distances
+
+Billy, watching: "grapple far too close to themselves, not a proper slingshot". 38% of anchors were
+under 200 units (the 24-30 degree pitches added with the wider search). Now 6-18 degrees down, 12
+first, and at least 250 units: anchors mean 329 (Billy 275), average speed +5.7 u/s, hooks
+17.1 -> 15.2/min, slingshots 10.6 -> 9.2/bot/min (30 matches).
