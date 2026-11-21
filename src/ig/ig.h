@@ -24,4 +24,7 @@ void IG_StatsPush(edict_t *other);
 struct bot_library_s;
 void IG_BotLibVars(struct bot_library_s *lib);
 
+// IG-14: bots keep their momentum on landing, as Q2PRO clients do.
+void IG_BotPmove(edict_t *ent, pmove_state_t *s);
+
 #endif

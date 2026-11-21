@@ -248,3 +248,13 @@ motion). While a pad flies the bot (`IG_InPadFlight`), a chain ends, strafing st
 reposition hooks wait for the landing; only the pad hook may fire. Also measured: on the twin pads
 of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than the planned
 (reach end) spot, sometimes the level below -- the end-of-arc hook is aimed at the planned spot.
+
+## IG-14: `ig_botstrafehack` -- bots land like Q2PRO clients (off)
+
+- **Requirement:** `ig_botstrafehack 1` clears PMF_TIME_LAND before a bot's pmove (`IG_BotPmove`,
+  p_client.c ClientThink), which is what Q2PRO's `sv_strafejump_hack` does for Q2PRO/R1Q2 clients.
+- **Why:** a bot's pmove runs with the server's default parameters (svs.pmp), lock on, while Billy
+  on Q2PRO never has the 144-200 ms post-landing jump lock.
+- **Tested** (30 matches, q2dm1/q2rdm11/ztn2dm3): no measurable change, alone or with IG-11 strafe
+  jumping (speed 301 vs 300-302, >400 u/s 15.0 vs 14.7-15.5%). Bots' landing hops already average
+  ~620 u/s: the lock is not where their speed goes. Kept, off, for parity.

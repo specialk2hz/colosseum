@@ -82,3 +82,26 @@ void IG_BotLibVars(struct bot_library_s *lib)
         }
     }
 }
+
+/*
+IG-14: `ig_botstrafehack 1`. Quake II locks the jump for 144-200 ms after a
+landing faster than 200 u/s (PMF_TIME_LAND), and ground friction takes ~60% of
+the speed in that time. Q2PRO lifts the lock for its own and R1Q2 clients
+(sv_strafejump_hack, pmoveParams_t.strafehack: the flag is never set) -- but
+a bot is no client connection: its pmove runs with the server's default
+parameters, lock on. A person on Q2PRO kept a slingshot's momentum through
+the landing; a bot lost it (975 u/s let go, 330 at the next hop). This
+clears the flag before a bot's pmove, which is what strafehack amounts to.
+*/
+void IG_BotPmove(edict_t *ent, pmove_state_t *s)
+{
+    static cvar_t *hack;
+
+    if (!hack)
+        hack = gi.cvar("ig_botstrafehack", "0", 0);
+    if (!hack->integer || !(ent->flags & FL_BOT) || !(s->pm_flags & PMF_TIME_LAND))
+        return;
+    s->pm_flags &= ~PMF_TIME_LAND;
+    if (!(s->pm_flags & (PMF_TIME_WATERJUMP | PMF_TIME_TELEPORT)))
+        s->pm_time = 0;
+}

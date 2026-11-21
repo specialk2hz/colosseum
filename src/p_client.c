@@ -16,6 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 #include "g_local.h"
+#include "ig/ig.h" // IG:
 #include "bot/bl_main.h"
 #include "bot/bl_spawn.h"
 #include "bot/p_menulib.h"
@@ -4077,6 +4078,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
             return;
 
         pm.cmd = *ucmd;
+        IG_BotPmove(ent, &pm.s); // IG: bots land like Q2PRO clients (IG-14)
 
         pm.trace = PM_trace;    // adds default parms
         pm.pointcontents = gi.pointcontents;
