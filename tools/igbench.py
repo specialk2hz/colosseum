@@ -289,6 +289,8 @@ METRICS = [
     ('hooktime', 'on hook %', lambda c, fr: 100.0 * c['hookframes'] / c['alive'] if c['alive'] else None),
     ('upper', 'upper %', lambda c, fr: 100.0 * c['upper'] / c['alive'] if c['alive'] else None),
     ('speed', 'units/s', lambda c, fr: c['dist'] / (c['alive'] * FRAME_S) if c['alive'] else None),
+    ('fast', 'over 400 u/s %', lambda c, fr: 100.0 * c['fast'] / c['alive'] if c.get('alive') and 'fast' in c else None),
+    ('faster', 'over 600 u/s %', lambda c, fr: 100.0 * c['faster'] / c['alive'] if c.get('alive') and 'faster' in c else None),
     ('nearest', 'nearest player units', lambda c, fr: c['nearest'] / c['nearframes'] if c.get('nearframes') else None),
     ('crowd', 'crowded %', lambda c, fr: 100.0 * c['crowd'] / c['alive'] if c.get('alive') and 'crowd' in c else None),
     ('contact', 'to contact s', lambda c, fr: c['contactframes'] * FRAME_S / c['contacts'] if c['contacts'] else None),

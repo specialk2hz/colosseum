@@ -37,6 +37,8 @@ of the License, or (at your option) any later version.
 //   nearest      units to the nearest other live player, summed over the
 //                frames it was alive with someone else alive (spread)
 //   crowd        frames with IG_CROWD_N or more others within IG_CROWD_DIST
+//   fast, faster frames moving faster than 400 / 600 units/s (running is 300:
+//                only hooks, pads and jumps get there)
 
 #include "g_local.h"
 #include "tourney/osp_types.h"
@@ -61,7 +63,7 @@ typedef struct {
     vec3_t  pend_start, pend_anchor, pend_end;
     float   dist;
     float   nearest;
-    int     nearframes, crowd;
+    int     nearframes, crowd, fast, faster;
     int     shots0;             // p_acc rail shots when the window opened
     // per-frame state
     bool    was_alive, contacted, have_origin;
@@ -224,6 +226,12 @@ void IG_StatsFrame(void)
         if (alive) {
             c->alive++;
             IG_StatsSpread(i, c, ent);
+            {
+                float sp = VectorLength(ent->velocity);
+
+                if (sp > 400) c->fast++;
+                if (sp > 600) c->faster++;
+            }
             if (ent->s.origin[2] + ent->mins[2] > igs.upperz)
                 c->upper++;
             if (c->have_origin) {
@@ -341,11 +349,11 @@ static void IG_StatsReport(void)
             continue;
         gi.dprintf("igstats client %d alive %d upper %d dist %d pads %d hooks %d "
                    "hookframes %d climbs %d lives %d contacts %d contactframes %d shots %d "
-                   "nearest %d nearframes %d crowd %d "
+                   "nearest %d nearframes %d crowd %d fast %d faster %d "
                    "name %s\n",
                    i, c->alive, c->upper, (int)c->dist, c->pads, c->hooks,
                    c->hookframes, c->climbs, c->lives, c->contacts, c->contactframes,
-                   IG_RailShots(ent) - c->shots0, (int)c->nearest, c->nearframes, c->crowd,
+                   IG_RailShots(ent) - c->shots0, (int)c->nearest, c->nearframes, c->crowd, c->fast, c->faster,
                    ent->client->pers.netname);
     }
 }

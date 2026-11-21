@@ -165,3 +165,20 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
   re-hooks toward safe floor if it hangs over the pool. Hooks fire only after two aimed thinks.
 - **Tested:** q2rdm11, 10 matches: lava deaths 157 -> ~80; of escapes started, 66 of 67 ended over
   safe floor.
+
+## IG-11: strafe jumping (experimental, off)
+
+- **Requirement:** `ig_strafe` (brain libvar; no server cvar yet) 1: on a long straight route stretch at
+  running speed the bot jumps and, in the air, wishes at the angle whose cosine is
+  (300 - 30) / speed to its velocity, toward the route's side, and jumps again on landing.
+- **Why:** Billy: the bots should be faster; Quake II's air acceleration (PM_Accelerate with 1) adds
+  speed this way.
+- **Tested:** no gain. Corridor maps (q2dm1, q2rdm11, ztn2dm3) and open ones (aerowalk, campgrounds,
+  q2rdm12): average speed unchanged, landing speed no higher than take-off, and it costs some
+  slingshots. Left in, off, for a later look (a bot thinks at 10 Hz; routes bend too soon).
+
+## IG-12: speed counters in `sv igstats`
+
+- `fast` / `faster`: frames moving faster than 400 / 600 units/s (running is 300). The whole-match
+  average speed is mostly fighting; these show the bursts hooks give. Stock Q3 bots vs the fork's
+  instagib.cfg (2026-11-21): over 400 u/s 2.2% -> 13.2% of the time, over 600 0.6% -> 7.5%.
