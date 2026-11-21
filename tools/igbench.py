@@ -282,7 +282,9 @@ METRICS = [
     # name, header, per-bot value from a client dict and the window (frames)
     ('frags', 'frags/min', lambda c, fr: c['kills'] / (fr * FRAME_S / 60)),
     ('deaths', 'deaths/min', lambda c, fr: c['deaths'] / (fr * FRAME_S / 60)),
-    ('acc', 'rail acc %', lambda c, fr: 100.0 * c['hits'] / c['shots'] if c['shots'] else None),
+    # railhits: OSP's rail-only count. botstats' hits include hook damage, which
+    # inflated it (runs before 2026-11-21 report that, marked by no railhits)
+    ('acc', 'rail acc %', lambda c, fr: 100.0 * c.get('railhits', c['hits']) / c['shots'] if c['shots'] else None),
     ('pads', 'pads/min', lambda c, fr: c['pads'] / (c['alive'] * FRAME_S / 60) if c['alive'] else None),
     ('hooks', 'hooks/min', lambda c, fr: c['hooks'] / (c['alive'] * FRAME_S / 60) if c['alive'] else None),
     ('climbs', 'hooks that climbed %', lambda c, fr: 100.0 * c.get('climbs', 0) / c['hooks'] if c['hooks'] else None),

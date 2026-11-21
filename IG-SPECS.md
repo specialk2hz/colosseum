@@ -182,3 +182,19 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
 - `fast` / `faster`: frames moving faster than 400 / 600 units/s (running is 300). The whole-match
   average speed is mostly fighting; these show the bursts hooks give. Stock Q3 bots vs the fork's
   instagib.cfg (2026-11-21): over 400 u/s 2.2% -> 13.2% of the time, over 600 0.6% -> 7.5%.
+
+### IG-9 addendum (2026-11-21, evening): the slingshot, nailed
+
+Billy's move: jump, hook the floor (or a far wall) ahead, let go quickly, about two hops, then
+sling again or stop. What was wrong, found by logging the hook game-side against the brain:
+- `AngleDifference` was undeclared in ai_ig_sling.c: every aim check read garbage.
+- The body-clear check traced along the hook line, which for a floor anchor runs into the floor.
+- Q3's view turn eases and carries angular speed between frames; the game fires a hook command
+  along the LAST usercmd's view. Now every hook (slingshot, combat, lava) flicks onto its anchor
+  and fires on the very next think, only if no other view was sent in between (`IG_FlickReady`).
+- A shallow floor hook catches up to 300 units off the aimed spot: the latch is also read from the
+  pull itself (speed > 800 toward the anchor).
+Results (30 matches, q2dm1/q2rdm11/ztn2dm3): hooks caught within 100 units of the aim 28% -> 82%,
+never caught 14% -> 2%; slingshots 3.5 -> 9.1/bot/min; hooks 15.5/min; > 400 u/s 14% of the time.
+Also: igstats `railhits` (OSP's rail-only table). botstats' hits counted hook damage, so the
+"rail accuracy 47%" of ig-0.3 was hooks hitting players; real rail accuracy is ~35% before and after.

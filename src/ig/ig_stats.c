@@ -34,6 +34,7 @@ of the License, or (at your option) any later version.
 //                its death, whichever comes first
 //   contactframes  frames from spawn to first contact, summed over those lives
 //   shots        rail shots (OSP's accuracy table, p_acc)
+//   railhits     rail hits, same table (botstats' hits include hook damage)
 //   nearest      units to the nearest other live player, summed over the
 //                frames it was alive with someone else alive (spread)
 //   crowd        frames with IG_CROWD_N or more others within IG_CROWD_DIST
@@ -65,6 +66,7 @@ typedef struct {
     float   nearest;
     int     nearframes, crowd, fast, faster;
     int     shots0;             // p_acc rail shots when the window opened
+    int     railhits0;          // p_acc rail hits when the window opened
     // per-frame state
     bool    was_alive, contacted, have_origin;
     vec3_t  origin;
@@ -89,6 +91,18 @@ static int IG_RailShots(const edict_t *ent)
         if (id >= 0 && id < (int)q_countof(p_acc))
             return p_acc[id].shots[ACC_RAILGUN];
     }
+    return 0;
+}
+
+// Rail hits from the same table. botstats' "hits" counts any damage to
+// another player, and in instagib the hook does damage (hook_initdamage):
+// hooks that struck players read as rail accuracy (47% "rail" against 36%).
+static int IG_RailHits(const edict_t *ent)
+{
+    int id = ent->client->resp.clientid;
+
+    if (G_IsOspRuleset() && id >= 0 && id < (int)q_countof(p_acc))
+        return p_acc[id].hits[ACC_RAILGUN];
     return 0;
 }
 
@@ -120,6 +134,7 @@ static void IG_StatsReset(void)
             ig_cl_t *c = &igs.cl[i];
 
             c->shots0 = IG_RailShots(ent);
+            c->railhits0 = IG_RailHits(ent);
             c->shots_seen = c->shots0;
             // A life already under way is not timed to contact: its spawn
             // is before the window.  It still counts alive/upper/dist frames.
@@ -349,11 +364,11 @@ static void IG_StatsReport(void)
             continue;
         gi.dprintf("igstats client %d alive %d upper %d dist %d pads %d hooks %d "
                    "hookframes %d climbs %d lives %d contacts %d contactframes %d shots %d "
-                   "nearest %d nearframes %d crowd %d fast %d faster %d "
+                   "railhits %d nearest %d nearframes %d crowd %d fast %d faster %d "
                    "name %s\n",
                    i, c->alive, c->upper, (int)c->dist, c->pads, c->hooks,
                    c->hookframes, c->climbs, c->lives, c->contacts, c->contactframes,
-                   IG_RailShots(ent) - c->shots0, (int)c->nearest, c->nearframes, c->crowd, c->fast, c->faster,
+                   IG_RailShots(ent) - c->shots0, IG_RailHits(ent) - c->railhits0, (int)c->nearest, c->nearframes, c->crowd, c->fast, c->faster,
                    ent->client->pers.netname);
     }
 }
