@@ -21,8 +21,8 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
 
 - **Requirement:** after `instagib.cfg`, a Config vote (or `exec`) to any shipped mode config puts back
   everything instagib changed that upstream's mode configs do not set: `dmflags`, `weapon_have`,
-  `weapon_initial`, `start_slugs`, `max_slugs`, `damage_railgun`, `motd_file`, all 26 `allow_*` and
-  `ig_noblaster`.
+  `weapon_initial`, `start_slugs`, `max_slugs`, `damage_railgun`, `motd_file`, all 26 `allow_*`,
+  `ig_noblaster` and `ig_bothook`.
 - **Why:** cvars persist across configs; without this a vote from instagib to `dm` stays railgun-only.
 - **Where:** the "instagib fork" block at the end of `colosseum/server.cfg`, which every mode config
   execs first. Values are the library defaults (engine default 16 for `dmflags`).
