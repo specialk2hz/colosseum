@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // scoreboard/player text builders.
 
 #include "g_local.h"
+#include "ig/ig.h" // IG:
 #include "tourney/osp_types.h"
 #include "bot/bl_main.h"
 #include "bot/bl_botcfg.h"
@@ -497,6 +498,7 @@ void OSP_showScores(int *list, int count, edict_t *ent)
     outlen = 0;
     buf[0] = 0;
     outlen = strlen(buf);
+    outlen = IG_ScoreMapLine(buf, sizeof(buf), outlen); // IG: the map's name (IG-18)
 
     if (level.intermission_framenum != 0)
         endframe = endlvl_frame;

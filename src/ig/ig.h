@@ -30,4 +30,8 @@ void IG_BotPmove(edict_t *ent, pmove_state_t *s);
 // IG-15: `ig_moverec 1` logs a person's every movement command (ig_stats.c).
 void IG_MoveRecord(edict_t *ent, const usercmd_t *ucmd, bool onground);
 
+// IG-18 / IG-19: scoreboard map name, vote menu map list (ig_menu.c).
+int IG_ScoreMapLine(char *buf, size_t size, int outlen);
+bool IG_VoteMapList(edict_t *ent);
+
 #endif

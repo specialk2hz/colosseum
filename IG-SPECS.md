@@ -280,3 +280,18 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
   462 -> 830. Cost: q2rdm11 falls/lava 0.24 -> 0.35/min (0.41 without the safe-floor check).
   Tried and dropped: pushing toward the hook while pulled (no gain), delaying the let-go for a hop
   (lost the gain: a held jump key cannot jump again).
+
+## IG-18: `ig_scoremap` -- the map's name on the scoreboard (off)
+
+- **Requirement:** `ig_scoremap 1`: the OSP scoreboard (OSP_showScores) shows `level.mapname` (the
+  file name, no `.bsp`) centred above the leader banner (`IG_ScoreMapLine`, src/ig/ig_menu.c).
+- **Why:** Billy wants the board to say which map it is.
+- **Tested:** in game on 27913.
+
+## IG-19: `ig_votemaplist` -- pick the map from a list (off)
+
+- **Requirement:** `ig_votemaplist 1`: the vote menu's Map row opens a list of the rotation's maps,
+  12 a page with next/previous, the staged one starred; picking one stages it as the stepping row did
+  (resp.osp_r290 / osp_r254 bit 1) and returns to the vote menu on the Map row.
+- **Why:** Billy: show all the options instead of cycling through each one (28 instagib maps).
+- **Tested:** in game on 27913.

@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // decides whether "back" goes to Team_Menu or RegDM_Menu.
 
 #include "g_local.h"
+#include "ig/ig.h" // IG:
 #include "tourney/osp_types.h"
 
 // Defined below its first use in the donor, whose g_local.h declared it.
@@ -1740,6 +1741,7 @@ void OSP_proposeVote_menu(edict_t *ent, osp_pmenu_t *p)
 
 void OSP_changeMap_menu(edict_t *ent, osp_pmenu_t *p)
 {
+    if (IG_VoteMapList(ent)) return; // IG: a list to pick from (IG-19)
     if (ent->client->resp.osp_r254 && ent->client->resp.osp_r254 != 1) {
         gi.cprintf(ent, PRINT_HIGH,
                    "Sorry, you can change only one item at a time!\n");
