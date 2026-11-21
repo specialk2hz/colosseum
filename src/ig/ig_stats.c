@@ -426,7 +426,7 @@ bool IG_ServerCommand(const char *cmd)
 }
 
 /*
-IG-15: `ig_moverec 1`. Every movement command of a person (never a bot) as an
+IG-15: `ig_moverec 1`. Every movement command of a person (2: and of bots) as an
 "igmove" line: what Billy does with the keys and the view while he slingshots
 and strafe jumps, for the bots to copy. Per usercmd, so at the client's rate:
   igmove <slot> <frame> <msec> spd <horizontal> vz <vertical> g <on ground>
@@ -440,7 +440,8 @@ void IG_MoveRecord(edict_t *ent, const usercmd_t *ucmd, bool onground)
 
     if (!rec)
         rec = gi.cvar("ig_moverec", "0", 0);
-    if (!rec->integer || !ent->client || (ent->flags & FL_BOT) || ent->health <= 0 ||
+    // 1: people only; 2: bots too (to compare them on the same measures)
+    if (!rec->integer || !ent->client || ((ent->flags & FL_BOT) && rec->integer < 2) || ent->health <= 0 ||
         ent->movetype == MOVETYPE_NOCLIP || G_IsObserver(ent))
         return;
     hook = !ent->client->ctf_grapple ? 0 :
