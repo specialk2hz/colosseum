@@ -190,6 +190,7 @@ def parse(text, spec, names):
     # the brain's own event lines (game_q3/ai_ig_revenge.c), counted per match
     res['revenge'] = sum(1 for l in lines[start:] if re.match(r'^ig: revenge \d+ on \d+', l))
     res['revengekill'] = sum(1 for l in lines[start:] if l.startswith('ig: revenge kill '))
+    res['sling'] = sum(1 for l in lines[start:] if re.match(r'^ig: slingshot \d+ length', l))
     for l in lines[start:]:
         m = botduel.RE_ENDED.match(l)
         if m:
@@ -295,6 +296,7 @@ METRICS = [
 # Per match rather than per bot: the brain's revenge events (IG-8).
 MATCH_METRICS = [
     ('revenge', 'grudges/bot/min', lambda r, fr: r.get('revenge', 0) / max(1, len(r['clients'])) / (fr * FRAME_S / 60)),
+    ('sling', 'slingshots/bot/min', lambda r, fr: r.get('sling', 0) / max(1, len(r['clients'])) / (fr * FRAME_S / 60)),
     ('revengekill', 'grudges settled %', lambda r, fr: 100.0 * r['revengekill'] / r['revenge'] if r.get('revenge') else None),
 ]
 

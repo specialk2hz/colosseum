@@ -91,3 +91,43 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
   (server repo, `tools/build-aas.sh`).
 - **Tested:** igbench, feature off vs `ig-0.1-baseline` and feature on vs off, on q2dm1, q2rdm11,
   ztn2dm3 (report in the server repo, bench/ig-0.2-hook-climb).
+
+## IG-7: `ig_botroam` -- hunt goals instead of the random one
+
+- **Requirement:** a Quake III bot with nothing to pick up goes where it last saw (120-degree view,
+  3000 units) or heard (firing, 1500 units) an enemy, the freshest trace up to 10 s old, instead of
+  `AAS_RandomGoalArea`'s random area. It passes through (picks its next goal within 160 units) and
+  re-plans on a trace 3 s fresher. Item goals are never replaced, so deathmatch's item gathering is
+  unchanged. `ig_botdebug` (1 quiet, 2 everything) has bots say their choice in chat. Default off.
+- **Why:** in instagib every item is removed, so all a stock bot ever does between fights is walk to a
+  random area anywhere on the map.
+- **Where:** brain `game_q3/ai_ig_roam.c`; `// IG:` calls in `ai_dmnet.c` (BotGetItemLongTermGoal) and
+  `ai_dmq3.c` (BotDeathmatchAI). Game: `ig_botroam` -> libvar `ig_roam`.
+- **Tested:** igbench, roam on vs off (hook on): frags/min 4.54 -> 5.40 (significant), time to contact
+  4.38 -> 3.96 s, accuracy unchanged.
+
+## IG-8: `ig_botrevenge` -- a grudge (trigger rule OPEN)
+
+- **Requirement:** a bot killed twice in a row by the same player within `ig_botrevenge_window` (60 s)
+  hunts that player (IG-7's hunt, even with roam off) and prefers them as its enemy when in view, for
+  `ig_botrevenge_time` (20 s) or until it kills them. It knows only what it perceived. Default off.
+- **Why:** Billy's request: bots that react to being farmed.
+- **Where:** brain `game_q3/ai_ig_revenge.c`; `// IG:` calls in `ai_dmq3.c` (BotFindEnemy, the
+  obituary). igbench counts grudges and settlements from the brain's `ig: revenge` lines.
+- **Tested:** fires ~1.1 per bot per minute in instagib, 40% settled -- too often; the trigger is being
+  rethought (humans only / 3 in a row / cooldown). Keep off until decided.
+
+## IG-9: `ig_botsling` -- slingshot: jump, hook ahead, let go
+
+- **Requirement:** with `ig_bothook`, a bot running a long clear stretch of route (700 units ahead,
+  at least 450 horizontally, running that way at 200+) jumps, hooks a solid non-sky anchor ahead at
+  10-26 degrees up (350-1100 units, 40-450 above the eye, body path and landing floor checked), and
+  lets go once pulled half the remaining distance or past a quarter of it at 850+ -- the pull measured
+  from where the hook latches -- or after 0.8 s, or when stalled; 3 s cooldown. Default off.
+- **Why:** stock Q3 bots only hook standing at a grapple route's start; human players slingshot.
+  Billy's brief: include a jump to really boost.
+- **Where:** brain `game_q3/ai_ig_sling.c` (one `// IG:` call at the end of AINode_Seek_LTG's
+  movement) and `botlib/be_ig_hook.c` (`IG_HookNear`). Game: `ig_botsling` -> libvar `ig_sling`.
+- **Tested:** igbench vs roam only: 2.4 slingshots per bot per minute, speed 261 -> 269 u/s
+  (significant), frags/accuracy/falls unchanged. Of attempts, 39% are full slingshots (released at
+  975 u/s), 57% never latch (hook misses or is refused) -- the next refinement.
