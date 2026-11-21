@@ -56,6 +56,8 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_revenge", gi.cvar("ig_botrevenge", "0", 0)->value ? "1" : "0");
     lib->funcs.BotLibVarSet("ig_revenge_window", gi.cvar("ig_botrevenge_window", "60", 0)->string);
     lib->funcs.BotLibVarSet("ig_revenge_time", gi.cvar("ig_botrevenge_time", "20", 0)->string);
+    // testing aid: bots say in chat which goal they chose and why
+    lib->funcs.BotLibVarSet("ig_debug", gi.cvar("ig_botdebug", "0", 0)->value ? "1" : "0");
     {
         cvar_t *extra = gi.cvar("ig_botlibvars", "", 0);
         char buf[MAX_STRING_CHARS], *name, *value;
