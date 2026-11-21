@@ -258,3 +258,12 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
 - **Tested** (30 matches, q2dm1/q2rdm11/ztn2dm3): no measurable change, alone or with IG-11 strafe
   jumping (speed 301 vs 300-302, >400 u/s 15.0 vs 14.7-15.5%). Bots' landing hops already average
   ~620 u/s: the lock is not where their speed goes. Kept, off, for parity.
+
+## IG-15: `ig_moverec` -- record a person's movement (off)
+
+- **Requirement:** `ig_moverec 1` logs every movement command of a person (never a bot) as an
+  `igmove` line (`IG_MoveRecord`, after the pmove in ClientThink): horizontal and vertical speed,
+  ground, hook state, forward/side/up keys, view angles, position.
+- **Why:** Billy keeps his slingshot momentum by strafe jumping during it; the bots' strafe code
+  (IG-11) guesses the timing. His recorded keys and view turns are the reference to copy.
+- **Tested:** in his recording session on 27913 (lines present, one per usercmd).

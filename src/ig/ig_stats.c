@@ -424,3 +424,31 @@ bool IG_ServerCommand(const char *cmd)
     }
     return true;
 }
+
+/*
+IG-15: `ig_moverec 1`. Every movement command of a person (never a bot) as an
+"igmove" line: what Billy does with the keys and the view while he slingshots
+and strafe jumps, for the bots to copy. Per usercmd, so at the client's rate:
+  igmove <slot> <frame> <msec> spd <horizontal> vz <vertical> g <on ground>
+         hook <0 none, 1 flying, 2 pulling/hanging> f <forward> s <side> u <up>
+         yaw <yaw> pitch <pitch> x <origin x> y <origin y> z <origin z>
+*/
+void IG_MoveRecord(edict_t *ent, const usercmd_t *ucmd, bool onground)
+{
+    static cvar_t *rec;
+    int hook;
+
+    if (!rec)
+        rec = gi.cvar("ig_moverec", "0", 0);
+    if (!rec->integer || !ent->client || (ent->flags & FL_BOT) || ent->health <= 0 ||
+        ent->movetype == MOVETYPE_NOCLIP || G_IsObserver(ent))
+        return;
+    hook = !ent->client->ctf_grapple ? 0 :
+           ent->client->ctf_grapplestate > CTF_GRAPPLE_STATE_FLY ? 2 : 1;
+    gi.dprintf("igmove %d %d %d spd %.0f vz %.0f g %d hook %d f %d s %d u %d yaw %.1f pitch %.1f x %.0f y %.0f z %.0f\n",
+               (int)(ent - g_edicts) - 1, level.framenum, ucmd->msec,
+               sqrtf(ent->velocity[0] * ent->velocity[0] + ent->velocity[1] * ent->velocity[1]),
+               ent->velocity[2], onground, hook, ucmd->forwardmove, ucmd->sidemove, ucmd->upmove,
+               ent->client->v_angle[YAW], ent->client->v_angle[PITCH],
+               ent->s.origin[0], ent->s.origin[1], ent->s.origin[2]);
+}

@@ -4090,6 +4090,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
             ent->s.origin[i] = SHORT2COORD(pm.s.origin[i]);
             ent->velocity[i] = SHORT2COORD(pm.s.velocity[i]);
         }
+        IG_MoveRecord(ent, ucmd, pm.groundentity != NULL); // IG: movement recording (IG-15)
 
         VectorCopy(pm.mins, ent->mins);
         VectorCopy(pm.maxs, ent->maxs);
