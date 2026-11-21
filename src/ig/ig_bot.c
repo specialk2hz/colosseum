@@ -15,6 +15,11 @@ of the License, or (at your option) any later version.
 //                        when the hook is on (OSP rulesets, hook_enable)
 //   ig_bothook_cost  150 the fixed cost of a grapple route, in 1/100 s of
 //                        route time (bspc bakes in 500); read at map load
+//   ig_botroam       0   1: goals with a reason (hunt) instead of the random
+//                        fallback; item goals untouched (IG-7)
+//   ig_botrevenge    0   1: a bot killed twice by one player within
+//                        ig_botrevenge_window (60 s) goes after them for
+//                        ig_botrevenge_time (20 s) or until it kills them (IG-8)
 //   ig_botlibvars    ""  "name value name value ...": any further libvars for
 //                        the Q3 brain, pushed after the above.  For tuning and
 //                        A/B tests (igbench --set ig_botlibvars ...), not play
@@ -47,6 +52,10 @@ void IG_BotLibVars(struct bot_library_s *lib)
         lib->funcs.BotLibVarSet("cmd_grappleon", "hook");
         lib->funcs.BotLibVarSet("cmd_grappleoff", "unhook");
     }
+    lib->funcs.BotLibVarSet("ig_roam", gi.cvar("ig_botroam", "0", 0)->value ? "1" : "0");
+    lib->funcs.BotLibVarSet("ig_revenge", gi.cvar("ig_botrevenge", "0", 0)->value ? "1" : "0");
+    lib->funcs.BotLibVarSet("ig_revenge_window", gi.cvar("ig_botrevenge_window", "60", 0)->string);
+    lib->funcs.BotLibVarSet("ig_revenge_time", gi.cvar("ig_botrevenge_time", "20", 0)->string);
     {
         cvar_t *extra = gi.cvar("ig_botlibvars", "", 0);
         char buf[MAX_STRING_CHARS], *name, *value;
