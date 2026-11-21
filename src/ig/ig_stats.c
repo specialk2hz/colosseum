@@ -54,6 +54,10 @@ typedef struct {
     // a finished hook's line waits IG_LAND_FRAMES for where the bot came down
     bool    pend;
     int     pend_frame, pend_pull, pend_hang;
+    // how a hook was used, for modelling a person's hooking: on the ground or
+    // in the air when it went out, speed then and at the let-go, and a jump
+    // pad within the landing second
+    int     hookair, hookspeed, pend_air, pend_firespeed, pend_relspeed, pend_pad;
     vec3_t  pend_start, pend_anchor, pend_end;
     float   dist;
     float   nearest;
@@ -174,10 +178,12 @@ static void IG_StatsHookLine(int i, ig_cl_t *c, const edict_t *ent)
     else
         Q_strlcpy(land, "dead", sizeof(land));
     gi.dprintf("igstats hook %d frame %d pull %d hang %d start %.0f %.0f %.0f "
-               "anchor %.0f %.0f %.0f end %.0f %.0f %.0f land %s\n", i, level.framenum,
+               "anchor %.0f %.0f %.0f end %.0f %.0f %.0f air %d firespeed %d relspeed %d pad %d "
+               "human %d land %s\n", i, level.framenum,
                c->pend_pull, c->pend_hang, c->pend_start[0], c->pend_start[1], c->pend_start[2],
                c->pend_anchor[0], c->pend_anchor[1], c->pend_anchor[2],
-               c->pend_end[0], c->pend_end[1], c->pend_end[2], land);
+               c->pend_end[0], c->pend_end[1], c->pend_end[2], c->pend_air, c->pend_firespeed,
+               c->pend_relspeed, c->pend_pad, !(g_edicts[1 + i].flags & FL_BOT), land);
     c->pend = false;
 }
 
@@ -239,6 +245,8 @@ void IG_StatsFrame(void)
                     c->hookz = ent->s.origin[2];
                     VectorCopy(ent->s.origin, c->hookstart);
                     c->hookpull = c->hookhang = 0;
+                    c->hookair = ent->groundentity == NULL;
+                    c->hookspeed = (int)VectorLength(ent->velocity);
                 }
                 if (ent->client->ctf_grapplestate == CTF_GRAPPLE_STATE_PULL ||
                     ent->client->ctf_grapplestate == CTF_GRAPPLE_STATE_HANG) {
@@ -257,6 +265,10 @@ void IG_StatsFrame(void)
                 c->pend = true;
                 c->pend_frame = level.framenum + IG_LAND_FRAMES;
                 c->pend_pull = c->hookpull;
+                c->pend_air = c->hookair;
+                c->pend_firespeed = c->hookspeed;
+                c->pend_relspeed = (int)VectorLength(ent->velocity);
+                c->pend_pad = 0;
                 c->pend_hang = c->hookhang;
                 VectorCopy(c->hookstart, c->pend_start);
                 VectorCopy(c->hookanchor, c->pend_anchor);
@@ -310,6 +322,8 @@ void IG_StatsPush(edict_t *other)
     if (level.framenum - c->last_pad > IG_PAD_DEBOUNCE)
         c->pads++;
     c->last_pad = level.framenum;
+    if (c->pend)
+        c->pend_pad = 1;        // the pad the hook was let go for
 }
 
 static void IG_StatsReport(void)

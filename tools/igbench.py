@@ -191,6 +191,7 @@ def parse(text, spec, names):
     res['revenge'] = sum(1 for l in lines[start:] if re.match(r'^ig: revenge \d+ on \d+', l))
     res['revengekill'] = sum(1 for l in lines[start:] if l.startswith('ig: revenge kill '))
     res['sling'] = sum(1 for l in lines[start:] if re.match(r'^ig: slingshot \d+ length', l))
+    res['fighthook'] = sum(1 for l in lines[start:] if re.match(r'^ig: fighthook \d+$', l))
     for l in lines[start:]:
         m = botduel.RE_ENDED.match(l)
         if m:
@@ -299,6 +300,7 @@ METRICS = [
 MATCH_METRICS = [
     ('revenge', 'grudges/bot/min', lambda r, fr: r.get('revenge', 0) / max(1, len(r['clients'])) / (fr * FRAME_S / 60)),
     ('sling', 'slingshots/bot/min', lambda r, fr: r.get('sling', 0) / max(1, len(r['clients'])) / (fr * FRAME_S / 60)),
+    ('fighthook', 'fight hooks/bot/min', lambda r, fr: r.get('fighthook', 0) / max(1, len(r['clients'])) / (fr * FRAME_S / 60)),
     ('revengekill', 'grudges settled %', lambda r, fr: 100.0 * r['revengekill'] / r['revenge'] if r.get('revenge') else None),
 ]
 

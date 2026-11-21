@@ -131,3 +131,16 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
 - **Tested:** igbench vs roam only: 2.4 slingshots per bot per minute, speed 261 -> 269 u/s
   (significant), frags/accuracy/falls unchanged. Of attempts, 39% are full slingshots (released at
   975 u/s), 57% never latch (hook misses or is refused) -- the next refinement.
+
+## IG-10: `ig_botfighthook` -- a hook mid-fight
+
+- **Requirement:** with `ig_bothook`, a bot fighting a visible enemy 250-1800 units away hooks, mostly
+  right after it fires (the railgun's reload): a short anchor (180-450) diagonally sideways and up,
+  within 55 degrees of its view (it turns no faster than its character); jumps if grounded; rides about
+  0.25 s and lets go; 2.5 s between. Default off.
+- **Why:** Billy hooks mid-fight for a better angle and to be harder to hit.
+- **Where:** brain `game_q3/ai_ig_sling.c` (`IG_CombatHook`), one `// IG:` call after BotCheckAttack in
+  AINode_Battle_Fight. Game: `ig_botfighthook` -> libvar `ig_fighthook`.
+- **Tested:** igbench, on vs off (roam, slingshot on): 1.6 fight hooks per bot per minute, 53% latch;
+  rail accuracy +2.0 points (borderline), frags/deaths unchanged -- symmetric between bots by design;
+  harder-to-hit is judged against a person.
