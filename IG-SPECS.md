@@ -267,3 +267,16 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
 - **Why:** Billy keeps his slingshot momentum by strafe jumping during it; the bots' strafe code
   (IG-11) guesses the timing. His recorded keys and view turns are the reference to copy.
 - **Tested:** in his recording session on 27913 (lines present, one per usercmd).
+
+## IG-17: `ig_botpullhop` -- hop off the floor while a slingshot pulls (off)
+
+- **Requirement:** `ig_botpullhop 1` (libvar `ig_pullhop`): while a slingshot's hook pulls, a bot
+  touching the floor jumps that frame, where the floor ahead along its motion is safe.
+- **Why:** from Billy's recording (IG-15), slingshot for slingshot: same anchors (315 vs 313 units,
+  14 deg down), same 0.2 s pull -- but the bots were on the floor 41% of the pull (Billy 20%) and
+  let go at 462 u/s (Billy 754). A floor anchor drags the body into the floor, where ground friction
+  takes ~60% of OSP's 975 u/s each frame; a jump clears the ground before the friction.
+- **Tested** (30 matches): speed 301 -> 313 u/s, > 600 u/s 8.2 -> 10.8% of the time, let-go speed
+  462 -> 830. Cost: q2rdm11 falls/lava 0.24 -> 0.35/min (0.41 without the safe-floor check).
+  Tried and dropped: pushing toward the hook while pulled (no gain), delaying the let-go for a hop
+  (lost the gain: a held jump key cannot jump again).
