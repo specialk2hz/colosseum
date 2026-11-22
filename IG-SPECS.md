@@ -331,3 +331,13 @@ Billy: fewer runners, more above average. The derived affinity is now 0.30 + 0.6
 0.4 x AGGRESSION): stock bots 4 runners (< 0.45: Phobos 0.38, Ranger 0.40, Crash 0.42, Wrack 0.45),
 6 average, 16 above average, 9 masters (was 8 / 10 / 10 / 7). Calibration unchanged (0.55 = former
 behaviour), so the roster as a whole hooks somewhat more.
+
+### Hang fixes (2026-11-22, Billy saw Razor stuck on q2rdm11)
+
+- A combat/reposition hook still out when the fight ended was left to travelling, which only waited
+  for it ("a combat hook still finishing"); only the fight step lets go, so the bot hung until OSP's
+  hook_holdtime (7.5 s). Travelling now runs that step.
+- A route (climb) hook past its 1.5 s hold that gets no closer (8 units) to the landing for 0.6 s
+  lets go (`IG_GrappleDist`): Q3's own give-up waits for the hook to go out of sight.
+- 24 matches (q2rdm11/q2dm1/ztn2dm3): bot hooks hung 1 s+ 28 -> 9, 3 s+ 7 -> 0, 6 s+ 3 -> 0;
+  hooks/min 14.4 -> 15.8, speed +6 u/s (n.s.).
