@@ -295,3 +295,15 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
   (resp.osp_r290 / osp_r254 bit 1) and returns to the vote menu on the Map row.
 - **Why:** Billy: show all the options instead of cycling through each one (28 instagib maps).
 - **Tested:** in game on 27913.
+
+## IG-20: `ig_botstairhook` -- Billy's stairwell trick (off)
+
+- **Requirement:** `ig_botstairhook 1` (libvar `ig_stairhook`), with the slingshot on: when the route
+  500 units ahead rises 48-320 units (stairs, a ramp), the slingshot's jump is followed by an upward
+  hook: 12-36 degrees up, straight on or up to 35 degrees to a side (the stairwell's walls), 200-650
+  units out, hitting above the top of the climb, the body's path along the pull clear of the steps.
+  It lets go at the top's height (or after 0.5 s, or stalled).
+- **Why:** Billy: "grapple the side of a wall when going up stairs to slingshot up the stairwell".
+- **Tested** (24 matches, q2dm1/q2rdm11/ztn2dm3, with IG-17 on): 940 stair hooks (q2dm1 547),
+  72% let go at the top, 12% never latched. Averages unchanged (speed +1.4 u/s, upper +1.5 points,
+  both within noise; falls/lava unchanged): stairs are a small slice of a match.
