@@ -439,3 +439,20 @@ behaviour), so the roster as a whole hooks somewhat more.
   135 -> 103, lava deaths 0.39 -> 0.23/min, speed -2.8 u/s (not significant), slingshots 9.9 -> 9.1/min;
   q2dm1 and ztn2dm3 identical to the baseline. Lava landings after combat hooks and high-ground walks
   (half of them) are not covered.
+
+## IG-30: `ig_botunstuck` -- stuck bots go back to a spawn point (off)
+
+- **Requirement:** `ig_botunstuck 1`: a bot whose box is inside something solid (MASK_PLAYERSOLID) for
+  a second, or that stays within 16 units across the floor for `ig_botunstuck_time` seconds (10)
+  while asking to walk and not on the hook, is moved to a spawn point the ruleset picks, like a
+  teleporter (flash, hook let go, no frag change). Never onto another player: it waits a think if
+  the spot is taken. Logs `ig: unstuck <slot> solid|still at x y z`. Bots only; any mode.
+- **Why:** Billy saw four bots ride q2dm1pro's lift up and down for minutes, "staring at the sky".
+  The lift (func_plat, x 1664-1792, y 960-1088) rises into a player-clip lid that starts at its top
+  height (z 1024) and covers all of it but a strip at the south edge. Bots stand in the middle, are
+  carried into the clip, and pmove can no longer move them; they ride with the lift for the rest of
+  the map, looking up and down at their goals.
+- **Tested** (igbench, q2dm1pro/q2rdm11/q2dm1/ztn2dm3, 6 seeds, 5 bots, 5 min, no fighting): 4 moves
+  in 24 matches, all "still", all real traps on replay with ig_moverec (treading water in place,
+  wedged mid-air twice, pinned in a corner). No false moves. The lift case itself is rare (none in
+  these matches); on 27913 for Billy to watch.

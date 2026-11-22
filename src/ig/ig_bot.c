@@ -120,3 +120,106 @@ bool IG_BotHookCommand(const char *cmd)
 {
     return !Q_stricmp(cmd, IG_HOOKON) || !Q_stricmp(cmd, IG_HOOKOFF);
 }
+
+/*
+=================
+IG_BotUnstuck  (IG-30, `ig_botunstuck`)
+
+A bot that is stuck for good is put back at a spawn point, frags untouched:
+  - inside something solid for a second: q2dm1pro's lift rises into a
+    player-clip lid that covers all of its top but a strip at the south edge,
+    so a bot riding in the middle ends up in the clip, where pmove cannot move
+    it, and rides up and down with the lift for the rest of the map;
+  - or not moved more than 16 units across the floor in ig_botunstuck_time
+    seconds (10) while asking to walk, and not on the hook.
+From ClientThink after the pmove, for bots only.  0 = upstream.
+=================
+*/
+#define IG_UNSTUCK_RANGE    16.0f
+#define IG_UNSTUCK_SOLID    (1 * BASE_FRAMERATE)
+
+static struct {
+    int     frame;      // the frame of the last check, to spot respawns and new maps
+    int     since;      // when it settled at `at`
+    int     solid;      // when it was first found in solid, 0 if it is not
+    vec3_t  at;
+} ig_stuck[MAX_CLIENTS];
+
+static void IG_BotRespot(edict_t *ent, const char *why)
+{
+    vec3_t  origin, angles;
+    trace_t tr;
+    int     i;
+
+    if (!G_SelectSpawnPoint(ent, origin, angles))
+        return;
+    origin[2] += 9;     // as PutClientInServer places a body
+    // never onto someone (no telefrag): try again next think
+    tr = gi.trace(origin, ent->mins, ent->maxs, origin, ent, MASK_PLAYERSOLID);
+    if (tr.startsolid)
+        return;
+    gi.dprintf("ig: unstuck %d %s at %.0f %.0f %.0f\n", (int)(ent - g_edicts) - 1, why,
+               ent->s.origin[0], ent->s.origin[1], ent->s.origin[2]);
+
+    G_PlayerResetGrapple(ent);
+    gi.unlinkentity(ent);
+    VectorCopy(origin, ent->s.origin);
+    VectorCopy(origin, ent->s.old_origin);
+    VectorClear(ent->velocity);
+    ent->groundentity = NULL;
+    ent->client->ps.pmove.pm_time = 160 >> PM_TIME_SHIFT;
+    ent->client->ps.pmove.pm_flags |= PMF_TIME_TELEPORT;
+    ent->s.event = EV_PLAYER_TELEPORT;
+    for (i = 0; i < 3; i++)
+        ent->client->ps.pmove.delta_angles[i] = ANGLE2SHORT(angles[i] - ent->client->resp.cmd_angles[i]);
+    VectorCopy(angles, ent->s.angles);
+    VectorCopy(angles, ent->client->ps.viewangles);
+    VectorCopy(angles, ent->client->v_angle);
+    gi.linkentity(ent);
+}
+
+void IG_BotUnstuck(edict_t *ent, const usercmd_t *ucmd)
+{
+    static cvar_t *on, *still;
+    trace_t tr;
+    float   dx, dy;
+    int     n = (int)(ent - g_edicts) - 1;
+
+    if (!on) {
+        on = gi.cvar("ig_botunstuck", "0", 0);
+        still = gi.cvar("ig_botunstuck_time", "10", 0);
+    }
+    if (!on->integer || !(ent->flags & FL_BOT) || n < 0 || n >= MAX_CLIENTS ||
+        ent->health <= 0 || ent->deadflag || ent->movetype == MOVETYPE_NOCLIP || G_IsObserver(ent))
+        return;
+
+    // a new body or a new map: start over
+    if (ig_stuck[n].frame > level.framenum || ig_stuck[n].frame < level.framenum - 2) {
+        ig_stuck[n].since = level.framenum;
+        ig_stuck[n].solid = 0;
+        VectorCopy(ent->s.origin, ig_stuck[n].at);
+    }
+    ig_stuck[n].frame = level.framenum;
+
+    tr = gi.trace(ent->s.origin, ent->mins, ent->maxs, ent->s.origin, ent, MASK_PLAYERSOLID);
+    if (!tr.startsolid)
+        ig_stuck[n].solid = 0;
+    else if (!ig_stuck[n].solid)
+        ig_stuck[n].solid = level.framenum;
+    else if (level.framenum - ig_stuck[n].solid >= IG_UNSTUCK_SOLID) {
+        IG_BotRespot(ent, "solid");
+        ig_stuck[n].frame = -1;
+        return;
+    }
+
+    dx = ent->s.origin[0] - ig_stuck[n].at[0];
+    dy = ent->s.origin[1] - ig_stuck[n].at[1];
+    if (dx * dx + dy * dy > IG_UNSTUCK_RANGE * IG_UNSTUCK_RANGE || ent->client->ctf_grapple ||
+        (!ucmd->forwardmove && !ucmd->sidemove)) {
+        ig_stuck[n].since = level.framenum;
+        VectorCopy(ent->s.origin, ig_stuck[n].at);
+    } else if (still->value > 0 && level.framenum - ig_stuck[n].since >= still->value * BASE_FRAMERATE) {
+        IG_BotRespot(ent, "still");
+        ig_stuck[n].frame = -1;
+    }
+}

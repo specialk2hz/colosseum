@@ -4118,6 +4118,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
         // save results of pmove
         client->ps.pmove = pm.s;
         client->old_pmove = pm.s;
+        IG_BotUnstuck(ent, ucmd); // IG: stuck bots go back to a spawn point (IG-30)
 
         //ROGUE sam raimi cam support
         if (ent->flags & FL_SAM_RAIMI)

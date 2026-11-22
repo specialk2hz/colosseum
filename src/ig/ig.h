@@ -56,4 +56,7 @@ bool IG_RouteBlocksCommand(edict_t *bot);
 #define IG_HOOKOFF  "unhook"
 bool IG_BotHookCommand(const char *cmd);
 
+// IG-30: a bot stuck in solid or in one spot goes back to a spawn point (ig_bot.c).
+void IG_BotUnstuck(edict_t *ent, const usercmd_t *ucmd);
+
 #endif
