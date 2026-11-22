@@ -29,3 +29,26 @@ int IG_StartBlaster(void)
 {
     return gi.cvar("ig_noblaster", "0", 0)->value ? 0 : 1;
 }
+
+/*
+=================
+IG_NoFallFx
+
+IG-24.  With falling damage off (not a campaign, dmflags DF_NO_FALLING),
+`ig_nofallfx 1` also drops what a hard landing still does: the view dip
+(`fall_value`) and the grunt (EV_FALL / EV_FALLFAR).  The landing makes the
+short thud (EV_FALLSHORT) instead.  True when it has handled the landing and
+P_FallingDamage should return.
+=================
+*/
+bool IG_NoFallFx(edict_t *ent)
+{
+    static cvar_t *nofx;
+
+    if (!nofx)
+        nofx = gi.cvar("ig_nofallfx", "0", 0);
+    if (!nofx->integer || G_IsCampaign() || !((int)dmflags->value & DF_NO_FALLING))
+        return false;
+    ent->s.event = EV_FALLSHORT;
+    return true;
+}

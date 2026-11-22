@@ -591,6 +591,8 @@ static void P_FallingDamage(edict_t *ent)
         ent->s.event = EV_FOOTSTEP;
         return;
     }
+    if (IG_NoFallFx(ent))   // IG: IG-24 no landing dip or grunt without fall damage
+        return;
 
     ent->client->fall_value = delta * 0.5f;
     if (ent->client->fall_value > 40)

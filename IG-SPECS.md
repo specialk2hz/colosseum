@@ -365,3 +365,12 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Why:** Billy: the menus feel laggy. The donor (OSP) sent every press at once; the delay is
   upstream Colosseum's bandwidth saving (~1.3 KB a redraw), not a 1998 limit.
 - **Tested:** in game on 27913 ("works great").
+
+## IG-24: `ig_nofallfx` -- no landing dip or grunt without fall damage (off)
+
+- **Requirement:** `ig_nofallfx 1`, outside campaigns, with dmflags DF_NO_FALLING (8): a landing hard
+  enough for fall damage (delta >= 15) makes the short landing thud (EV_FALLSHORT) instead of the grunt
+  (EV_FALL / EV_FALLFAR), and sets no `fall_value`, so the view does not dip. Softer landings are
+  unchanged (footstep). With fall damage on it changes nothing. Hook: P_FallingDamage (p_view.c).
+- **Why:** Billy: instagib already has no fall damage, but the grunt and the dip still feel like it.
+- **Tested:** in game on 27913.

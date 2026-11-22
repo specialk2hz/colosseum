@@ -41,4 +41,7 @@ bool IG_EndVoteMenuOpen(edict_t *ent);
 // IG-23: OSP menus redraw on the key press (ig_endvote.c).
 bool IG_MenuFast(edict_t *ent);
 
+// IG-24: no landing dip or grunt when fall damage is off (ig_main.c).
+bool IG_NoFallFx(edict_t *ent);
+
 #endif
