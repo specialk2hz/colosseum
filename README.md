@@ -457,6 +457,7 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_botaffinitychance` | A bot takes a slingshot chance with probability equal to its hook affinity, so runners and grapple masters differ | 28 |
 | `ig_botwalkway` | Near lava, slingshots and chains stay on the walkway instead of flying off its edge | 29 |
 | `ig_botunstuck` | A bot stuck inside something solid (q2dm1pro's lift) or in one spot for 10 s goes back to a spawn point, frags untouched | 30 |
+| `ig_botjumpland` (+ brain `ig_strafe 2`) | Bots strafe jump in chains, carving through the route's bends and jumping again on the landing frame | 31 |
 
 Measuring: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py`
 (seeded, frame-counted bot matches compared with confidence intervals).

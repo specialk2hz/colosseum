@@ -4078,7 +4078,7 @@ void ClientThink(edict_t *ent, usercmd_t *ucmd)
             return;
 
         pm.cmd = *ucmd;
-        IG_BotPmove(ent, &pm.s); // IG: bots land like Q2PRO clients (IG-14)
+        IG_BotPmove(ent, &pm.s, &pm.cmd); // IG: bots land like Q2PRO clients (IG-14, IG-31)
 
         pm.trace = PM_trace;    // adds default parms
         pm.pointcontents = gi.pointcontents;

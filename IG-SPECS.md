@@ -456,3 +456,23 @@ behaviour), so the roster as a whole hooks somewhat more.
   in 24 matches, all "still", all real traps on replay with ig_moverec (treading water in place,
   wedged mid-air twice, pinned in a corner). No false moves. The lift case itself is rare (none in
   these matches); on 27913 for Billy to watch.
+
+## IG-31: strafe jumping that chains -- `ig_strafe 2` and `ig_botjumpland` (off)
+
+- **Requirement:** brain libvar `ig_strafe 2` (IG-11's strafe jumping, extended): a chain already
+  going follows the route 300 units ahead through its bends; in the air the bot wishes toward the side
+  the route bends, at the most-speed angle or at the route itself up to 75 degrees off its velocity;
+  a route point behind it or closer than 96 units (it flew past) keeps the last good direction, and a
+  landing just past one gets one more hop that way; coming down it asks for jump. Game cvar
+  `ig_botjumpland 1`: a bot that asked for jump in the air keeps it held until it lands (the botlib
+  drops jump every other frame), so it takes off again on the landing frame.
+- **Why:** Billy wants bots to strafe jump when not hooking. His recording (route8, q2rdm11): in the air
+  he holds forward and strafe 45-55 degrees off his velocity, gaining ~90 u/s per second, swaps
+  sides near the top, carves through bends (46 degrees of view turn per hop), and presses jump just
+  before he lands. IG-11 already aimed at that angle and bots gain as much in the air (+100-126 u/s
+  per s at 30-50 degrees); it failed on chaining: 78% of chains ended before a second hop, mostly
+  "the route turned" -- the bot overshoots the route's next point mid-jump.
+- **Tested** (igbench, q2rdm11/q2dm1/ztn2dm3/q2dm1pro, 20 seeds, 5 bots, base = IG-28/29/30 on):
+  chains of 2+ hops 7% -> 20%; time over 400 u/s 16.2 -> 18.6% (q2rdm11 16.7 -> 20.6%); speed
+  +3.5 u/s (q2dm1 +5.7, q2rdm11 +5.0, both significant); slingshots 7.6 -> 6.1/bot/min and hooks
+  -1.6/min (hops take some of their stretches); frags, accuracy, suicides unchanged.

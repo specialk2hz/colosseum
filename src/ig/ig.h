@@ -25,7 +25,7 @@ struct bot_library_s;
 void IG_BotLibVars(struct bot_library_s *lib);
 
 // IG-14: bots keep their momentum on landing, as Q2PRO clients do.
-void IG_BotPmove(edict_t *ent, pmove_state_t *s);
+void IG_BotPmove(edict_t *ent, pmove_state_t *s, usercmd_t *cmd);
 
 // IG-15: `ig_moverec 1` logs a person's every movement command (ig_stats.c).
 void IG_MoveRecord(edict_t *ent, const usercmd_t *ucmd, bool onground);

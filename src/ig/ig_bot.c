@@ -99,12 +99,35 @@ parameters, lock on. A person on Q2PRO kept a slingshot's momentum through
 the landing; a bot lost it (975 u/s let go, 330 at the next hop). This
 clears the flag before a bot's pmove, which is what strafehack amounts to.
 */
-void IG_BotPmove(edict_t *ent, pmove_state_t *s)
-{
-    static cvar_t *hack;
+/*
+IG-31: `ig_botjumpland 1`. Billy presses jump just before he lands while strafe
+jumping, so he takes off again on the first ground frame and friction never
+touches him. A bot cannot hold jump: the botlib drops it every other frame
+(be_ea.c ACTION_JUMPEDLASTFRAME), so a jump asked for in the air may be off on
+the landing frame. A bot that asked for jump in the air in the last two frames
+keeps it held until it lands. Airborne jumps do nothing in Quake II (PM_CheckJump
+needs ground), and PMF_JUMP_HELD is only set by a jump, so the held jump fires on
+the landing.
+*/
+static int ig_airjump[MAX_CLIENTS];
 
-    if (!hack)
+void IG_BotPmove(edict_t *ent, pmove_state_t *s, usercmd_t *cmd)
+{
+    static cvar_t *hack, *jumpland;
+    int n = (int)(ent - g_edicts) - 1;
+
+    if (!hack) {
         hack = gi.cvar("ig_botstrafehack", "0", 0);
+        jumpland = gi.cvar("ig_botjumpland", "0", 0);
+    }
+    if (jumpland->integer && (ent->flags & FL_BOT) && n >= 0 && n < MAX_CLIENTS) {
+        if (ent->groundentity || ent->client->ctf_grapple)
+            ig_airjump[n] = 0;
+        else if (cmd->upmove > 0)
+            ig_airjump[n] = level.framenum;
+        else if (ig_airjump[n] && level.framenum - ig_airjump[n] <= 2 && ig_airjump[n] <= level.framenum)
+            cmd->upmove = 400;
+    }
     if (!hack->integer || !(ent->flags & FL_BOT) || !(s->pm_flags & PMF_TIME_LAND))
         return;
     s->pm_flags &= ~PMF_TIME_LAND;
