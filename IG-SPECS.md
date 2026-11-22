@@ -310,3 +310,17 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
 - **Not every time** (Billy): a climb is hooked with chance `ig_stairchance` (libvar, default
   0.35); declined, the bot runs up and does not ask again for 2.5 s. Stair hooks q2dm1 547 -> 209,
   q2rdm11 311 -> 111; other averages unchanged.
+
+## IG-21: `ig_botaffinity` -- hook affinity per character (off)
+
+- **Requirement:** `ig_botaffinity 1` (libvar `ig_affinity`): each Q3 bot has a hook affinity 0-1,
+  character trait 49 (`CHARACTERISTIC_IG_HOOK`, chars.h); default_c.c sets 9 = "not set", worked out
+  as 0.10 + 0.85 x (0.6 x JUMPER + 0.4 x AGGRESSION) (stock bots: Phobos 0.20 ... Klesk 0.95).
+  scale = affinity / 0.55 (0.55 = the former behaviour) multiplies: slingshot start chance (and its
+  cooldown), chain chance, stair chance, reposition and combat-hook chances, both pad tricks. Climb
+  routes and the lava escape are never scaled.
+- **Why:** Billy: "a grapple master value so some bots are heavy on grapple and some aren't".
+- **Tested** (24 matches, with IG-17/IG-20): averages unchanged; per bot, hooks/min spread 12.0-17.0
+  (off, random) -> 8.7-17.5 (on), the runners at the bottom (Phobos 8.7, Slash 10.4, Crash 11.1);
+  the masters gain less (Klesk 13.9 -> 15.7): at 0.55 nearly every slingshot chance is already taken.
+  Note: the character parser takes no negative numbers (a -1 broke default_c.c).
