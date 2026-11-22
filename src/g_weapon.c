@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #include "g_local.h"
 #include "tourney/osp_hooks.h"
+#include "ig/ig.h" // IG:
 
 // RotatePointAroundVector() lives in the engine's math.c, which the game library
 // does not link against; the mission pack needs its own copy.
@@ -824,6 +825,7 @@ void fire_rail(edict_t *self, vec3_t start, vec3_t aimdir, int damage, int kick)
 
     if (self->client)
         PlayerNoise(self, tr.endpos, PNOISE_IMPACT);
+    IG_RailSplash(self, &tr);   // IG: IG-25 rail jumping
 }
 
 /*

@@ -374,3 +374,41 @@ behaviour), so the roster as a whole hooks somewhat more.
   unchanged (footstep). With fall damage on it changes nothing. Hook: P_FallingDamage (p_view.c).
 - **Why:** Billy: instagib already has no fall damage, but the grunt and the dip still feel like it.
 - **Tested:** in game on 27913.
+
+## IG-25: `ig_railsplash` -- rail jumping (off)
+
+- **Requirement:** `ig_railsplash 1` (or `2`), outside campaigns: where a rail slug stops on a solid,
+  non-sky surface, every client (`1`: only the shooter) within `ig_railsplash_radius` (120) with a
+  clear line from the impact is pushed away from it by `ig_railsplash_kick` x (1 - dist/radius) u/s
+  (900 next to it), no damage. Hook: the end of fire_rail (src/ig/ig_rail.c).
+- **Why:** Billy: rail jumping in instagib; a setting, shooter only by default.
+- **Tested:** on 27913 by Billy: 450 too weak, 700 better, 900 "seems good".
+- **Next:** bot rail jumps (bspc rail-jump routes with this push, the railgun on the weapon-jump travel,
+  scaled by hook affinity).
+
+## IG-26: `ig_botroutes` -- bots replay recorded routes (off, experimental)
+
+- **Requirement:** `ig_botroutes 1` (OSP, hook on): routes in `q3bot/maps/<map>.route` (next to the
+  navigation file; made by server/tools/route-extract.py from an `ig_moverec` log, chat-marked
+  start/stop/bad or `--auto`). A bot near the first quarter of a route, on the ground, with no enemy
+  in sight, takes it with chance `ig_routechance` (0.5, checked once a second); it follows the
+  recording's keys and view at the nearest point ahead, jumps where the recording took off, fires each
+  hook at the recorded anchor and lets go where the recording did; the brain's hook commands are
+  dropped meanwhile. It leaves at the end, 128 units off the path on the ground (256 in the air or
+  hooked), on a missed hook, an enemy in sight on the ground, or twice the recorded time.
+  `ig_routedebug 1`/`2` logs it. Code: src/ig/ig_route.c, hooks in BotExecuteInput and
+  BotClientCommand.
+- **Why:** Billy: teach the bots his fast grapple route on q2rdm11.
+- **Tested (2026-11-22, q2rdm11, 5 recorded runs):** bots take it and fire the hooks at the right
+  points, but 0 of 12 attempts reached the end (best ~half): a frame-by-frame copy diverges after a
+  different entry speed. **Next:** rework around hook events (jump, hook the anchor, let go near the
+  recorded release point, steer to the next hook with the bot's own movement).
+
+## IG-27: `ig_botpeace` -- bots that only move (off)
+
+- **Requirement:** `ig_botpeace 1` (libvar `ig_peace`): BotFindEnemy returns no enemy and the roam
+  code keeps no traces to hunt, so Q3 bots never aim, shoot or chase; everything else (routes, hooks,
+  roam goals) runs.
+- **Why:** Billy: watch the bots grapple without fighting; also takes enemy interruptions out of
+  route tests.
+- **Tested:** 27913, q2rdm11, 5 bots, 1 min: 0 kills, 74 slingshots.

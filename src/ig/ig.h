@@ -44,4 +44,16 @@ bool IG_MenuFast(edict_t *ent);
 // IG-24: no landing dip or grunt when fall damage is off (ig_main.c).
 bool IG_NoFallFx(edict_t *ent);
 
+// IG-25: rail jumping, a no-damage push at the slug's impact (ig_rail.c).
+void IG_RailSplash(edict_t *self, const trace_t *tr);
+
+// IG-26: bots replay recorded routes (ig_route.c).
+bool IG_RouteInput(edict_t *bot, usercmd_t *ucmd);
+void IG_RouteAfter(edict_t *bot);
+bool IG_RouteBlocksCommand(edict_t *bot);
+// the OSP hook commands the Q3 brain is given (ig_bot.c)
+#define IG_HOOKON   "hook"
+#define IG_HOOKOFF  "unhook"
+bool IG_BotHookCommand(const char *cmd);
+
 #endif

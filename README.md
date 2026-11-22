@@ -451,6 +451,9 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_endvote` | When a match ends, players vote for the next map from a menu (`ig_endvotemaps` maps, default 4: the rotation's pick plus random ones from the mode's map list; `ig_endvotetime` seconds, default 15, or until everyone has voted). Console: `mapvote [n]` | 22 |
 | `ig_menufast` | OSP menus redraw on the key press instead of 0.2 s after the last one | 23 |
 | `ig_nofallfx` | With falling damage off (dmflags 8), a hard landing has no view dip or grunt either | 24 |
+| `ig_railsplash` | Rail jumping: a slug hitting a wall or floor pushes players away from the impact, no damage (`1` the shooter, `2` everyone; `ig_railsplash_kick` 900, `ig_railsplash_radius` 120) | 25 |
+| `ig_botroutes` | Bots sometimes replay a person's recorded route (`q3bot/maps/<map>.route`, made with the server repo's `tools/route-extract.py`); experimental | 26 |
+| `ig_botpeace` | Bots pick no enemies and hunt nobody, they only move: for watching their movement | 27 |
 
 Measuring: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py`
 (seeded, frame-counted bot matches compared with confidence intervals).

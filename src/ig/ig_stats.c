@@ -430,7 +430,7 @@ IG-15: `ig_moverec 1`. Every movement command of a person (2: and of bots) as an
 "igmove" line: what Billy does with the keys and the view while he slingshots
 and strafe jumps, for the bots to copy. Per usercmd, so at the client's rate:
   igmove <slot> <frame> <msec> spd <horizontal> vz <vertical> g <on ground>
-         hook <0 none, 1 flying, 2 pulling/hanging> f <forward> s <side> u <up>
+         hook <0 none, 1 flying, 2 pulling/hanging> f <forward> s <side> u <up> ... b <buttons: 1 attack>
          yaw <yaw> pitch <pitch> x <origin x> y <origin y> z <origin z>
 */
 void IG_MoveRecord(edict_t *ent, const usercmd_t *ucmd, bool onground)
@@ -446,10 +446,10 @@ void IG_MoveRecord(edict_t *ent, const usercmd_t *ucmd, bool onground)
         return;
     hook = !ent->client->ctf_grapple ? 0 :
            ent->client->ctf_grapplestate > CTF_GRAPPLE_STATE_FLY ? 2 : 1;
-    gi.dprintf("igmove %d %d %d spd %.0f vz %.0f g %d hook %d f %d s %d u %d yaw %.1f pitch %.1f x %.0f y %.0f z %.0f\n",
+    gi.dprintf("igmove %d %d %d spd %.0f vz %.0f g %d hook %d f %d s %d u %d yaw %.1f pitch %.1f x %.0f y %.0f z %.0f b %d\n",
                (int)(ent - g_edicts) - 1, level.framenum, ucmd->msec,
                sqrtf(ent->velocity[0] * ent->velocity[0] + ent->velocity[1] * ent->velocity[1]),
                ent->velocity[2], onground, hook, ucmd->forwardmove, ucmd->sidemove, ucmd->upmove,
                ent->client->v_angle[YAW], ent->client->v_angle[PITCH],
-               ent->s.origin[0], ent->s.origin[1], ent->s.origin[2]);
+               ent->s.origin[0], ent->s.origin[1], ent->s.origin[2], ucmd->buttons);
 }

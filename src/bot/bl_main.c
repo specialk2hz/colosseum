@@ -343,6 +343,7 @@ void BotExecuteInput(edict_t *bot)
     ucmd.impulse = 0;
     //light level at client location
     ucmd.lightlevel = 64;
+    IG_RouteInput(bot, &ucmd);  // IG: IG-26 a recorded route drives the bot
     //
     // FL_BOTINPUT is set for the duration, so client code can tell a
     // synthesised command from a network one.
@@ -368,6 +369,7 @@ void BotExecuteInput(edict_t *bot)
     } //end else
     //
     bot->flags &= ~FL_BOTINPUT;
+    IG_RouteAfter(bot);         // IG: IG-26 route hooks
     //set the ping of the bot
     bot->client->ping = 1000 * bi->thinktime + crand() * 20;
 } //end of the function BotExecuteInput

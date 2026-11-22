@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 #include "bot/bl_main.h"
 #include "bot/bl_redirgi.h"
+#include "ig/ig.h" // IG:
 
 #define MAX_COMMANDARGUMENTS            20
 // "at least the engine's maximum message size".  Q2PRO's MAX_MSGLEN
@@ -570,7 +571,8 @@ void BotClientCommand(int client, char *str, ...)
     } //end if
     va_end(ap);
     clent = DF_CLIENTENT(client);
-    ClientCommand(clent);
+    if (!IG_RouteBlocksCommand(clent))  // IG: IG-26 the route owns the hook
+        ClientCommand(clent);
     BotClearCommandArguments();
 } //end of the function BotClientCommand
 //===========================================================================
