@@ -6,40 +6,6 @@ One modern Quake II game library that unites baseq2, both mission packs, Threewa
 
 One library, one venue, many rulesets, with Mr. Elusive's Gladiator bots as the opponents.
 
-## This fork: instagib and smarter bots
-
-This is [specialk2hz/colosseum](https://github.com/specialk2hz/colosseum), branch `instagib`, a fork of
-[Niehztog/colosseum](https://github.com/Niehztog/colosseum) for a Quake II instagib server (railgun only,
-offhand grappling hook) with lifelike Quake III bots. Everything upstream does still works the same way:
-**every change is behind its own cvar, and every cvar defaults to upstream's behaviour.** Instagib itself is
-a server config (OSP Tourney's loadout and damage cvars), not code. New code lives in `src/ig/`; upstream
-files only get one-line hooks marked `// IG:`. Each change has a numbered requirement, the reason for it
-and how it was measured in [`IG-SPECS.md`](IG-SPECS.md).
-
-The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.com/specialk2hz/q3a_bot_backport_for_q2)
-(the `vendor/q3a_bot_backport_for_q2` submodule); the cvars below are passed to it as libvars.
-
-| Cvar (default 0) | What it does | IG |
-|---|---|---|
-| `ig_noblaster` | Instagib loadouts start without the blaster | 1 |
-| `ig_bothook` | Quake III bots use the offhand hook on climb routes (the master switch for every hook feature below; needs the OSP hook enabled) | 6 |
-| `ig_botroam` | Bots with nothing to pick up hunt where they last saw or heard an enemy, or take high ground, instead of wandering at random | 7 |
-| `ig_botsling` | Slingshots: jump, hook the floor or a far wall ahead, let go quickly, hop, chain | 9 |
-| `ig_botfighthook` | Hooks mid-fight, and a reposition after a kill or two misses | 10 |
-| `ig_botpadhook` | Hook into a jump pad and let go just before it; a short hook toward the landing at the end of the arc | 13 |
-| `ig_botstrafehack` | Bots land like Q2PRO clients (no post-landing jump lock) | 14 |
-| `ig_moverec` | Logs a player's movement (`2`: bots too), for copying it into the bots | 15 |
-| `ig_botpullhop` | Hop off the floor while a slingshot pulls, so friction doesn't eat the pull | 17 |
-| `ig_scoremap` | The OSP scoreboard shows the map's file name | 18 |
-| `ig_votemaplist` | The vote menu's Map row opens a list to pick from | 19 |
-| `ig_botstairhook` | Hook a stairwell's wall to slingshot up it (sometimes, not every time) | 20 |
-| `ig_botaffinity` | Each bot's hook affinity (character trait 49, or worked out from its personality) decides how much it grapples | 21 |
-| `ig_botrevenge` | A bot killed twice by the same player hunts them for a while | 8 |
-
-Tools: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py` (seeded,
-frame-counted bot matches compared with confidence intervals) measure every change before and after.
-
-* [This fork: instagib and smarter bots](#this-fork-instagib-and-smarter-bots)
 * [What you get](#what-you-get)
 * [Requirements](#requirements)
 * [Installing](#installing)
@@ -452,3 +418,36 @@ It incorporates source code from the Gladiator bot, whose licence asks that this
 * **skuller and the Q2PRO contributors** - the modern engine and game API this is built on
 
 Colosseum replaces none of them, and is not endorsed by any of them.
+
+## Changes in this fork
+
+This is [specialk2hz/colosseum](https://github.com/specialk2hz/colosseum), branch `instagib`, a fork of
+[Niehztog/colosseum](https://github.com/Niehztog/colosseum) for a Quake II instagib server (railgun only,
+offhand grappling hook) with lifelike Quake III bots. Everything above still applies: **every change is
+behind its own cvar, and every cvar defaults to upstream's behaviour.** Instagib itself is a server config
+built on OSP Tourney's loadout and damage cvars, not code. New code lives in `src/ig/`; upstream files only
+get one-line hooks marked `// IG:`. Each change has a numbered requirement, its reason and how it was
+measured in [`IG-SPECS.md`](IG-SPECS.md).
+
+The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.com/specialk2hz/q3a_bot_backport_for_q2)
+(the `vendor/q3a_bot_backport_for_q2` submodule); the bot cvars below are passed to it as libvars.
+
+| Cvar (default 0) | What it does | IG |
+|---|---|---|
+| `ig_noblaster` | Instagib loadouts start without the blaster | 1 |
+| `ig_bothook` | Quake III bots use the offhand hook on climb routes; the master switch for every hook feature below (needs the OSP hook enabled) | 6 |
+| `ig_botroam` | Bots with nothing to pick up hunt where they last saw or heard an enemy, or take high ground, instead of wandering at random | 7 |
+| `ig_botrevenge` | A bot killed twice by the same player hunts them for a while | 8 |
+| `ig_botsling` | Slingshots: jump, hook the floor or a far wall ahead, let go quickly, hop, chain | 9 |
+| `ig_botfighthook` | Hooks mid-fight, and a reposition after a kill or two misses | 10 |
+| `ig_botpadhook` | Hook into a jump pad and let go just before it; a short hook toward the landing at the end of the arc | 13 |
+| `ig_botstrafehack` | Bots land like Q2PRO clients (no post-landing jump lock) | 14 |
+| `ig_moverec` | Logs a player's movement (`2`: bots too), for copying it into the bots | 15 |
+| `ig_botpullhop` | Hop off the floor while a slingshot pulls, so friction doesn't eat the pull | 17 |
+| `ig_scoremap` | The OSP scoreboard shows the map's file name | 18 |
+| `ig_votemaplist` | The vote menu's Map row opens a list to pick from | 19 |
+| `ig_botstairhook` | Hook a stairwell's wall to slingshot up it, some of the time | 20 |
+| `ig_botaffinity` | Each bot's hook affinity (character trait 49, or worked out from its personality) decides how much it grapples | 21 |
+
+Measuring: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py`
+(seeded, frame-counted bot matches compared with confidence intervals).
