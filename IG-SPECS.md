@@ -307,3 +307,6 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
 - **Tested** (24 matches, q2dm1/q2rdm11/ztn2dm3, with IG-17 on): 940 stair hooks (q2dm1 547),
   72% let go at the top, 12% never latched. Averages unchanged (speed +1.4 u/s, upper +1.5 points,
   both within noise; falls/lava unchanged): stairs are a small slice of a match.
+- **Not every time** (Billy): a climb is hooked with chance `ig_stairchance` (libvar, default
+  0.35); declined, the bot runs up and does not ask again for 2.5 s. Stair hooks q2dm1 547 -> 209,
+  q2rdm11 311 -> 111; other averages unchanged.
