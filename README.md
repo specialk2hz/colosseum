@@ -34,7 +34,7 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_votemaplist` | The vote menu's Map row opens a list to pick from | 19 |
 | `ig_botstairhook` | Hook a stairwell's wall to slingshot up it (sometimes, not every time) | 20 |
 | `ig_botaffinity` | Each bot's hook affinity (character trait 49, or worked out from its personality) decides how much it grapples | 21 |
-| `ig_botrevenge` | A bot killed twice by the same player hunts them for a while (off: trigger still being decided) | 8 |
+| `ig_botrevenge` | A bot killed twice by the same player hunts them for a while | 8 |
 
 Tools: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py` (seeded,
 frame-counted bot matches compared with confidence intervals) measure every change before and after.
