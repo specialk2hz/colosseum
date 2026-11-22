@@ -22,6 +22,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "arena/arena.h"
 #include "tourney/osp_hooks.h"
 #include "m_player.h"
+#include "ig/ig.h" // IG:
 
 static char *ClientTeam(edict_t *ent)
 {
@@ -1514,6 +1515,8 @@ void ClientCommand(edict_t *ent)
         return;
     }
 
+    if (IG_EndVoteCommand(ent, cmd))   // IG: IG-22 end-of-match vote keys
+        return;
     if (level.intermission_framenum)
         return;
 

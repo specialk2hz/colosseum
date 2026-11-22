@@ -2,7 +2,7 @@
 
 Every client and server command Colosseum accepts, what it does, which ruleset it belongs to, and whether it is server-only.
 
-Generated from `tools/counts.py --list commands` and annotated. **The counts accrue by layer**, in the order the donors were merged; `tools/counts.py` measures the finished tree, so what it prints today is the last of them: **107** (106 upstream plus the fork's `sv igstats`).
+Generated from `tools/counts.py --list commands` and annotated. **The counts accrue by layer**, in the order the donors were merged; `tools/counts.py` measures the finished tree, so what it prints today is the last of them: **108** (106 upstream plus the fork's `sv igstats` and `mapvote`).
 
 ## Inherited from baseq2
 
@@ -27,6 +27,7 @@ tools/counts.py --list commands
 |---|---|
 | `team` | join red, blue or neither |
 | `id` | toggle the player-id display (on by default) |
+| `mapvote [n]` | during the end-of-match vote (IG-22): vote for option n, or reopen the vote menu |
 | `yes` / `no` | vote in an election |
 | `ready` / `notready` | match readiness |
 | `ghost` | reclaim a match slot with a ghost code after a disconnect |

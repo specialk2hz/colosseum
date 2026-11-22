@@ -75,6 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 #include "g_local.h"
 #include "tourney/osp_types.h"
+#include "ig/ig.h" // IG:
 
 // The layout channel's budget.  Same 1400 as the statusbar (g_stats.h) and the
 // same reason: it is what svc_layout carries.
@@ -341,6 +342,8 @@ void osp_PMenu_Update(edict_t *ent)
         gi.dprintf("warning:  ent has no menu\n");
         return;
     }
+    if (IG_MenuFast(ent))   // IG: IG-23 redraw on the key press
+        return;
 
     if (level.time - ent->client->menutime >= 1.0f) {
         // been a second or more since last update, update now

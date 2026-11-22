@@ -1090,6 +1090,7 @@ static void G_RunFrame(void)
     // Ahead of the test below rather than beside the rules row, so a timer that
     // came due is spent on this frame's level change and not the next one's.
     G_CheckIntermissionExit();
+    IG_EndVoteFrame();      // IG: IG-22 holds or ends the intermission
 
     // exit intermissions
     if (level.exitintermission) {

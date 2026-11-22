@@ -341,3 +341,27 @@ behaviour), so the roster as a whole hooks somewhat more.
   lets go (`IG_GrappleDist`): Q3's own give-up waits for the hook to go out of sight.
 - 24 matches (q2rdm11/q2dm1/ztn2dm3): bot hooks hung 1 s+ 28 -> 9, 3 s+ 7 -> 0, 6 s+ 3 -> 0;
   hooks/min 14.4 -> 15.8, speed +6 u/s (n.s.).
+
+## IG-22: `ig_endvote` -- the end-of-match map vote (off)
+
+- **Requirement:** `ig_endvote 1` (OSP rulesets): 3 s into the intermission every person (not bots)
+  gets a menu of `ig_endvotemaps` (default 4, 2-8) maps from the mode's map list (`map_file`): the
+  rotation's pick first, then random maps other than the one just played, unplayed ones first. Live
+  counts and a countdown; a vote can be changed. It closes after `ig_endvotetime` s (default 15, 5-60)
+  or once everybody has voted; most votes wins (a tie drawn at random, no votes = the rotation's pick),
+  the level changes 3 s later. `mapvote` reopens the menu, `mapvote <n>` votes. Not held after a passed
+  map or config vote or `map` (`manual_map`), on dmflags same-level, or with only bots on.
+  Code: src/ig/ig_endvote.c; hooks in G_RunFrame (holds the exit while open), ClientCommand (menu keys
+  ahead of the intermission guard) and p_view.c (the hi-score page refresh does not draw over the menu).
+- **Why:** Billy: end-of-match map vote (Phase 2 roadmap).
+- **Tested:** on 27913 with Billy (2 min timelimit). Bots-only match: no vote, rotation unchanged.
+  Two bugs found there: OSP closes every menu 2 s into the intermission (ClientThink), so the menu now
+  opens at 3 s; the intermission skips the menu flush, so the vote menu redraws on each key press.
+
+## IG-23: `ig_menufast` -- menus redraw on the key press (off)
+
+- **Requirement:** `ig_menufast 1`: osp_PMenu_Update sends the menu at once (reliable) instead of
+  marking it dirty for ClientEndServerFrame's flush 0.2 s after the last press.
+- **Why:** Billy: the menus feel laggy. The donor (OSP) sent every press at once; the delay is
+  upstream Colosseum's bandwidth saving (~1.3 KB a redraw), not a 1998 limit.
+- **Tested:** in game on 27913 ("works great").

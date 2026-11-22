@@ -448,6 +448,8 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_votemaplist` | The vote menu's Map row opens a list to pick from | 19 |
 | `ig_botstairhook` | Hook a stairwell's wall to slingshot up it, some of the time | 20 |
 | `ig_botaffinity` | Each bot's hook affinity (character trait 49, or worked out from its personality) decides how much it grapples | 21 |
+| `ig_endvote` | When a match ends, players vote for the next map from a menu (`ig_endvotemaps` maps, default 4: the rotation's pick plus random ones from the mode's map list; `ig_endvotetime` seconds, default 15, or until everyone has voted). Console: `mapvote [n]` | 22 |
+| `ig_menufast` | OSP menus redraw on the key press instead of 0.2 s after the last one | 23 |
 
 Measuring: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py`
 (seeded, frame-counted bot matches compared with confidence intervals).

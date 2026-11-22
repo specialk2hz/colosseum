@@ -23,6 +23,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "tourney/osp_hooks.h"
 #include "m_player.h"
 #include "arena/arena.h"
+#include "ig/ig.h" // IG:
 
 static  edict_t     *current_player;
 static  gclient_t   *current_client;
@@ -1093,7 +1094,8 @@ void ClientEndServerFrame(edict_t *ent)
         if (G_IsOspRuleset()) {
             OSP_clearStats(ent);
             if (ent->client->showscores && !(level.framenum & 31) &&
-                hs_mode && !(ent->flags & FL_BOT)) {
+                hs_mode && !(ent->flags & FL_BOT) &&
+                !IG_EndVoteMenuOpen(ent)) {     // IG: IG-22 keeps the vote menu up
                 G_ScoreboardMessage(ent, ent->enemy);
                 gi.unicast(ent, false);
             }

@@ -34,4 +34,11 @@ void IG_MoveRecord(edict_t *ent, const usercmd_t *ucmd, bool onground);
 int IG_ScoreMapLine(char *buf, size_t size, int outlen);
 bool IG_VoteMapList(edict_t *ent);
 
+// IG-22: the end-of-match map vote (ig_endvote.c).
+void IG_EndVoteFrame(void);
+bool IG_EndVoteCommand(edict_t *ent, const char *cmd);
+bool IG_EndVoteMenuOpen(edict_t *ent);
+// IG-23: OSP menus redraw on the key press (ig_endvote.c).
+bool IG_MenuFast(edict_t *ent);
+
 #endif
