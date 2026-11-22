@@ -324,3 +324,10 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
   (off, random) -> 8.7-17.5 (on), the runners at the bottom (Phobos 8.7, Slash 10.4, Crash 11.1);
   the masters gain less (Klesk 13.9 -> 15.7): at 0.55 nearly every slingshot chance is already taken.
   Note: the character parser takes no negative numbers (a -1 broke default_c.c).
+
+### IG-21 addendum (2026-11-22): fewer runners
+
+Billy: fewer runners, more above average. The derived affinity is now 0.30 + 0.65 x (0.6 x JUMPER +
+0.4 x AGGRESSION): stock bots 4 runners (< 0.45: Phobos 0.38, Ranger 0.40, Crash 0.42, Wrack 0.45),
+6 average, 16 above average, 9 masters (was 8 / 10 / 10 / 7). Calibration unchanged (0.55 = former
+behaviour), so the roster as a whole hooks somewhat more.
