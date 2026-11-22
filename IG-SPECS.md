@@ -412,3 +412,30 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Why:** Billy: watch the bots grapple without fighting; also takes enemy interruptions out of
   route tests.
 - **Tested:** 27913, q2rdm11, 5 bots, 1 min: 0 kills, 74 slingshots.
+
+## IG-28: `ig_botaffinitychance` -- affinity is the slingshot chance (off)
+
+- **Requirement:** with `ig_botaffinity 1` and `ig_botaffinitychance 1` (libvar `ig_affinitychance`):
+  a slingshot chance is taken with probability = the bot's hook affinity, instead of
+  clamp(1 + (affinity/0.55 - 1) x 0.77, 0.4, 1).
+- **Why:** Billy (no-fighting test): "are all the bots grapple masters?" Every derived affinity is
+  >= 0.5 since the IG-21 floor, so the old formula took ~every chance for every bot (5 bots: 368-394
+  slingshots in the same time).
+- **Tested** (igbench, 60 matches: q2dm1/q2rdm11/ztn2dm3 x 20 seeds, 5 min): slingshots/bot/min
+  9.9 -> 8.8 (q2dm1), 9.9 -> 8.4 (q2rdm11); frags, deaths, rail accuracy unchanged. Per bot
+  (34 characters) hooks/min 9.6-16.4 (sd 1.43) -> 9.2-15.4 (sd 1.67): runners drop (Ranger 11.1 -> 9.5,
+  Slash 12.6 -> 10.4), masters stay (Xaero 15.5, Sarge 14.1 -> 15.2). A modest spread: climbs and
+  fight hooks are not scaled by it.
+
+## IG-29: `ig_botwalkway` -- slingshots stay on the walkway near lava (off)
+
+- **Requirement:** `ig_botwalkway 1` (libvar `ig_walkway`): where lava or slime lies within 192 units
+  to either side of a slingshot's line (out to its length + 300), the floor along the line may not
+  fall more than 48 below the lower of the bot's feet and its aim point; checked for the slingshot's
+  start, a chain's next jump, and each candidate anchor's flight line. Away from lava nothing changes.
+- **Why:** Billy (q2rdm11 lava room): bots hook at angles that throw them off the walkways.
+- **Tested** (igbench as IG-28): applied everywhere, the rule cut q2rdm11 lava landings 135 -> 86 but
+  cost q2dm1 a third of its slingshots and 24 u/s. Near lava only, side 192: q2rdm11 lava landings
+  135 -> 103, lava deaths 0.39 -> 0.23/min, speed -2.8 u/s (not significant), slingshots 9.9 -> 9.1/min;
+  q2dm1 and ztn2dm3 identical to the baseline. Lava landings after combat hooks and high-ground walks
+  (half of them) are not covered.

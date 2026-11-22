@@ -516,6 +516,6 @@ The fork's own cvars (specialk2hz/colosseum). Each defaults to upstream behaviou
 | `ig_routedebug` | `0` | `1`: log when bots take, hook on and leave routes (IG-26) |
 | `ig_botpeace` | `0` | `1`: Quake III bots pick no enemies and hunt nobody: they only move (for watching movement, testing routes) (IG-27) |
 | `ig_botaffinitychance` | `0` | `1` (with `ig_botaffinity`): a bot takes a slingshot chance with probability equal to its hook affinity, instead of every bot above 0.55 taking them all (IG-28) |
-| `ig_botwalkway` | `0` | `1`: a slingshot or chain only goes where the floor along its line stays near the bot's feet (or the route point's), so it does not cut a bending walkway's corner off the edge (IG-29) |
+| `ig_botwalkway` | `0` | `1`: near lava or slime, a slingshot or chain only goes where the floor along its line stays near the bot's feet (or the aim point's), so it does not fly off a walkway; elsewhere unchanged (IG-29) |
 | `ig_botstairhook` | `0` | `1`: with `ig_bothook` and `ig_botsling`, a Quake III bot whose route climbs 48-320 units ahead (stairs, a ramp) jumps and hooks a side wall or the wall at the top, above the climb, and lets go at the top (IG-20). Pushed as `ig_stairhook` |
 | `ig_botaffinity` | `0` | `1`: each Quake III bot's hook affinity (character trait 49, or worked out from its jumping and aggression) scales how often it chooses to slingshot, chain, hook stairs, pads and mid-fight; 0.55 is the former behaviour (IG-21). Pushed as `ig_affinity` |
