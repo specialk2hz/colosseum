@@ -57,6 +57,8 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_stairhook", use && gi.cvar("ig_botstairhook", "0", 0)->value ? "1" : "0");   // IG-20
     lib->funcs.BotLibVarSet("ig_affinity", gi.cvar("ig_botaffinity", "0", 0)->value ? "1" : "0");   // IG-21
     lib->funcs.BotLibVarSet("ig_peace", gi.cvar("ig_botpeace", "0", 0)->value ? "1" : "0");   // IG-27
+    lib->funcs.BotLibVarSet("ig_affinitychance", gi.cvar("ig_botaffinitychance", "0", 0)->value ? "1" : "0");   // IG-28
+    lib->funcs.BotLibVarSet("ig_walkway", gi.cvar("ig_botwalkway", "0", 0)->value ? "1" : "0");   // IG-29
     // the server's hook_sky, for the lava escape (IG-9)
     lib->funcs.BotLibVarSet("ig_hooksky", gi.cvar("hook_sky", "0", 0)->value ? "1" : "0");
     if (use) {
