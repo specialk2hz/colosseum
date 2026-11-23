@@ -500,7 +500,7 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Requirement:** `ig_lavarescue 1`: damage of kind lava, slime or trigger_hurt (pits, the void) to a
   live player is cancelled in T_Damage before anything is taken, and the player is moved to a spawn
   point the ruleset picks, like a teleporter (flash, hook let go, velocity cleared): no death, no
-  suicide, no frag lost. People and bots; any ruleset but the campaign. Logs
+  suicide, no frag lost. People and bots; any ruleset but the campaign. Server configs: on in instagib.cfg only, server.cfg resets it to 0. Logs
   `ig: respot <slot> lava|slime|pit at x y z`. Never onto someone: up to three spawn picks.
 - **Why:** Billy: the Corkscrew mod's pit-fall recovery, which returns players without losing a frag.
 - **Tested** (igbench q2rdm11, 10 seeds, 5 bots): 109 rescues, suicides 0.33 -> 0.00/min, frags/min
