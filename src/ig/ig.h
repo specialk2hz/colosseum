@@ -70,6 +70,7 @@ void IG_HookLook(edict_t *hook);
 bool IG_HookFireSound(edict_t *ent, float volume);
 bool IG_HookLatchFx(edict_t *hook, edict_t *other, cplane_t *plane, float volume);
 void IG_HookFrame(edict_t *hook);
+void IG_HookPrecache(void);
 int  IG_HookVoteCurrent(int enabled);
 int  IG_HookVoteNext(int state);
 const char *IG_HookVoteLabel(int state);

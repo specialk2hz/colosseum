@@ -24,6 +24,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "arena/arena.h"
 #include "tourney/osp_types.h"
 #include "tourney/osp_stats.h"
+#include "ig/ig.h" // IG:
 
 typedef struct {
     char    *name;
@@ -1479,6 +1480,7 @@ void SP_worldspawn(edict_t *ent)
     gi.soundindex("misc/talk1.wav");
 
     gi.soundindex("misc/udeath.wav");
+    IG_HookPrecache();  // IG: LMCTF hook assets, so clients download them (IG-34)
 
     // gibs
     gi.soundindex("items/respawn1.wav");

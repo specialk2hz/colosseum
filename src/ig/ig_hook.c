@@ -41,6 +41,8 @@ static const char *const ig_hooknames[IG_HOOK_TYPES] = { "osp", "lmctf" };
 static cvar_t *hook_type, *ig_hookvote;
 static cvar_t *lmctf_speed, *lmctf_pull, *lmctf_damage;
 
+static bool IG_HookVoteOffered(int type);
+
 static void IG_HookCvars(void)
 {
     if (hook_type)
@@ -139,6 +141,24 @@ IG_HookFrame every frame from OSP_HookFrame, after the hand is placed in
 s.old_origin.  `wait` on the hook is when its next flight/pull sound plays.
 */
 #define IG_LMSND(n) gi.soundindex("lmhook/" n ".wav")
+
+/*
+IG_HookPrecache: at map load, when LMCTF's hook is on or offered.  A client
+downloads only what the server lists while it connects, so a sound first
+indexed mid-game would never reach someone without the pak.
+*/
+void IG_HookPrecache(void)
+{
+    IG_HookCvars();
+    if (IG_HookType() != IG_HOOK_LMCTF && !IG_HookVoteOffered(IG_HOOK_LMCTF))
+        return;
+    gi.modelindex("models/objects/ghook/tris.md2");
+    IG_LMSND("grfire");
+    IG_LMSND("gflyair");
+    IG_LMSND("ghit");
+    IG_LMSND("ghitwall");
+    IG_LMSND("gpulling");
+}
 
 void IG_HookLook(edict_t *hook)
 {
