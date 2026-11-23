@@ -508,3 +508,8 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Fix found on the way (IG-30 too):** a body goes 10 units over the spawn spot, as PutClientInServer
   places it; at 9 the box touched the floor on q2rdm11's spots, every try read as blocked, and no one
   was moved.
+- **Sound** (Billy: "it makes the lava sound and no teleport sound"): lava and slime are caught in
+  P_WorldEffects as the player first touches them, before the splash sound (`IG_HazardRescueEnter`),
+  so only the teleport is heard. Respot also clears the stored fall speed: the landing check in the
+  same frame had turned the teleport event into a footstep. Retested: 58 rescues in 3 q2rdm11 matches,
+  no lava deaths.

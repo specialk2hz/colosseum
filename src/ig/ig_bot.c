@@ -198,6 +198,7 @@ bool IG_Respot(edict_t *ent, const char *why)
     VectorCopy(origin, ent->s.origin);
     VectorCopy(origin, ent->s.old_origin);
     VectorClear(ent->velocity);
+    VectorClear(ent->client->oldvelocity);  // or the landing check turns the teleport event into a footstep
     ent->groundentity = NULL;
     ent->client->ps.pmove.pm_time = 160 >> PM_TIME_SHIFT;
     ent->client->ps.pmove.pm_flags |= PMF_TIME_TELEPORT;
@@ -280,4 +281,19 @@ bool IG_HazardRescue(edict_t *targ, int mod)
     if (mod != MOD_LAVA && mod != MOD_SLIME && mod != MOD_TRIGGER_HURT)
         return false;
     return IG_Respot(targ, mod == MOD_LAVA ? "lava" : mod == MOD_SLIME ? "slime" : "pit");
+}
+
+/*
+IG_HazardRescueEnter: from P_WorldEffects as a player first touches lava or
+slime, before the splash sound: rescued there, only the teleport is heard.
+*/
+bool IG_HazardRescueEnter(edict_t *ent)
+{
+    if (!(ent->watertype & (CONTENTS_LAVA | CONTENTS_SLIME)))
+        return false;
+    if (!IG_HazardRescue(ent, (ent->watertype & CONTENTS_LAVA) ? MOD_LAVA : MOD_SLIME))
+        return false;
+    ent->client->old_waterlevel = 0;    // no splash-out sound on the next frame
+    ent->flags &= ~FL_INWATER;
+    return true;
 }

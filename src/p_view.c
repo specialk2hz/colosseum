@@ -651,6 +651,8 @@ static void P_WorldEffects(void)
     // if just entered a water volume, play a sound
     //
     if (!old_waterlevel && waterlevel) {
+        if (IG_HazardRescueEnter(current_player))   // IG: IG-33 rescued before the splash
+            return;
         PlayerNoise(current_player, current_player->s.origin, PNOISE_SELF);
         if (current_player->watertype & CONTENTS_LAVA)
             gi.sound(current_player, CHAN_BODY, gi.soundindex("player/lava_in.wav"), 1, ATTN_NORM, 0);

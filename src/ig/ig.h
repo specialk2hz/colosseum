@@ -62,5 +62,6 @@ bool IG_Respot(edict_t *ent, const char *why);
 
 // IG-33: lava, slime and pits put a player back at a spawn point (ig_bot.c).
 bool IG_HazardRescue(edict_t *targ, int mod);
+bool IG_HazardRescueEnter(edict_t *ent);
 
 #endif
