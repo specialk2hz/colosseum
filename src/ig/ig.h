@@ -62,6 +62,7 @@ bool IG_RouteBlocksCommand(edict_t *bot);
 int  IG_HookType(void);
 int  IG_HookTypeFromName(const char *name);
 int  IG_HookFlySpeed(int osp);
+int  IG_HookPullSpeed(int osp);
 bool IG_HookSky(int osp);
 int  IG_HookInitDamage(int osp);
 bool IG_HookIncDamage(void);

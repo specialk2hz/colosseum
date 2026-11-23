@@ -80,6 +80,13 @@ int IG_HookFlySpeed(int osp)
     return osp;
 }
 
+int IG_HookPullSpeed(int osp)
+{
+    if (IG_HookType() == IG_HOOK_LMCTF)
+        return (int)lmctf_pull->value;
+    return osp;
+}
+
 bool IG_HookSky(int osp)
 {
     if (IG_HookType() == IG_HOOK_LMCTF)

@@ -534,7 +534,18 @@ behaviour), so the roster as a whole hooks somewhat more.
   `sound/lmhook/` because LMCTF's `weapons/grapple/grfire.wav` shares its path with CTF's in baseq2
   (zacmemappak.pak), which clients would play instead. The cable model (`models/ctf/segment`) is in
   zacmemappak.pak.
-- **Tested** (igbench q2rdm11 + q2dm1, 3 seeds, osp vs lmctf): the game side works -- hooks fly,
-  latch and pull -- but the bots are tuned to OSP's 1650/975: hooks that climb 25% -> 3-5%, speed
-  329 -> 232 u/s, hooks/min 18 -> 27 (retries). Bot support for other hook speeds is the next step
-  (the brain needs the live speeds), so LMCTF is a vote option on 27913 only.
+- **Bots** (brain): the game passes the live hook's speeds (libvars `ig_hookfly`, `ig_hookpull`) and
+  `ig_slingup`. The brain (1) recognises LMCTF's hook model as a hook -- it saw only OSP's beam and
+  Threewave's model, so every LMCTF hook read as "no hook" (climbs bit 1% of the time); (2) scales the
+  slingshot's OSP-tuned times and speeds to the live hook (flight timeout, latch-by-speed, "fast"
+  release, pull time, stall speed, combat and stairwell pulls, pad pull) and the orphan watchdog to
+  the flight time -- on OSP's 1650/975 every value is what it was; (3) on LMCTF hooks its slingshot
+  anchors the same 6-18 degrees UP instead of down (`ig_slingup 100`): the pull's gravity drags a
+  floor anchor's pull along the floor. Tried and dropped: flatter floor anchors, a higher climb aim
+  (+32/+64), confirming a latch across a frame.
+- **Tested** (igbench q2rdm11 + q2dm1, 5 seeds each; vs the brain before):
+  OSP unchanged in every figure. LMCTF before -> after: 238 -> 287 u/s, > 600 u/s 2.9 -> 8.8%, climbs
+  landing higher 1 -> 72%, upper levels 37 -> 48.6% (OSP 48.3), frags 3.69 -> 3.77. Reference, OSP's
+  hook slowed to LMCTF's 800/800 (no gravity, no ease): 300 u/s, 12.0%, 70%, 44.5% -- so the bots are
+  within 13 u/s of what that speed allows, and climb as well. Slingshots/bot/min 7.6 (reference
+  10.4): LMCTF's hook flies half as fast, so each takes longer.
