@@ -213,8 +213,32 @@ IG_StatsFrame
 Once per server frame, from the end of G_RunFrame.
 =================
 */
+// Diagnostic (ig_movedebug): once, 3 s into a map, every entity a bot could
+// collide with, by the number the bot library uses for it.
+static void IG_EntityDump(void)
+{
+    static int done = -1;
+    cvar_t *dbg = gi.cvar("ig_movedebug", "0", 0);
+    int i;
+    edict_t *e;
+
+    if (!dbg->integer || level.framenum != 3 * BASE_FRAMERATE || done == level.framenum)
+        return;
+    done = level.framenum;
+    for (i = game.maxclients + 1; i < globals.num_edicts; i++) {
+        e = g_edicts + i;
+        if (!e->inuse)
+            continue;
+        gi.dprintf("igent %d %s solid %d svf %d at %.0f %.0f %.0f mins %.0f %.0f %.0f maxs %.0f %.0f %.0f\n", i,
+                   e->classname ? e->classname : "?", e->solid, e->svflags,
+                   e->s.origin[0], e->s.origin[1], e->s.origin[2],
+                   e->mins[0], e->mins[1], e->mins[2], e->maxs[0], e->maxs[1], e->maxs[2]);
+    }
+}
+
 void IG_StatsFrame(void)
 {
+    IG_EntityDump();
     int i;
 
     if (!igs.open || level.intermission_framenum)

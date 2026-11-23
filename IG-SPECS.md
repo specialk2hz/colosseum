@@ -556,3 +556,24 @@ behaviour), so the roster as a whole hooks somewhat more.
   hook slowed to LMCTF's 800/800 (no gravity, no ease): 300 u/s, 12.0%, 70%, 44.5% -- so the bots are
   within 13 u/s of what that speed allows, and climb as well. Slingshots/bot/min 7.6 (reference
   10.4): LMCTF's hook flies half as fast, so each takes longer.
+
+## IG-35: `ig_botfuncwall` -- a func_wall is the map, not an obstacle (off)
+
+- **Requirement:** `ig_botfuncwall 1` (libvar `ig_funcwall`): a Quake III bot standing on a `func_wall`
+  (a brush entity that never moves) is moved as if it stood on a `func_static`: in its area, on its
+  route. Off: Q3's BotMoveToGoal, which knows plats, bobbers, trains, doors and func_static only, calls
+  it "on top of an obstacle" (MOVERESULT_ONTOPOFOBSTACLE) and BotAIBlocked moves it at random. Code:
+  botlib/be_ai_move.c (BotSetBrushModelTypes notes func_wall models; BotMoveToGoal), game cvar in
+  src/ig/ig_bot.c. Group B, trial (27913).
+- **Why:** Billy: bots circle the pentagon pads on q2rdm11. Those pads are func_wall plates (66x66, 6
+  high) under every item spot; instagib's items are hidden but the pads stay, and high-ground goals
+  (IG-7) land on them because a pad is a slightly higher floor.
+- **Diagnostics added:** `ig_movedebug 1` logs each think of a bot seeking its long-term goal ("ig:
+  move": area, goal, travel type, failure, block, blocking entity, area reachabilities; `2`: failures
+  and blocks only) and, 3 s into a map, every non-client entity ("igent"); the brain logs its
+  high-ground points ("ig: high ground point N at x y z area a").
+- **Tested (2026-11-23, igbench, q2rdm11, 10 seeds, 5 bots, 27913's settings):** no-fighting matches
+  (ig_botpeace), circling (2 s with > 400 units moved inside a 96-unit circle) 437 -> 311 windows; on
+  the armor pad 35 -> 0, quad pad 13 -> 0. What is left is mostly strafe chains overshooting and
+  turning back (next item). Fighting matches: every figure within noise (frags 3.26 -> 3.37, rail acc
+  26.0 -> 25.7%, speed 329 -> 327 u/s, suicides 0.36 -> 0.35/min).

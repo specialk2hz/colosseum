@@ -62,6 +62,8 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_peace", gi.cvar("ig_botpeace", "0", 0)->value ? "1" : "0");   // IG-27
     lib->funcs.BotLibVarSet("ig_affinitychance", gi.cvar("ig_botaffinitychance", "0", 0)->value ? "1" : "0");   // IG-28
     lib->funcs.BotLibVarSet("ig_walkway", gi.cvar("ig_botwalkway", "0", 0)->value ? "1" : "0");   // IG-29
+    lib->funcs.BotLibVarSet("ig_movedebug", gi.cvar("ig_movedebug", "0", 0)->string);   // diagnostic: log seek moves
+    lib->funcs.BotLibVarSet("ig_funcwall", gi.cvar("ig_botfuncwall", "0", 0)->value ? "1" : "0");   // IG-35
     // IG-31: 2 = strafe-jump chains (1 = IG-11's single hops); the game half is ig_botjumpland
     lib->funcs.BotLibVarSet("ig_strafe", gi.cvar("ig_botstrafe", "0", 0)->string);
     // IG-32: climb grapples, bits: 2 let go over the ledge, 1 fire on the run (experimental)
