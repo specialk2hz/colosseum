@@ -452,7 +452,7 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_menufast` | OSP menus redraw on the key press instead of 0.2 s after the last one | 23 |
 | `ig_nofallfx` | With falling damage off (dmflags 8), a hard landing has no view dip or grunt either | 24 |
 | `ig_railsplash` | Rail jumping: a slug hitting a wall or floor pushes players away from the impact, no damage (`1` the shooter, `2` everyone; `ig_railsplash_kick` 900, `ig_railsplash_radius` 120) | 25 |
-| `ig_botroutes` | Bots sometimes replay a person's recorded route (`q3bot/maps/<map>.route`, made with the server repo's `tools/route-extract.py`); experimental | 26 |
+| `ig_botroutes` | Bots sometimes replay a person's recorded route (`q3bot/maps/<map>.route`, made with the server repo's `tools/route-extract.py`), only on the hook style it was recorded with; lets go of a hook that stalls; experimental | 26 |
 | `ig_botpeace` | Bots pick no enemies and hunt nobody, they only move: for watching their movement | 27 |
 | `ig_botaffinitychance` | A bot takes a slingshot chance with probability equal to its hook affinity, so runners and grapple masters differ | 28 |
 | `ig_botwalkway` | Near lava, slingshots and chains stay on the walkway instead of flying off its edge | 29 |

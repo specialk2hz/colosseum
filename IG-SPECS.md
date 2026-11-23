@@ -398,11 +398,18 @@ behaviour), so the roster as a whole hooks somewhat more.
   hooked), on a missed hook, an enemy in sight on the ground, or twice the recorded time.
   `ig_routedebug 1`/`2` logs it. Code: src/ig/ig_route.c, hooks in BotExecuteInput and
   BotClientCommand.
+  A route plays only on the hook style it was recorded with (`hook <type>` line in its block, OSP when
+  absent), and a hook that has latched while the bot moves under 60 u/s for 0.3 s is let go of and
+  the route left ("stalled").
 - **Why:** Billy: teach the bots his fast grapple route on q2rdm11.
 - **Tested (2026-11-22, q2rdm11, 5 recorded runs):** bots take it and fire the hooks at the right
   points, but 0 of 12 attempts reached the end (best ~half): a frame-by-frame copy diverges after a
   different entry speed. **Next:** rework around hook events (jump, hook the anchor, let go near the
   recorded release point, steer to the next hook with the bot's own movement).
+- **Fixed (2026-11-23):** on LMCTF's hook (half OSP's speed) Mynx replayed Billy's OSP gap crossing on
+  q2rdm11: the hook latched ~0.3 s late, 90 units down in the gap, and the pull pinned her to the far
+  wall under the lip for the hook's 7.5 s hold. Now LMCTF skips OSP recordings, and the stall rule
+  lets go on any hook.
 
 ## IG-27: `ig_botpeace` -- bots that only move (off)
 

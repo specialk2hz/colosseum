@@ -19,7 +19,14 @@ of the License, or (at your option) any later version.
 //     where the recording let go;
 //   * gives control back at the end, or when it falls more than 128 units off
 //     the path, a hook fails to latch, an enemy comes into sight while it is
-//     on the ground, or it takes twice the recorded time.
+//     on the ground, or it takes twice the recorded time;
+//   * lets go and gives control back when its hook has latched but the bot
+//     has barely moved for RT_STALL_TIME (pinned under a ledge it was meant to
+//     clear: it used to hang there until the hook's hold limit).
+// A route replays only on the hook style it was recorded with: a `hook <type>`
+// line inside the block (`hook lmctf`), OSP's when there is none. A recording's
+// timing is that hook's: copied onto a slower hook, a gap-crossing shot
+// latches late and the pull drags the bot into the gap (Mynx, LMCTF, q2rdm11).
 // The bot brain's own hook commands are ignored while a route drives the bot.
 // Default 0: no routes. OSP rulesets with the hook enabled only.
 //
@@ -42,6 +49,8 @@ of the License, or (at your option) any later version.
 #define RT_OFFPATH      128.0f  // on the ground
 #define RT_OFFPATHAIR   256.0f  // in the air or hooked: momentum differs from the recording's
 #define RT_LOOKAHEAD    150     // ms of recording to steer toward on the ground
+#define RT_STALL_SPEED  60.0f   // latched and slower than this ...
+#define RT_STALL_TIME   0.3f    // ... for this long: let go
 
 typedef struct {
     short   msec;
@@ -67,6 +76,7 @@ typedef struct {
     int         nhooks;
     rt_hook_t   hooks[RT_MAXHOOKS];
     int         totalms;
+    int         hooktype;       // IG_HOOK_*: the hook it was recorded with
 } rt_route_t;
 
 static struct {
@@ -82,6 +92,7 @@ typedef struct {
     bool    hooked;             // our hook is out
     int     firedframe;
     int     startframe;
+    int     stallframe;         // first frame latched and stalled, 0: moving
     int     nextcheck;
     bool    fireangle;          // aim set this frame for a pending fire
 } rt_bot_t;
@@ -168,7 +179,13 @@ static void RT_Load(void)
             r = &rt.routes[rt.nroutes++];
             memset(r, 0, sizeof(*r));
             Q_strlcpy(r->name, name, sizeof(r->name));
+            r->hooktype = IG_HOOK_OSP;
             r->p = gi.TagMalloc(sizeof(rt_point_t) * RT_MAXPOINTS, TAG_GAME);
+            continue;
+        }
+        if (r && sscanf(line, "hook %31s", name) == 1) {
+            if (IG_HookTypeFromName(name) >= 0)
+                r->hooktype = IG_HookTypeFromName(name);
             continue;
         }
         if (!strncmp(line, "end", 3)) {
@@ -248,6 +265,8 @@ static void RT_TryStart(edict_t *bot, rt_bot_t *b)
     if (!bot->groundentity || RT_EnemyInSight(bot))
         return;
     for (i = 0; i < rt.nroutes; i++) {
+        if (rt.routes[i].hooktype != IG_HookType())
+            continue;                           // recorded on another hook
         last = (int)(rt.routes[i].npoints * RT_STARTFRAC);
         for (j = 0; j < last; j++) {
             VectorSubtract(rt.routes[i].p[j].org, bot->s.origin, v);
@@ -271,6 +290,7 @@ static void RT_TryStart(edict_t *bot, rt_bot_t *b)
         b->hook++;
     b->hooked = false;
     b->startframe = level.framenum;
+    b->stallframe = 0;
     if (ig_routedebug->integer)
         gi.dprintf("ig_route: %s takes %s at %d\n", bot->client->pers.netname, rt.routes[best].name, bestj);
 }
@@ -374,6 +394,22 @@ bool IG_RouteInput(edict_t *bot, usercmd_t *ucmd)
         bot->client->ctf_grapplestate <= CTF_GRAPPLE_STATE_FLY) {
         RT_Stop(bot, b, "hook missed");
         return false;
+    }
+    if (r->hooktype != IG_HookType()) {
+        RT_Stop(bot, b, "hook style changed");
+        return false;
+    }
+    // latched but going nowhere: pinned under the ledge it was meant to clear
+    if (b->hooked && bot->client->ctf_grapple && bot->client->ctf_grapplestate > CTF_GRAPPLE_STATE_FLY &&
+        VectorLength(bot->velocity) < RT_STALL_SPEED) {
+        if (!b->stallframe)
+            b->stallframe = level.framenum;
+        else if (level.framenum - b->stallframe >= RT_STALL_TIME * BASE_FRAMERATE) {
+            RT_Stop(bot, b, "stalled");
+            return false;
+        }
+    } else {
+        b->stallframe = 0;
     }
     if (b->hooked && !bot->client->ctf_grapple && level.framenum - b->firedframe > 3) {
         if (ig_routedebug->integer)
