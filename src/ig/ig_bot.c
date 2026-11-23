@@ -168,20 +168,29 @@ static struct {
     vec3_t  at;
 } ig_stuck[MAX_CLIENTS];
 
-static void IG_BotRespot(edict_t *ent, const char *why)
+/*
+IG_Respot: puts a live player at a spawn point the ruleset picks, like a
+teleporter (flash, hook let go, velocity cleared), frags untouched. Never onto
+someone: up to three picks, false if all were taken. For IG-30 (stuck bots) and
+IG-33 (lava and pit rescue).
+*/
+bool IG_Respot(edict_t *ent, const char *why)
 {
     vec3_t  origin, angles;
     trace_t tr;
-    int     i;
+    int     i, tries;
 
-    if (!G_SelectSpawnPoint(ent, origin, angles))
-        return;
-    origin[2] += 9;     // as PutClientInServer places a body
-    // never onto someone (no telefrag): try again next think
-    tr = gi.trace(origin, ent->mins, ent->maxs, origin, ent, MASK_PLAYERSOLID);
-    if (tr.startsolid)
-        return;
-    gi.dprintf("ig: unstuck %d %s at %.0f %.0f %.0f\n", (int)(ent - g_edicts) - 1, why,
+    for (tries = 0; tries < 3; tries++) {
+        if (!G_SelectSpawnPoint(ent, origin, angles))
+            return false;
+        origin[2] += 10;    // as PutClientInServer places a body ("make sure off ground")
+        tr = gi.trace(origin, ent->mins, ent->maxs, origin, ent, MASK_PLAYERSOLID);
+        if (!tr.startsolid)
+            break;
+    }
+    if (tries == 3)
+        return false;
+    gi.dprintf("ig: respot %d %s at %.0f %.0f %.0f\n", (int)(ent - g_edicts) - 1, why,
                ent->s.origin[0], ent->s.origin[1], ent->s.origin[2]);
 
     G_PlayerResetGrapple(ent);
@@ -199,6 +208,7 @@ static void IG_BotRespot(edict_t *ent, const char *why)
     VectorCopy(angles, ent->client->ps.viewangles);
     VectorCopy(angles, ent->client->v_angle);
     gi.linkentity(ent);
+    return true;
 }
 
 void IG_BotUnstuck(edict_t *ent, const usercmd_t *ucmd)
@@ -230,7 +240,7 @@ void IG_BotUnstuck(edict_t *ent, const usercmd_t *ucmd)
     else if (!ig_stuck[n].solid)
         ig_stuck[n].solid = level.framenum;
     else if (level.framenum - ig_stuck[n].solid >= IG_UNSTUCK_SOLID) {
-        IG_BotRespot(ent, "solid");
+        IG_Respot(ent, "solid");
         ig_stuck[n].frame = -1;
         return;
     }
@@ -242,7 +252,32 @@ void IG_BotUnstuck(edict_t *ent, const usercmd_t *ucmd)
         ig_stuck[n].since = level.framenum;
         VectorCopy(ent->s.origin, ig_stuck[n].at);
     } else if (still->value > 0 && level.framenum - ig_stuck[n].since >= still->value * BASE_FRAMERATE) {
-        IG_BotRespot(ent, "still");
+        IG_Respot(ent, "still");
         ig_stuck[n].frame = -1;
     }
+}
+
+/*
+=================
+IG_HazardRescue  (IG-33, `ig_lavarescue`)
+
+Corkscrew's pit-fall recovery (Billy): a player who touches lava or slime, or
+a trigger_hurt (pits, the void), is put back at a spawn point instead of
+dying -- no death, no suicide, no frag lost. From T_Damage, before anything
+is taken; true when the damage is cancelled. Any ruleset but the campaign;
+people and bots alike.
+=================
+*/
+bool IG_HazardRescue(edict_t *targ, int mod)
+{
+    static cvar_t *on;
+
+    if (!on)
+        on = gi.cvar("ig_lavarescue", "0", 0);
+    if (!on->integer || G_IsCampaign() || !targ->client || targ->health <= 0 || targ->deadflag ||
+        targ->movetype == MOVETYPE_NOCLIP || G_IsObserver(targ))
+        return false;
+    if (mod != MOD_LAVA && mod != MOD_SLIME && mod != MOD_TRIGGER_HURT)
+        return false;
+    return IG_Respot(targ, mod == MOD_LAVA ? "lava" : mod == MOD_SLIME ? "slime" : "pit");
 }

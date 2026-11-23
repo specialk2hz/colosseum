@@ -494,3 +494,17 @@ behaviour), so the roster as a whole hooks somewhat more.
   and everything else unchanged. Bit 1: standstill fires 74 -> 6%, landings unchanged at 3 degrees (66%
   at an 8-degree tolerance: the hook landed ~40 units off the anchor), but a third fewer climbs and
   -7.6 u/s (a bot that runs past the start before its aim lines up loses the route). On 27913: 2.
+
+## IG-33: `ig_lavarescue` -- lava, slime and pits put you back at a spawn point (off)
+
+- **Requirement:** `ig_lavarescue 1`: damage of kind lava, slime or trigger_hurt (pits, the void) to a
+  live player is cancelled in T_Damage before anything is taken, and the player is moved to a spawn
+  point the ruleset picks, like a teleporter (flash, hook let go, velocity cleared): no death, no
+  suicide, no frag lost. People and bots; any ruleset but the campaign. Logs
+  `ig: respot <slot> lava|slime|pit at x y z`. Never onto someone: up to three spawn picks.
+- **Why:** Billy: the Corkscrew mod's pit-fall recovery, which returns players without losing a frag.
+- **Tested** (igbench q2rdm11, 10 seeds, 5 bots): 109 rescues, suicides 0.33 -> 0.00/min, frags/min
+  3.29 -> 3.58 (no -1s), speed and deaths unchanged.
+- **Fix found on the way (IG-30 too):** a body goes 10 units over the spawn spot, as PutClientInServer
+  places it; at 9 the box touched the floor on q2rdm11's spots, every try read as blocked, and no one
+  was moved.

@@ -58,5 +58,9 @@ bool IG_BotHookCommand(const char *cmd);
 
 // IG-30: a bot stuck in solid or in one spot goes back to a spawn point (ig_bot.c).
 void IG_BotUnstuck(edict_t *ent, const usercmd_t *ucmd);
+bool IG_Respot(edict_t *ent, const char *why);
+
+// IG-33: lava, slime and pits put a player back at a spawn point (ig_bot.c).
+bool IG_HazardRescue(edict_t *targ, int mod);
 
 #endif

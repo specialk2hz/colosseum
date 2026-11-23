@@ -18,6 +18,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 // g_combat.c
 
 #include "g_local.h"
+#include "ig/ig.h"
 #include "bot/bl_main.h"
 #include "tourney/osp_hooks.h"
 #include "arena/arena.h"
@@ -636,6 +637,9 @@ void T_Damage(edict_t *targ, edict_t *inflictor, edict_t *attacker, const vec3_t
     // R-SEC-10.
     if (!attacker)
         attacker = world;
+
+    if (IG_HazardRescue(targ, mod)) // IG: lava and pit rescue (IG-33)
+        return;
 
     sphere_notified = false;        // PGM
 
