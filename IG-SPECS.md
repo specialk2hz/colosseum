@@ -476,3 +476,21 @@ behaviour), so the roster as a whole hooks somewhat more.
   chains of 2+ hops 7% -> 20%; time over 400 u/s 16.2 -> 18.6% (q2rdm11 16.7 -> 20.6%); speed
   +3.5 u/s (q2dm1 +5.7, q2rdm11 +5.0, both significant); slingshots 7.6 -> 6.1/bot/min and hooks
   -1.6/min (hops take some of their stretches); frags, accuracy, suicides unchanged.
+
+## IG-32: `ig_climbrun` -- hook climbs let go at the top (off)
+
+- **Requirement:** brain libvar `ig_climbrun` (bits). 2: on a grapple route, once the hook is attached
+  and the bot's origin is 8 units over the landing area's bottom (feet over its floor) within 48
+  units of the area horizontally, it lets go that frame, and the pull's momentum carries it over
+  the lip. 1 (experimental): within 40 units of the route's start it fires on the move once its view
+  is within atan(16 / distance) degrees (2-6) of the aim and a body-sized trace clears 80% of the line
+  to the anchor, instead of stopping until the aim is inside 2 degrees.
+- **Why:** Billy: climbs are "awkwardly slow and weirdly positioned ... with a slight hold at the
+  end". Route climbs: 74% fired from a standstill (Billy fires at ~250 u/s); after the pull the bot
+  hung 0.19 s on average (29% over 0.3 s) because Q3 let go only when the pull stopped bringing it
+  closer.
+- **Tested** (igbench, 4 maps x 6 seeds, route climbs only, marked by `ig: climb fire`): bit 2 alone:
+  hang 0.19 -> 0.06 s, hangs over 0.3 s 29 -> 5%, climbs landing on the higher level 79 -> 82%, speed
+  and everything else unchanged. Bit 1: standstill fires 74 -> 6%, landings unchanged at 3 degrees (66%
+  at an 8-degree tolerance: the hook landed ~40 units off the anchor), but a third fewer climbs and
+  -7.6 u/s (a bot that runs past the start before its aim lines up loses the route). On 27913: 2.
