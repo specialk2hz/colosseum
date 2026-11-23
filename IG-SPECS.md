@@ -168,7 +168,7 @@ why, and how it is tested. Every switch defaults to upstream behaviour.
 
 ## IG-11: strafe jumping (experimental, off)
 
-- **Requirement:** `ig_strafe` (brain libvar; no server cvar yet) 1: on a long straight route stretch at
+- **Requirement:** `ig_strafe` (brain libvar; game cvar `ig_botstrafe` since IG-31) 1: on a long straight route stretch at
   running speed the bot jumps and, in the air, wishes at the angle whose cosine is
   (300 - 30) / speed to its velocity, toward the route's side, and jumps again on landing.
 - **Why:** Billy: the bots should be faster; Quake II's air acceleration (PM_Accelerate with 1) adds
@@ -459,7 +459,7 @@ behaviour), so the roster as a whole hooks somewhat more.
 
 ## IG-31: strafe jumping that chains -- `ig_strafe 2` and `ig_botjumpland` (off)
 
-- **Requirement:** brain libvar `ig_strafe 2` (IG-11's strafe jumping, extended): a chain already
+- **Requirement:** brain libvar `ig_strafe 2`, set from the game cvar `ig_botstrafe` (IG-11's strafe jumping, extended): a chain already
   going follows the route 300 units ahead through its bends; in the air the bot wishes toward the side
   the route bends, at the most-speed angle or at the route itself up to 75 degrees off its velocity;
   a route point behind it or closer than 96 units (it flew past) keeps the last good direction, and a
@@ -479,7 +479,7 @@ behaviour), so the roster as a whole hooks somewhat more.
 
 ## IG-32: `ig_climbrun` -- hook climbs let go at the top (off)
 
-- **Requirement:** brain libvar `ig_climbrun` (bits). 2: on a grapple route, once the hook is attached
+- **Requirement:** brain libvar `ig_climbrun` (bits), set from the game cvar `ig_botclimbrun` (with `ig_bothook`). 2: on a grapple route, once the hook is attached
   and the bot's origin is 8 units over the landing area's bottom (feet over its floor) within 48
   units of the area horizontally, it lets go that frame, and the pull's momentum carries it over
   the lip. 1 (experimental): within 40 units of the route's start it fires on the move once its view

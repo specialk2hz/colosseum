@@ -20,6 +20,9 @@ of the License, or (at your option) any later version.
 //   ig_botrevenge    0   1: a bot killed twice by one player within
 //                        ig_botrevenge_window (60 s) goes after them for
 //                        ig_botrevenge_time (20 s) or until it kills them (IG-8)
+//   ig_botstrafe     0   brain ig_strafe: 2 strafe-jump chains (IG-31)
+//   ig_botclimbrun   0   brain ig_climbrun, bits: 2 let go over the ledge,
+//                        1 fire on the run (IG-32); needs ig_bothook
 //   ig_botlibvars    ""  "name value name value ...": any further libvars for
 //                        the Q3 brain, pushed after the above.  For tuning and
 //                        A/B tests (igbench --set ig_botlibvars ...), not play
@@ -59,6 +62,10 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_peace", gi.cvar("ig_botpeace", "0", 0)->value ? "1" : "0");   // IG-27
     lib->funcs.BotLibVarSet("ig_affinitychance", gi.cvar("ig_botaffinitychance", "0", 0)->value ? "1" : "0");   // IG-28
     lib->funcs.BotLibVarSet("ig_walkway", gi.cvar("ig_botwalkway", "0", 0)->value ? "1" : "0");   // IG-29
+    // IG-31: 2 = strafe-jump chains (1 = IG-11's single hops); the game half is ig_botjumpland
+    lib->funcs.BotLibVarSet("ig_strafe", gi.cvar("ig_botstrafe", "0", 0)->string);
+    // IG-32: climb grapples, bits: 2 let go over the ledge, 1 fire on the run (experimental)
+    lib->funcs.BotLibVarSet("ig_climbrun", use ? gi.cvar("ig_botclimbrun", "0", 0)->string : "0");
     // the server's hook_sky, for the lava escape (IG-9)
     lib->funcs.BotLibVarSet("ig_hooksky", gi.cvar("hook_sky", "0", 0)->value ? "1" : "0");
     if (use) {
