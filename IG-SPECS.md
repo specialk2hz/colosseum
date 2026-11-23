@@ -513,3 +513,28 @@ behaviour), so the roster as a whole hooks somewhat more.
   so only the teleport is heard. Respot also clears the stored fall speed: the landing check in the
   same frame had turned the teleport event into a footstep. Retested: 58 rescues in 3 q2rdm11 matches,
   no lava deaths.
+
+## IG-34: `hook_type` -- hook styles, LMCTF first (default `osp`)
+
+- **Requirement:** `hook_type lmctf` makes the offhand hook behave, look and sound like LMCTF 6.0's:
+  flies at 800 u/s (`hook_lmctf_speed`), no sky; pulls at 800 (`hook_lmctf_pull`) with gravity still
+  pulling the player down; inside 120 units of the anchor the pull eases in steps (5x the distance at
+  120 down to 1x at 10) so the player glides in and settles; a player hit takes
+  `hook_lmctf_damage` (0: the hook lets go); the ghook model on a CTF grapple cable, blaster sparks
+  where it bites, LMCTF's fire, flight (every 0.4 s), bite (wall / player) and pull (every 0.8 s)
+  sounds. `hook_type osp` (default) is upstream. `ig_hookvote "osp lmctf"` turns the vote menu's
+  hook row into Disabled -> OSP -> LMCTF, and `vote hook lmctf` / `vote hook osp` / `vote hook 0`
+  work in the console; a passed vote sets hook_enable and hook_type. Empty = upstream's on/off row.
+  server.cfg resets both, so a Config vote goes back to OSP's hook.
+- **Why:** Billy wants other hook styles, LMCTF first, with LMCTF's sound and graphics, picked in the
+  vote menu or set per config. LMCTF's source (packetflinger/lmctf) carries no licence: it was read
+  for behaviour (speeds, the ease steps, which sound plays when), none of it is copied.
+- **Assets:** LMCTF's pak4 sounds and model, extracted into `lmctf-hook.pak` (work/lmhook, never
+  committed: LMCTF's assets) and installed in the gamedir; clients download it. Sounds are renamed to
+  `sound/lmhook/` because LMCTF's `weapons/grapple/grfire.wav` shares its path with CTF's in baseq2
+  (zacmemappak.pak), which clients would play instead. The cable model (`models/ctf/segment`) is in
+  zacmemappak.pak.
+- **Tested** (igbench q2rdm11 + q2dm1, 3 seeds, osp vs lmctf): the game side works -- hooks fly,
+  latch and pull -- but the bots are tuned to OSP's 1650/975: hooks that climb 25% -> 3-5%, speed
+  329 -> 232 u/s, hooks/min 18 -> 27 (retries). Bot support for other hook speeds is the next step
+  (the brain needs the live speeds), so LMCTF is a vote option on 27913 only.

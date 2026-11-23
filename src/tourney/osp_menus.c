@@ -530,10 +530,7 @@ void OSP_voteMenu(edict_t *ent, osp_pmenu_t *p)
         ent->client->resp.osp_r25c = (int)fraglimit->value;
         ent->client->resp.osp_r298 = rune_stat;
         ent->client->resp.osp_r268 = -1;
-        if ((int)hook_enable->value)
-            ent->client->resp.osp_r260 = 1;
-        else
-            ent->client->resp.osp_r260 = 0;
+        ent->client->resp.osp_r260 = IG_HookVoteCurrent((int)hook_enable->value);   // IG: hook styles (IG-34)
 
         OSP_updateVoteMenu(ent);
         osp_PMenu_Open(ent, Vote_Menu, 0, 19);
@@ -1186,11 +1183,8 @@ void OSP_updateVoteMenu(edict_t *ent)
     if (!(int)vote_enable_hook->value) {
         Q_snprintf(vm_hook, sizeof(vm_hook), "The Hook: [LOCKED]");
         Vote_Menu[9].SelectFunc = NULL;
-    } else if (!ent->client->resp.osp_r260) {
-        Q_snprintf(vm_hook, sizeof(vm_hook), "The Hook: DISABLED");
-        Vote_Menu[9].SelectFunc = OSP_changeHook_menu;
     } else {
-        Q_snprintf(vm_hook, sizeof(vm_hook), "The Hook: ENABLED");
+        Q_snprintf(vm_hook, sizeof(vm_hook), "The Hook: %s", IG_HookVoteLabel(ent->client->resp.osp_r260));   // IG: IG-34
         Vote_Menu[9].SelectFunc = OSP_changeHook_menu;
     }
 
@@ -1439,10 +1433,7 @@ void OSP_updateProposalMenu(edict_t *ent)
             Q_snprintf(pm_line1, sizeof(pm_line1), "Change fraglimit to %s", vote_value);
         break;
     case 0x10:
-        if (Q_atoi(vote_value))
-            Q_snprintf(pm_line1, sizeof(pm_line1), "Set the hook to ENABLED");
-        else
-            Q_snprintf(pm_line1, sizeof(pm_line1), "Set the hook to DISABLED");
+        Q_snprintf(pm_line1, sizeof(pm_line1), "Set the hook to %s", IG_HookVoteLabel(Q_atoi(vote_value)));   // IG: IG-34
         break;
     case 0x800:
         if (Q_atoi(vote_value))
@@ -1860,9 +1851,9 @@ void OSP_changeHook_menu(edict_t *ent, osp_pmenu_t *p)
         return;
     }
 
-    ent->client->resp.osp_r260 = 1 - ent->client->resp.osp_r260;
+    ent->client->resp.osp_r260 = IG_HookVoteNext(ent->client->resp.osp_r260);   // IG: hook styles (IG-34)
     ent->client->resp.osp_r254 = 0x10;
-    if (ent->client->resp.osp_r260 == (int)hook_enable->value)
+    if (ent->client->resp.osp_r260 == IG_HookVoteCurrent((int)hook_enable->value))   // IG: IG-34
         ent->client->resp.osp_r254 = 0;
 
     OSP_updateVoteMenu(ent);

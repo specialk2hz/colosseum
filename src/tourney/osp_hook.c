@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "g_local.h"
 #include "tourney/osp_types.h"
+#include "ig/ig.h" // IG:
 
 // `resp.osp_r240 == 2` is "has a body", the gate the weapons are behind
 // (ClientBeginServerFrame's Think_Weapon test); ENTERED alone is not enough, as
@@ -111,7 +112,7 @@ void GrappleTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
     if (self->owner->client->ctf_grapplestate != CTF_GRAPPLE_STATE_FLY)
         return;
 
-    if ((surf && (surf->flags & SURF_SKY) && (int)hook_sky->value == 0) ||
+    if ((surf && (surf->flags & SURF_SKY) && !IG_HookSky((int)hook_sky->value)) ||   // IG: hook styles (IG-34)
         self->owner->client->ctf_grapple != self) {
         ResetGrapple(self);
         return;
@@ -144,6 +145,8 @@ void GrappleTouch(edict_t *self, edict_t *other, cplane_t *plane, csurface_t *su
     if (self->owner->client->silencer_shots)
         volume = 0.2f;
 
+    if (IG_HookLatchFx(self, other, plane, volume))   // IG: LMCTF bite sound and sparks (IG-34)
+        return;
     gi.sound(self->owner, CHAN_BODY + CHAN_WEAPON, gi.soundindex("flyer/flyatck2.wav"), volume, ATTN_NORM, 0);
 
     gi.WriteByte(svc_temp_entity);
@@ -194,7 +197,7 @@ void GrapplePull(edict_t *self)
             VectorCopy(self->enemy->velocity, self->velocity);
 
         if (self->enemy->takedamage) {
-            if (self->health < (int)hook_maxdamage->value) {
+            if (IG_HookIncDamage() && self->health < (int)hook_maxdamage->value) {   // IG: IG-34
                 T_Damage(self->enemy, self, self->owner, self->velocity, self->s.origin, vec3_origin, (int)hook_incdamage->value, 1, 0, MOD_GRAPPLE);
                 self->health += (int)hook_incdamage->value;
             }
@@ -223,6 +226,8 @@ void GrapplePull(edict_t *self)
             self->owner->client->ctf_grapplestate = CTF_GRAPPLE_STATE_HANG;
         }
 
+        if (IG_HookPull(self, hookdir, vlen))   // IG: hook styles (IG-34)
+            return;
         VectorNormalize(hookdir);
         if (self->owner->client->ctf_grapplestate != CTF_GRAPPLE_STATE_HANG)
             VectorScale(hookdir, (int)hook_pullspeed->value, hookdir);
@@ -260,6 +265,7 @@ bool OSP_HookFrame(edict_t *hook)
     VectorSet(offset, 24, 8, owner->viewheight - 8);
     P_ProjectSource(owner->client, owner->s.origin, offset, forward, right,
                     hook->s.old_origin);
+    IG_HookFrame(hook);     // IG: LMCTF cable and sounds (IG-34)
     return true;
 }
 
@@ -313,6 +319,7 @@ void FireGrapple(edict_t *self, vec3_t start, vec3_t dir, int damage, int speed,
                                      &tailp, 0);
 
     gi.linkentity(grapple);
+    IG_HookLook(grapple);   // IG: LMCTF hook model (IG-34)
 
     tr = gi.trace(self->s.origin, NULL, NULL, grapple->s.origin, grapple, MASK_SHOT);
     if (tr.fraction < 1.0f) {
@@ -342,15 +349,16 @@ void GrappleFire(edict_t *ent, const vec3_t g_offset, int damage, int effect)
     if (ent->client->silencer_shots)
         volume = 0.2f;
 
-    gi.sound(ent, CHAN_BODY + CHAN_WEAPON, gi.soundindex("flyer/flyatck3.wav"), volume, ATTN_NORM, 0);
-    FireGrapple(ent, start, forward, damage, (int)hook_speed->value, effect);
+    if (!IG_HookFireSound(ent, volume))   // IG: LMCTF fire sound (IG-34)
+        gi.sound(ent, CHAN_BODY + CHAN_WEAPON, gi.soundindex("flyer/flyatck3.wav"), volume, ATTN_NORM, 0);
+    FireGrapple(ent, start, forward, damage, IG_HookFlySpeed((int)hook_speed->value), effect);   // IG: IG-34
 }
 
 void Grapple_Fire(edict_t *ent)
 {
     int     damage;
 
-    damage = hook_initdamage->value;
+    damage = IG_HookInitDamage(hook_initdamage->value);   // IG: IG-34
     GrappleFire(ent, vec3_origin, damage, 0);
 }
 

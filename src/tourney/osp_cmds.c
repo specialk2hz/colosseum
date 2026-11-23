@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // gone.
 #include "bot/bl_redirgi.h"
 #include "bot/bl_spawn.h"
+#include "ig/ig.h" // IG:
 
 void ClientDisconnect(edict_t *ent);
 
@@ -796,7 +797,7 @@ void OSP_vote_cmd(edict_t *ent, int mode, int nargs, char *what, char *value)
                 gi.cprintf(ent, PRINT_HIGH, "Hook is currently ENABLED.\n");
             else
                 gi.cprintf(ent, PRINT_HIGH, "Hook is currently DISABLED.\n");
-        } else
+        } else if (IG_HookVoteArg(ent, &a2))   // IG: `vote hook lmctf` (IG-34)
             vote_item = 0x10;
     } else if (!Q_stricmp(a1, "runes")) {
         if (!(int)vote_enable_runes->value) {
@@ -1151,6 +1152,7 @@ void OSP_fraglimit_vote(void)
 void OSP_hook_vote(void)
 {
     gi.cvar_set("hook_enable", vote_value);
+    IG_HookVoteApply(vote_value);   // IG: hook styles (IG-34)
     OSP_setShowParams();
 
     if ((int)hook_enable->value) {
@@ -1597,10 +1599,7 @@ void OSP_voteinfo(edict_t *ent, bool broadcast)
     Q_strlcpy(scratch, "Vote error, invalid vote item active", sizeof(scratch));
 
     if (vote_item == 0x10) {
-        if (!Q_atoi(vote_value))
-            Q_strlcpy(scratch, "Set the \"hook\" to DISABLED", sizeof(scratch));
-        else
-            Q_strlcpy(scratch, "Set the \"hook\" to ENABLED", sizeof(scratch));
+        Q_snprintf(scratch, sizeof(scratch), "Set the \"hook\" to %s", IG_HookVoteLabel(Q_atoi(vote_value)));   // IG: IG-34
     } else if (vote_item == 0x800) {
         if (!Q_atoi(vote_value))
             Q_strlcpy(scratch, "Set all \"runes\" to DISABLED", sizeof(scratch));

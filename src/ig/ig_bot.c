@@ -67,7 +67,7 @@ void IG_BotLibVars(struct bot_library_s *lib)
     // IG-32: climb grapples, bits: 2 let go over the ledge, 1 fire on the run (experimental)
     lib->funcs.BotLibVarSet("ig_climbrun", use ? gi.cvar("ig_botclimbrun", "0", 0)->string : "0");
     // the server's hook_sky, for the lava escape (IG-9)
-    lib->funcs.BotLibVarSet("ig_hooksky", gi.cvar("hook_sky", "0", 0)->value ? "1" : "0");
+    lib->funcs.BotLibVarSet("ig_hooksky", IG_HookSky((int)gi.cvar("hook_sky", "0", 0)->value) ? "1" : "0");   // IG-34: per style
     if (use) {
         lib->funcs.BotLibVarSet("cmd_grappleon", IG_HOOKON);
         lib->funcs.BotLibVarSet("cmd_grappleoff", IG_HOOKOFF);

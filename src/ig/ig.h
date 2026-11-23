@@ -54,6 +54,27 @@ bool IG_RouteBlocksCommand(edict_t *bot);
 // the OSP hook commands the Q3 brain is given (ig_bot.c)
 #define IG_HOOKON   "hook"
 #define IG_HOOKOFF  "unhook"
+
+// IG-34: hook styles (ig_hook.c), `hook_type`
+#define IG_HOOK_OSP     0
+#define IG_HOOK_LMCTF   1
+#define IG_HOOK_TYPES   2
+int  IG_HookType(void);
+int  IG_HookTypeFromName(const char *name);
+int  IG_HookFlySpeed(int osp);
+bool IG_HookSky(int osp);
+int  IG_HookInitDamage(int osp);
+bool IG_HookIncDamage(void);
+bool IG_HookPull(edict_t *hook, vec3_t hookdir, float vlen);
+void IG_HookLook(edict_t *hook);
+bool IG_HookFireSound(edict_t *ent, float volume);
+bool IG_HookLatchFx(edict_t *hook, edict_t *other, cplane_t *plane, float volume);
+void IG_HookFrame(edict_t *hook);
+int  IG_HookVoteCurrent(int enabled);
+int  IG_HookVoteNext(int state);
+const char *IG_HookVoteLabel(int state);
+bool IG_HookVoteArg(edict_t *ent, char **arg);
+void IG_HookVoteApply(const char *value);
 bool IG_BotHookCommand(const char *cmd);
 
 // IG-30: a bot stuck in solid or in one spot goes back to a spawn point (ig_bot.c).

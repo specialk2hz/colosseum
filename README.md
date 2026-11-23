@@ -459,6 +459,7 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_botunstuck` | A bot stuck inside something solid (q2dm1pro's lift) or in one spot for 10 s goes back to a spawn point, frags untouched | 30 |
 | `ig_botstrafe 2` + `ig_botjumpland` | Bots strafe jump in chains, carving through the route's bends and jumping again on the landing frame | 31 |
 | `ig_botclimbrun 2` | Hook climbs let go as soon as the bot is over the ledge, instead of hanging at the anchor | 32 |
+| `hook_type lmctf`, `ig_hookvote "osp lmctf"` | Hook styles: LMCTF 6.0's hook (800 u/s, gravity while pulled, glide-in, no sky, its model, cable and sounds) beside OSP's; the vote menu's hook row picks Disabled / OSP / LMCTF. Needs lmctf-hook.pak in the gamedir | 34 |
 | `ig_lavarescue` | Lava, slime and pits put you back at a spawn point instead of killing you: no frag lost (Corkscrew's pit-fall recovery) | 33 |
 
 Measuring: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py`
