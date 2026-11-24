@@ -54,7 +54,7 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | stopped | neutral; replaced by the planner (IG-40) |
-| 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | WIP | step 1 done: Q2 movement port, 0.9 units off at 0.5 s |
+| 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | WIP | steps 1-2 done: Q2 movement + hook simulation, 96% within 8 units at 0.5 s |
 
 The tricks these features carry, and how the movement planner must keep each one: `BOT-TRICKS.md`.
 
@@ -731,5 +731,23 @@ behaviour), so the roster as a whole hooks somewhat more.
   it barely helps). The port (`game_q3/ai_ig_pmove.c`, from Q2PRO's pmove, GPL) uses real map traces:
   1.6 us and ~5.7 traces per 50 ms step. 80% of 0.5 s predictions are within 8 units; the rest are
   mostly hook pulls (90% with hooks off), then jump pads, movers and other players.
-- **Next:** step 2, the hook pull (OSP and LMCTF) and jump pads in the simulation; step 3, the planner.
+- **Step 2, done -- the hook and the rest of the body.** The simulation now fires the hook from the hand,
+  flies it once per 0.1 s game frame at `ig_hookfly` (sky only with `ig_hooksky`), and after each pmove
+  sets the pull as GrapplePull does: OSP at `ig_hookpull`, 425 inside 64; LMCTF (`ig_hookstyle 1`, a new
+  libvar from the game) with a frame of gravity and the glide-in. Also ducking (Q3 crouchers: 100 u/s,
+  box top 4), and jump pads and teleporters flagged by navigation area (`pad`, `teleport`), not
+  simulated: the planner takes a pad's landing from the navigation file. A bot tells its own hook by
+  its hand (`IG_OwnHook`: the hook's old_origin, which the game re-projects to its owner every frame);
+  for that the LMCTF hook now keeps old_origin (`FL_OLDORGNOTSET`; old_origin is not sent to clients
+  for a model, so nothing changes for players). Windows right after a teleport or respawn are skipped
+  (Q2 holds a player still there). q2rdm11, 3 matches, share of predictions within 8 units:
+
+  | ahead | all | no hook | hooked throughout | hook fired or let go |
+  |---|---|---|---|---|
+  | 0.5 s, OSP hook | 96.3% | 97.6% | 86.8% | 92.3% |
+  | 1.0 s, OSP hook | 91.0% | 93.6% | 71.8% | 85.5% |
+  | 0.5 s, LMCTF hook | 96.2% | 97.4% | 88.3% | 93.7% |
+
+  Medians 0.5-1.6 units. Cost: 2 us and 6 traces per 50 ms step.
+- **Next:** step 3, the planner on q2rdm11.
 

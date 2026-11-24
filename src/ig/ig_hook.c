@@ -173,6 +173,11 @@ void IG_HookLook(edict_t *hook)
         return;
     hook->s.renderfx &= ~(RF_BEAM | RF_TRANSLUCENT);
     hook->s.modelindex = gi.modelindex("models/objects/ghook/tris.md2");
+    // Keep the owner's hand in old_origin (OSP_HookFrame puts it there) as on
+    // OSP's beam: the bots tell their own hook by it (IG-40).  G_RunFrame would
+    // copy the origin over it.  Nothing reaches a client: old_origin is only
+    // sent for beams and RF_FRAMELERP models.
+    hook->flags |= FL_OLDORGNOTSET;
     hook->s.frame = 0;
     hook->s.skinnum = 0;
     hook->s.angles[PITCH] += 90;    // the model points along +z
