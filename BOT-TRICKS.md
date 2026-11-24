@@ -75,3 +75,26 @@ not built. "Planner" says how the planner must express it; "Verify" is the check
    q2rdm11 + all 28 maps; the climb drill for T7/T8).
 2. Billy plays 27913 with this list in hand: each trick seen, missing, or looking wrong.
 3. Any row the planner drops is marked "dropped" here, with why.
+
+## Planner v1 (2026-11-24): where each trick stands
+
+| # | In planner v1 | Note |
+|---|---|---|
+| T1 slingshot | option | 12 anchors around the route; hook price keeps it near Billy's 18 hooks/min |
+| T2 chains | falls out | slingshot options are offered in the air too |
+| T3 pull hop | **missing** | holding options do not hop while pulled on the floor |
+| T4, T5 pad hooks | old code kept | IG-13 still runs before the planner |
+| T6 stairwell hook | partly | the 25-degree-up anchor row; no side-wall preference yet |
+| T7, T8 climbs | old code kept | climb routes are the navigation's; the planner steps back |
+| T9 climbs keep momentum | todo | |
+| T10 mid-air hooks | falls out | |
+| T11-T13 hills, double grapple, turn/stop hooks | partly | turn/stop come out of the route cost when they pay; not checked |
+| T14 lava escape | old code kept | |
+| T15 strafe chains | option | the hop option, with the game's landing jump |
+| T16 knowing when not to hop | falls out | lava/pit options are out; walls cost |
+| T17 strafe after a slingshot | falls out | the air wish after a let-go |
+| T20, T21 fight hook, reposition | old code, checked | the simulation vetoes fires and let-gos into lava/pits |
+| fight dodges | old code, guarded | turned away from lava and edges |
+| P1 affinity | weight | hook price and pick weight |
+| P2 variety | yes | a pick among options within 0.06 s of the best |
+

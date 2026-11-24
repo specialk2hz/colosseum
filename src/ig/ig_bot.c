@@ -103,6 +103,10 @@ void IG_BotLibVars(struct bot_library_s *lib)
     // IG-34: the live hook's speeds, so the brain times its hooks for the style in use
     lib->funcs.BotLibVarSet("ig_hookfly", va("%d", IG_HookFlySpeed((int)gi.cvar("hook_speed", "1600", 0)->value)));
     lib->funcs.BotLibVarSet("ig_hookpull", va("%d", IG_HookPullSpeed((int)gi.cvar("hook_pullspeed", "1000", 0)->value)));
+    // IG-40: the movement planner in place of the trick-by-trick movement
+    lib->funcs.BotLibVarSet("ig_plan", use && gi.cvar("ig_botplan", "0", 0)->value ? "1" : "0");
+    // ...which simulates the game's half of strafe chains (IG-31) when it is on
+    lib->funcs.BotLibVarSet("ig_jumpland", gi.cvar("ig_botjumpland", "0", 0)->value ? "1" : "0");
     lib->funcs.BotLibVarSet("ig_hookstyle", IG_HookType() == IG_HOOK_LMCTF ? "1" : "0");  // IG-40: the pull the planner simulates
     lib->funcs.BotLibVarSet("ig_slingup", IG_HookType() == IG_HOOK_LMCTF ? "100" : "0");   // IG-34: LMCTF slings hook up
     // the server's hook_sky, for the lava escape (IG-9)

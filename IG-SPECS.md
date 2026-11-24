@@ -54,7 +54,7 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | stopped | neutral; replaced by the planner (IG-40) |
-| 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | WIP | steps 1-2 done: Q2 movement + hook simulation, 96% within 8 units at 0.5 s |
+| 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | WIP (`ig_botplan`) | v1 works: 28 maps 309 -> 330 u/s, upper 27.7 -> 31.1%, frags +5%; q2rdm11 lava trips halved |
 
 The tricks these features carry, and how the movement planner must keep each one: `BOT-TRICKS.md`.
 
@@ -749,5 +749,46 @@ behaviour), so the roster as a whole hooks somewhat more.
   | 0.5 s, LMCTF hook | 96.2% | 97.4% | 88.3% | 93.7% |
 
   Medians 0.5-1.6 units. Cost: 2 us and 6 traces per 50 ms step.
-- **Next:** step 3, the planner on q2rdm11.
+- **Step 3, v1 -- the planner** (`game_q3/ai_ig_plan.c`; game `ig_botplan` -> libvar `ig_plan`, off).
+  From the ground: run (the stock route move), strafe-hop, or slingshot to one of 12 anchors (3 yaws
+  around the route x pitches 20/8 down, 8/25 up; 200-900 units, solid, sky only with `ig_hooksky`).
+  In the air: the same, flown on; flicked last think: fire. Hooked (our hook): let go, let go and hop,
+  hold 1/2/3/8 more thinks. Each is flown 1.2 s in IG_Pmove with the input the bot would send (route
+  wish on the ground, the strafe-jump angle toward the route in the air, the jump pressed while coming
+  down, the game's `ig_botjumpland` hold) and costed: time + the navigation's travel time from where it
+  ends - 0.35 s per 300 u/s carried along the route + 0.15 s per hard wall hit + a hook price
+  (`ig_planhookcost`, 0.3 s at affinity 0.55, scaled by the bot's hook affinity). Lava or slime touched,
+  or a pit or lava under where it comes down: out. A pick among those within 0.06 s of the best, hooks
+  weighted by affinity; the option under way is favoured by 0.04 s. Steps back for anything the
+  navigation does itself (ladders, lifts, climb routes, pads), and keeps for now: the jump-pad hooks
+  (IG-13), the lava escape, the fight hook (IG-10), now checked by the simulation before it fires and
+  before it lets go (`IG_PlanFireUnsafe`, `IG_PlanHookUnsafe`).
+  **The guard** (`IG_PlanGuard`, every think, battle nodes only): an input the planner did not make
+  -- a fight's dodge -- that would reach lava, slime or a pit within 0.5 s is changed for the nearest
+  safe one (no jump; turned 45/90/135 either way; still). Combat strafing walked bots off q2rdm11's
+  walkways: most of what the planner left.
+  **Found on the way:** the adapter's roaming-view clamp (be_interface_q2.c, 45 degrees from the walk)
+  turned flicks off their anchor -- 64% of the planner's hooks flew past (now skipped when the planner
+  set the view: `IG_PlanViewSet`); a flying hook's direction is the one it was fired along.
+  Diagnostics: libvar `ig_plandebug` 1 (decisions), 2 (also every think: `igpl`, `igfire`).
+  **Measured** (5 bots, skill 3, trial settings of 27913, vs the same without the planner):
+
+  | | current build | planner |
+  |---|---|---|
+  | q2rdm11 (10 matches): lava trips / bot-min | 0.335 | 0.167 |
+  | q2rdm11: upper level % | 58.6 | 66.5 |
+  | q2rdm11: speed u/s | 327 | 344 |
+  | 28 maps (3 each): speed u/s | 309 | 330 |
+  | 28 maps: over 400 u/s % | 15.4 | 19.7 |
+  | 28 maps: upper level % | 27.7 | 31.1 |
+  | 28 maps: frags/min | 4.40 | 4.60 |
+  | 28 maps: hooks/min (Billy 18) | 12.4 | 16.9 |
+  | 28 maps: rail accuracy % | 26.5 | 26.2 |
+  | 28 maps: suicides/min | 0.14 | 0.09 |
+
+  Worse only on brutalo (platforms over a void: 301 -> 285 u/s, falls 1.21 -> 0.93/min): the guard
+  turns fight dodges away from the edges. Cost: a 5-minute match takes ~4 s instead of 1.4 s (about
+  1% of a core per bot at real speed).
+- **Next:** the fight movement in the planner (dodges and the fight hook as options), the pad tricks as
+  options, pull hop; then the BOT-TRICKS.md verification pass and Billy on 27913.
 
