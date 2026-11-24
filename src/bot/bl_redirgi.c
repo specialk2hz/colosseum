@@ -571,7 +571,7 @@ void BotClientCommand(int client, char *str, ...)
     } //end if
     va_end(ap);
     clent = DF_CLIENTENT(client);
-    if (!IG_RouteBlocksCommand(clent))  // IG: IG-26 the route owns the hook
+    if (!IG_DrillCommand(clent) && !IG_RouteBlocksCommand(clent))  // IG: IG-37 drill placement; IG-26 the route owns the hook
         ClientCommand(clent);
     BotClearCommandArguments();
 } //end of the function BotClientCommand

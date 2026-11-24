@@ -222,6 +222,28 @@ static void IG_EntityDump(void)
     int i;
     edict_t *e;
 
+    if (dbg->integer >= 4 && level.framenum % (30 * BASE_FRAMERATE) == 0) {
+        // every 30 s: the entities in use, by class (a leak shows as a count that only grows)
+        char seen[64][32];
+        int counts[64], n = 0, k;
+        for (i = 1; i < globals.num_edicts; i++) {
+            e = g_edicts + i;
+            if (!e->inuse)
+                continue;
+            for (k = 0; k < n; k++)
+                if (!strcmp(seen[k], e->classname ? e->classname : "?"))
+                    break;
+            if (k == n && n < 64) {
+                Q_strlcpy(seen[n], e->classname ? e->classname : "?", sizeof(seen[n]));
+                counts[n++] = 0;
+            }
+            if (k < 64)
+                counts[k]++;
+        }
+        for (k = 0; k < n; k++)
+            if (counts[k] > 8)
+                gi.dprintf("igentcount %d %s %d\n", level.framenum, seen[k], counts[k]);
+    }
     if (!dbg->integer || level.framenum != 3 * BASE_FRAMERATE || done == level.framenum)
         return;
     done = level.framenum;

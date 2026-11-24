@@ -64,10 +64,37 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_walkway", gi.cvar("ig_botwalkway", "0", 0)->value ? "1" : "0");   // IG-29
     lib->funcs.BotLibVarSet("ig_movedebug", gi.cvar("ig_movedebug", "0", 0)->string);   // diagnostic: log seek moves
     lib->funcs.BotLibVarSet("ig_funcwall", gi.cvar("ig_botfuncwall", "0", 0)->value ? "1" : "0");   // IG-35
+    // IG-37: the climb drill (a testing aid): mode, tries per route, aim, pause, and the point for mode 2
+    {
+        float pt[3] = { 0, 0, 0 };
+        int rn = 0;
+        const char *dp = gi.cvar("ig_drillpoint", "0 0 0", 0)->string;
+        if (dp[0] == 'r')
+            rn = atoi(dp + 1);      // "r3059": that route
+        else
+            sscanf(dp, "%f %f %f", &pt[0], &pt[1], &pt[2]);
+        lib->funcs.BotLibVarSet("ig_drillreach", va("%d", rn));
+        lib->funcs.BotLibVarSet("ig_drill", use ? gi.cvar("ig_drill", "0", 0)->string : "0");
+        lib->funcs.BotLibVarSet("ig_drilltries", gi.cvar("ig_drilltries", "10", 0)->string);
+        lib->funcs.BotLibVarSet("ig_drillaim", gi.cvar("ig_drillaim", "2", 0)->string);
+        lib->funcs.BotLibVarSet("ig_drillpause", gi.cvar("ig_drillpause", "0.3", 0)->string);
+        lib->funcs.BotLibVarSet("ig_climbsteer", gi.cvar("ig_drillsteer", "1", 0)->string);
+        lib->funcs.BotLibVarSet("ig_drillx", va("%.0f", pt[0]));
+        lib->funcs.BotLibVarSet("ig_drilly", va("%.0f", pt[1]));
+        lib->funcs.BotLibVarSet("ig_drillz", va("%.0f", pt[2]));
+        {
+            int part = 0, parts = 1;
+            sscanf(gi.cvar("ig_drillpart", "0/1", 0)->string, "%d/%d", &part, &parts);
+            lib->funcs.BotLibVarSet("ig_drillpart", va("%d", part));
+            lib->funcs.BotLibVarSet("ig_drillparts", va("%d", parts));
+        }
+    }
     // IG-31: 2 = strafe-jump chains (1 = IG-11's single hops); the game half is ig_botjumpland
     lib->funcs.BotLibVarSet("ig_strafe", gi.cvar("ig_botstrafe", "0", 0)->string);
     // IG-32: climb grapples, bits: 2 let go over the ledge, 1 fire on the run (experimental)
     lib->funcs.BotLibVarSet("ig_climbrun", use ? gi.cvar("ig_botclimbrun", "0", 0)->string : "0");
+    // IG-36: climbs hook the frame of the opening or the landing floor, then steer to its middle
+    lib->funcs.BotLibVarSet("ig_climbaim", use && gi.cvar("ig_botclimbaim", "0", 0)->value ? "1" : "0");
     // IG-34: the live hook's speeds, so the brain times its hooks for the style in use
     lib->funcs.BotLibVarSet("ig_hookfly", va("%d", IG_HookFlySpeed((int)gi.cvar("hook_speed", "1600", 0)->value)));
     lib->funcs.BotLibVarSet("ig_hookpull", va("%d", IG_HookPullSpeed((int)gi.cvar("hook_pullspeed", "1000", 0)->value)));
@@ -180,6 +207,54 @@ static struct {
     int     solid;      // when it was first found in solid, 0 if it is not
     vec3_t  at;
 } ig_stuck[MAX_CLIENTS];
+
+/*
+IG_DrillCommand (IG-37): the brain's climb drill asks for its bot to be put at
+a route's start: "igdrillpos x y z yaw". Taken only while ig_drill is on, and
+only from a bot. true when the command was this one.
+*/
+bool IG_DrillCommand(edict_t *ent)
+{
+    vec3_t  origin, angles = { 0, 0, 0 };
+    int     i;
+
+    if (Q_stricmp(gi.argv(0), "igdrillpos"))
+        return false;
+    if (!gi.cvar("ig_drill", "0", 0)->integer || !ent->client || !(ent->flags & FL_BOT) || ent->health <= 0)
+        return true;
+    // one argument, "x_y_z_yaw": a bot command reaches the game with its first argument only
+    if (sscanf(gi.argv(1), "%f_%f_%f_%f", &origin[0], &origin[1], &origin[2], &angles[YAW]) != 4)
+        return true;
+    if (gi.cvar("ig_movedebug", "0", 0)->integer) {
+        int inuse = 0, k;
+        const char *last = "?";
+        for (k = 1; k < globals.num_edicts; k++)
+            if (g_edicts[k].inuse) {
+                inuse++;
+                last = g_edicts[k].classname ? g_edicts[k].classname : "?";
+            }
+        gi.dprintf("igdrillpos %d to %.0f %.0f %.0f from %.0f %.0f %.0f edicts %d/%d last %s\n", (int)(ent - g_edicts) - 1,
+                   origin[0], origin[1], origin[2], ent->s.origin[0], ent->s.origin[1], ent->s.origin[2],
+                   inuse, globals.num_edicts, last);
+    }
+    G_PlayerResetGrapple(ent);
+    gi.unlinkentity(ent);
+    VectorCopy(origin, ent->s.origin);
+    VectorCopy(origin, ent->s.old_origin);
+    VectorClear(ent->velocity);
+    VectorClear(ent->client->oldvelocity);
+    ent->groundentity = NULL;
+    ent->client->ps.pmove.pm_time = 50 >> PM_TIME_SHIFT;
+    ent->client->ps.pmove.pm_flags |= PMF_TIME_TELEPORT;
+    ent->s.event = EV_PLAYER_TELEPORT;
+    for (i = 0; i < 3; i++)
+        ent->client->ps.pmove.delta_angles[i] = ANGLE2SHORT(angles[i] - ent->client->resp.cmd_angles[i]);
+    VectorCopy(angles, ent->s.angles);
+    VectorCopy(angles, ent->client->ps.viewangles);
+    VectorCopy(angles, ent->client->v_angle);
+    gi.linkentity(ent);
+    return true;
+}
 
 /*
 IG_Respot: puts a live player at a spawn point the ruleset picks, like a
