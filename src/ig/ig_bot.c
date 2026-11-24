@@ -76,9 +76,8 @@ void IG_BotLibVars(struct bot_library_s *lib)
         lib->funcs.BotLibVarSet("ig_drillreach", va("%d", rn));
         lib->funcs.BotLibVarSet("ig_drill", use ? gi.cvar("ig_drill", "0", 0)->string : "0");
         lib->funcs.BotLibVarSet("ig_drilltries", gi.cvar("ig_drilltries", "10", 0)->string);
-        lib->funcs.BotLibVarSet("ig_drillaim", gi.cvar("ig_drillaim", "2", 0)->string);
+        lib->funcs.BotLibVarSet("ig_drillaim", gi.cvar("ig_drillaim", "0 1", 0)->string);
         lib->funcs.BotLibVarSet("ig_drillpause", gi.cvar("ig_drillpause", "0.3", 0)->string);
-        lib->funcs.BotLibVarSet("ig_climbsteer", gi.cvar("ig_drillsteer", "1", 0)->string);
         lib->funcs.BotLibVarSet("ig_drillx", va("%.0f", pt[0]));
         lib->funcs.BotLibVarSet("ig_drilly", va("%.0f", pt[1]));
         lib->funcs.BotLibVarSet("ig_drillz", va("%.0f", pt[2]));
@@ -94,7 +93,9 @@ void IG_BotLibVars(struct bot_library_s *lib)
     // IG-32: climb grapples, bits: 2 let go over the ledge, 1 fire on the run (experimental)
     lib->funcs.BotLibVarSet("ig_climbrun", use ? gi.cvar("ig_botclimbrun", "0", 0)->string : "0");
     // IG-36: climbs hook the frame of the opening or the landing floor, then steer to its middle
-    lib->funcs.BotLibVarSet("ig_climbaim", use && gi.cvar("ig_botclimbaim", "0", 0)->value ? "1" : "0");
+    lib->funcs.BotLibVarSet("ig_climbaim", use ? gi.cvar("ig_botclimbaim", "0", 0)->string : "0");
+    // IG-36: after the let-go, bits: 1 air strafe to the landing's middle, 2 grapple down onto it
+    lib->funcs.BotLibVarSet("ig_climbland", use ? gi.cvar("ig_botclimbland", "0", 0)->string : "0");
     // IG-34: the live hook's speeds, so the brain times its hooks for the style in use
     lib->funcs.BotLibVarSet("ig_hookfly", va("%d", IG_HookFlySpeed((int)gi.cvar("hook_speed", "1600", 0)->value)));
     lib->funcs.BotLibVarSet("ig_hookpull", va("%d", IG_HookPullSpeed((int)gi.cvar("hook_pullspeed", "1000", 0)->value)));
