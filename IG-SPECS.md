@@ -53,7 +53,8 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 36 | `ig_botclimbaim`, `ig_botclimbland` | climbs land in the middle; climb tables | B | trial | landed 88.5 -> 91.3%, centred 44 -> 59%; Billy: "looks great" |
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
-| 39 | `ig_botarcsafe` | flight check before let-go / hop | B | WIP | neutral so far |
+| 39 | `ig_botarcsafe` | flight check before let-go / hop | B | stopped | neutral; replaced by the planner (IG-40) |
+| 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | WIP | step 1 done: Q2 movement port, 0.9 units off at 0.5 s |
 
 The tricks these features carry, and how the movement planner must keep each one: `BOT-TRICKS.md`.
 
@@ -705,4 +706,30 @@ behaviour), so the roster as a whole hooks somewhat more.
   hooks 8 in 10 matches).
 - **Tested so far:** q2rdm11, 10 matches: neutral (lava 0.335 -> 0.328/bot-min, speed unchanged).
   The check flies a straight hop while the chain steers in the air; next it must follow that steering.
+
+## IG-40: the movement planner (WIP, branch `planner`)
+
+- **Requirement:** one planner replaces the trick-by-trick movement control (most of `ai_ig_sling.c`,
+  the climb landing): each think it lists options (run, hop, slingshot to a few anchors, climb, let go,
+  hold), simulates each 1-2 s with Quake II's movement and the hook pull, scores progress along the route,
+  speed kept, landing room and hazards, and picks among the near-best with personality weights. Every
+  trick in `BOT-TRICKS.md` is kept, produced, or dropped on purpose there.
+- **Why:** Billy (2026-11-24): the fixes had become spaghetti, one patch per trick per hazard (IG-29, 38,
+  39 and the climb tables are the same missing piece: knowing where a move ends).
+- **Step 1, done -- a predictor that matches the game.** `ig_predcheck 1` (brain libvar, testing aid)
+  replays each bot's real inputs from 1, 5 and 10 thinks back and compares with where it really is
+  (`game_q3/ai_ig_pred.c`). q2rdm11, 3 matches, median horizontal error:
+
+  | ahead | stock Q3 predictor | same, Q3 bugs fixed | Q2 pmove port | position + velocity * t |
+  |---|---|---|---|---|
+  | 0.1 s | 2.3 | 2.1 | 0.2 | 2.3 |
+  | 0.5 s | 39.7 | 39.4 | 0.9 | 61.7 |
+  | 1.0 s | 124.5 | 120.0 | 1.8 | 199.9 |
+
+  The stock predictor (be_aas_move.c) collides with the navigation mesh and has ground and water
+  friction swapped and gravity right only at 0.1 s steps (`aas_ig_q2phys` fixes those, off by default;
+  it barely helps). The port (`game_q3/ai_ig_pmove.c`, from Q2PRO's pmove, GPL) uses real map traces:
+  1.6 us and ~5.7 traces per 50 ms step. 80% of 0.5 s predictions are within 8 units; the rest are
+  mostly hook pulls (90% with hooks off), then jump pads, movers and other players.
+- **Next:** step 2, the hook pull (OSP and LMCTF) and jump pads in the simulation; step 3, the planner.
 
