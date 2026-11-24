@@ -520,7 +520,7 @@ The fork's own cvars (specialk2hz/colosseum). Each defaults to upstream behaviou
 | `ig_botclimbaim` | `0` | `2` (with `ig_bothook`): the climb keeps the navigation file's anchor, and looks ahead, lets go over the landing and lands as `ig_botclimbland` says; `1`: a bot's hook climb hooks the frame of the opening above the roomiest point of its landing (or, a third of the time when it can see it, the landing floor itself) instead of the navigation file's anchor, lets go over the landing and air-steers to its middle (IG-36) |
 | `ig_drill` | `0` | Testing aid (IG-37, needs `ig_bothook`): the first Quake III bot is put at a hook-climb route's start, climbs, lands, and the outcome is logged (`igdrill` lines). `1`: every climb route of the map; `2`: the route starting nearest `ig_drillpoint`, over and over |
 | `ig_drilltries` | `10` | Climb drill: tries per route |
-| `ig_drillaim` | `0 1` | Climb drill: the aims to take in turn: `0` the navigation file's anchor, `1` IG-36's frame anchor, `2` the navigation file's anchor with IG-36's landing |
+| `ig_drillaim` | `0 1` | Climb drill: the aims to take in turn: `0` the navigation file's anchor, `1` IG-36's frame anchor, `2` the navigation file's anchor with IG-36's landing, `3` the bot's own choice (`ig_botclimbaim` and the map's climb table) |
 | `ig_drillpause` | `0.3` | Climb drill: seconds between tries |
 | `ig_drillpoint` | `0 0 0` | Climb drill, mode 2: the point whose nearest climb route is drilled, or `r<n>` for route n |
 | `ig_drillpart` | `0/1` | Climb drill, mode 1: `k/n` drills every n-th route from the k-th (a whole map takes hours of game time; OSP ends a level after an hour without a human) |
