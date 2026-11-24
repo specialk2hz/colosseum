@@ -789,6 +789,20 @@ behaviour), so the roster as a whole hooks somewhat more.
   Worse only on brutalo (platforms over a void: 301 -> 285 u/s, falls 1.21 -> 0.93/min): the guard
   turns fight dodges away from the edges. Cost: a 5-minute match takes ~4 s instead of 1.4 s (about
   1% of a core per bot at real speed).
+- **v1.1 (same day):** (a) options are scored where their momentum is spent: after the 1.2 s, the
+  route is run on (up to 1.5 s) until the bot is on the ground under 330 u/s. v1 scored speed at the
+  1.2 s mark with a bonus; a slingshot's speed fades after the let-go, so its score worsened every
+  think as the mark slid on and 45% of flicks never fired (the next think's fire cost +0.05 s on
+  the flick's prediction, p90 +0.72; now -0.09, p90 +0.19 -- one think is 0.1 s). (b) A flick
+  commits: its fire next think is favoured by 0.25 s (`PLAN_COMMIT`). (c) The planner decides once
+  per think (a node switch ran it twice; a second call could fire along a view not yet sent).
+  (d) A simulated run stops where the route takes a step it does not model (gap or barrier jump,
+  ladder, lift, climb, pad, teleporter) and is scored from there: it walked off brutalo's and
+  q2rdm4's gaps and was ruled out as a pit (q2rdm4 upper 18.2 -> 22.5%, now level with no planner).
+  (e) The pull hop (T3) is an option while hooked on the floor; the simulation rarely finds it pays.
+  28 maps: 309 -> 330 u/s, frags 4.40 -> 4.62, hooks 17.4/min, suicides 0.14 -> 0.08.
+  brutalo (8 matches): the guard costs upper level 34 -> 28% and 303 -> 281 u/s for falls 1.22 ->
+  0.87/min (guard off: 32%, 299 u/s, 1.17; libvar `ig_planguard 0`, testing).
 - **Next:** the fight movement in the planner (dodges and the fight hook as options), the pad tricks as
-  options, pull hop; then the BOT-TRICKS.md verification pass and Billy on 27913.
+  options; then the BOT-TRICKS.md verification pass.
 

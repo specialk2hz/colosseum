@@ -82,7 +82,7 @@ not built. "Planner" says how the planner must express it; "Verify" is the check
 |---|---|---|
 | T1 slingshot | option | 12 anchors around the route; hook price keeps it near Billy's 18 hooks/min |
 | T2 chains | falls out | slingshot options are offered in the air too |
-| T3 pull hop | **missing** | holding options do not hop while pulled on the floor |
+| T3 pull hop | option | 'holdhop' while hooked on the floor; the simulation rarely finds it pays (the pull resets the velocity every 50 ms) |
 | T4, T5 pad hooks | old code kept | IG-13 still runs before the planner |
 | T6 stairwell hook | partly | the 25-degree-up anchor row; no side-wall preference yet |
 | T7, T8 climbs | old code kept | climb routes are the navigation's; the planner steps back |
