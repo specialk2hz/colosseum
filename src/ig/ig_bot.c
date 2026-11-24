@@ -90,6 +90,8 @@ void IG_BotLibVars(struct bot_library_s *lib)
     }
     // IG-31: 2 = strafe-jump chains (1 = IG-11's single hops); the game half is ig_botjumpland
     lib->funcs.BotLibVarSet("ig_strafe", gi.cvar("ig_botstrafe", "0", 0)->string);
+    // IG-38: strafe chains plan ahead (a runway to start, room to keep going)
+    lib->funcs.BotLibVarSet("ig_strafeplan", gi.cvar("ig_botstrafeplan", "0", 0)->value ? "1" : "0");
     // IG-32: climb grapples, bits: 2 let go over the ledge, 1 fire on the run (experimental)
     lib->funcs.BotLibVarSet("ig_climbrun", use ? gi.cvar("ig_botclimbrun", "0", 0)->string : "0");
     // IG-36: climbs hook the frame of the opening or the landing floor, then steer to its middle
