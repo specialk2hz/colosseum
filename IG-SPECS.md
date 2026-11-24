@@ -577,3 +577,10 @@ behaviour), so the roster as a whole hooks somewhat more.
   the armor pad 35 -> 0, quad pad 13 -> 0. What is left is mostly strafe chains overshooting and
   turning back (next item). Fighting matches: every figure within noise (frags 3.26 -> 3.37, rail acc
   26.0 -> 25.7%, speed 329 -> 327 u/s, suicides 0.36 -> 0.35/min).
+- **All 28 instagib maps (2026-11-23):** it is the entity type, not the items: any func_wall a bot stands
+  on (pads, ledges, pillar tops). Bot thinks "on top of an obstacle" on a func_wall (no-fighting, 3 x 5
+  min, 5 bots, ig_movedebug 2) went to 0 on every map that had them: koldduel1 5922 (13% of bot time; its
+  func_walls are not pads), q2rdm11 1431, q2rdm12 809, ztn2dm4 651, ztn2dm5 284, omf 150, in2obl 95,
+  brutalo 54, ztn2dm3 19. Fighting, 140 matches: frags 4.38 -> 4.38/min, rail acc 26.7 -> 26.6%, speed
+  311 -> 311 u/s, all within noise. Still left, other entity types: func_door (q2rdm12, alkdm15, jtorque,
+  q2rdm4), func_plat (in2obl), func_rotating (peacefrag).
