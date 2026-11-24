@@ -803,6 +803,19 @@ behaviour), so the roster as a whole hooks somewhat more.
   28 maps: 309 -> 330 u/s, frags 4.40 -> 4.62, hooks 17.4/min, suicides 0.14 -> 0.08.
   brutalo (8 matches): the guard costs upper level 34 -> 28% and 303 -> 281 u/s for falls 1.22 ->
   0.87/min (guard off: 32%, 299 u/s, 1.17; libvar `ig_planguard 0`, testing).
-- **Next:** the fight movement in the planner (dodges and the fight hook as options), the pad tricks as
-  options; then the BOT-TRICKS.md verification pass.
+- **v1.2:** pits. bspc makes a `trigger_hurt` (a pit's death zone) lava in the navigation file, where
+  the map has none; the simulation now treats an area the navigation file calls lava or slime as lava,
+  and flies a fall out to its landing (up to 2.5 s) instead of tracing 1000 units down -- tltf2's and
+  brutalo's voids have a floor below the death zone. 28 maps, route planner vs no planner: suicides
+  0.14 -> 0.05/min (-64%), frags 4.40 -> 4.65, 309 -> 332 u/s, hooks 17.3/min.
+- **Fight movement (built, off: libvar `ig_planfight`, default 0).** `IG_PlanFight` in place of
+  BotAttackMove: 14 dodges (strafe either side square/in/out, with and without a hop; in; out) flown
+  0.8 s against the enemy where it is, costed by speed across the enemy's line, peeking (in sight while
+  the rail is loaded, out of it during the 1.5 s reload, from the bot's own shots), range, height; kept
+  0.3-0.8 s. All bots on it: kills and deaths both -8%, rail accuracy 26 -> 22.5% (everyone is harder
+  to hit), upper level -4 points. Head to head (`ig_pfodd 1`: odd clients on it, 28 maps x 4, 6 bots):
+  K/D 0.99 vs 1.00 stock, pit falls 0.11 vs 0.29 a bot, 6% fewer fights. Even, slower-paced, worse
+  positioned: left off until it values position (high ground, cover) better.
+- **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
+  stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
