@@ -460,6 +460,8 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_botstrafe 2` + `ig_botjumpland` | Bots strafe jump in chains, carving through the route's bends and jumping again on the landing frame | 31 |
 | `ig_botclimbrun 2` | Hook climbs let go as soon as the bot is over the ledge, instead of hanging at the anchor | 32 |
 | `hook_type lmctf`, `ig_hookvote "osp lmctf"` | Hook styles: LMCTF 6.0's hook (800 u/s, gravity while pulled, glide-in, no sky, its model, cable and sounds) beside OSP's; the vote menu's hook row picks Disabled / OSP / LMCTF. Bots use it too (they get the live hook speeds; within 13 u/s of what LMCTF's speed allows). Needs lmctf-hook.pak in the gamedir | 34 |
+| `ig_botclimbaim 1`, `ig_botclimbland 1` | Hook climbs hook the front face of the frame above the landing's roomiest point, look ahead, let go over the landing and air-strafe to its middle; a per-map climb table keeps bspc's anchor where that lands better (28 maps: landed 88.5 -> 91.3%, centred 44 -> 59%) | 36 |
+| `ig_drill` | Testing aid: one bot drills every hook-climb route (or one, over and over) and logs each try | 37 |
 | `ig_botfuncwall` | Bots treat a `func_wall` they stand on as part of the map: they no longer circle q2rdm11's item pads (Q3 took it for an obstacle and walked them about at random) | 35 |
 | `ig_lavarescue` | Lava, slime and pits put you back at a spawn point instead of killing you: no frag lost (Corkscrew's pit-fall recovery) | 33 |
 

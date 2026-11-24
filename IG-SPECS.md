@@ -584,3 +584,46 @@ behaviour), so the roster as a whole hooks somewhat more.
   brutalo 54, ztn2dm3 19. Fighting, 140 matches: frags 4.38 -> 4.38/min, rail acc 26.7 -> 26.6%, speed
   311 -> 311 u/s, all within noise. Still left, other entity types: func_door (q2rdm12, alkdm15, jtorque,
   q2rdm4), func_plat (in2obl), func_rotating (peacefrag).
+
+## IG-36: `ig_botclimbaim`, `ig_botclimbland` -- hook climbs the way Billy takes them (off)
+
+- **Requirement:** `ig_botclimbaim 1` (libvar `ig_climbaim`, with `ig_bothook`): for each hook-climb
+  route, once, the brain finds the SPOT (the landing floor point with the most room, near the route's
+  landing area) and a FRAME anchor: a wall point above it that faces the bot's eye, sits on a flat
+  part of its plane (16 units around), and from which the pull -- the player's box 4 units wider --
+  carries the body over the landing floor. The climb aims and fires at it, looks at the landing
+  while pulled, and lets go once the landing floor is under it. `ig_botclimbland` (libvar
+  `ig_climbland`, bits) says what it does next: 1 air strafe to the spot (wish the velocity that
+  reaches it in 0.6 s, braking the speed it arrived with), 2 grapple down onto the floor at the spot,
+  4 let go at the first moment a gravity arc would land it, 8 hold on until the pull stalls against
+  the frame. `ig_botclimbaim 2` keeps bspc's anchor with the same landing. A per-map CLIMB TABLE
+  (`q3bot/maps/<map>.climbs`, server repo, made by tools/climb-table.py from the IG-37 drill) lists
+  the routes where bspc's anchor lands more often; those are plain bspc. A table made for another
+  .aas (its `reachsize` line) is ignored. Floor anchors are worked out but never used on a climb.
+  Code: botlib/be_ig_hook.c (IG_ClimbAim*, IG_ClimbLand, IG_FrontFlat, IG_PullLands), hooks in
+  BotTravel_Grapple and BotMoveToGoal (be_ai_move.c).
+- **Why:** Billy: at q2rdm11's lava-room door bots hooked the side of the frame (it sticks out on
+  both sides) and landed in the corner; he hooks the frame and air-strafes to the middle.
+- **Tested (2026-11-24, IG-37 drill):** the door climb (route 3059), 40 tries each: bspc 100% landed,
+  0/40 within 64 of the middle; frame + air strafe 100% landed, 40/40 (median 16 units). On the way:
+  floor anchors from below landed 0/712; the plain push off a narrow ledge; holding to the stuck rule
+  (0.6 s, "too long"); side faces. All 28 instagib maps, fresh seed, ~100,000 tries each, bspc vs the
+  bot's choice with the table: landed 88.5 -> 91.3%, landings within 64 of the middle 44 -> 59%,
+  better on 27 of 28 maps (brutalo -1.7). Bot matches (28 maps x 5 seeds): frags, rail accuracy,
+  speed, hooks, suicides within noise; q2rdm11 upper levels 52.7 -> 58.8% (significant).
+
+## IG-37: `ig_drill` -- the climb drill (testing aid, off)
+
+- **Requirement:** `ig_drill 1`: the first Quake III bot is put at each hook-climb route's start
+  (the game places it on the brain's `igdrillpos x_y_z_yaw` command; a bot command reaches the game
+  with its first argument only), climbs, and every try is logged: `igdrill reach R try N aim A result
+  up|fell|nofire|hung dist D fire T land T at x y z start x y z pick P`. `ig_drilltries` per route,
+  `ig_drillaim` the aims taken in turn (0 bspc, 1 frame, 2 bspc + landing, 3 the bot's own choice),
+  `ig_drillpause` between tries; `ig_drill 2` repeats one route (the nearest to `ig_drillpoint x y z`,
+  or `r<n>`). `ig_drillpart k/n` drills every n-th route (OSP ends a level after an hour without a
+  human, and a map takes hours of game time; igbench runs the parts side by side in seconds). While
+  drilling nothing else hooks for that bot and no route is taken out. Code: be_ai_move.c (IG_Drill),
+  src/ig/ig_bot.c (IG_DrillCommand). igbench now copies a map's `.climbs` and `.route` with its .aas.
+- **Why:** Billy: "are you able to reproduce a bot in that location and grappling?" -- matches only
+  climb each route now and then; the drill gives every route clean tries, side by side.
+
