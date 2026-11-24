@@ -55,6 +55,8 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | WIP | neutral so far |
 
+The tricks these features carry, and how the movement planner must keep each one: `BOT-TRICKS.md`.
+
 Config-only change, not an IG switch: `allow_railgun 0` in instagib.cfg (no railgun/slug pickups, ready).
 
 ## IG-1: `ig_noblaster` -- no blaster in the OSP loadout
