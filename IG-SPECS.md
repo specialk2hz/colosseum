@@ -3,6 +3,60 @@
 The fork's own requirements, numbered like upstream's `SPECS.md`. Each row: the requirement,
 why, and how it is tested. Every switch defaults to upstream behaviour.
 
+## Index: every IG number and where it stands (2026-11-24)
+
+**The goal:** a Quake 2 instagib server whose bots move like a seasoned player (fast, varied, never
+scripted-looking) without changing the other modes. Every change is a switch, off by default, reset in
+`colosseum/server.cfg`, turned on per mode by the server repo's feature groups (`groups/*.cfg`).
+
+Status: **live** = on 27912 (pushed, `ig-0.4-speed` + IG-22..24) · **ready** = on in its group file,
+committed locally, not pushed · **trial** = 0 in its group, on only on 27913 until Billy has played it ·
+**WIP** = being built · **parked** = in the code, off, with a reason · **tool** = testing aid, never on in play.
+
+Groups: A hook movement (modes with the hook) · B instagib (instagib modes only) · C map movement (every
+mode) · D roaming · M menus (every mode). Brain libvars are named without `bot` (`ig_botsling` -> `ig_sling`).
+
+| IG | Switch | What | Group | Status | Measured / verdict |
+|---|---|---|---|---|---|
+| 1 | `ig_noblaster` | no blaster in the loadout | instagib.cfg | live | |
+| 2 | server.cfg resets | leaving instagib restores stock rules | -- | live | |
+| 3 | `nochat 1` | no bot chat | server.cfg | live | |
+| 4, 12 | `sv igstats` | movement and fight counters | -- | live (tool) | |
+| 5 | `tools/igbench.py` | seeded bot matches, compared | -- | tool | |
+| 6 | `ig_bothook` | bots take hook climb routes | A | live | hooks 0 -> 17/min |
+| 7 | `ig_botroam` | hunt goals instead of random roaming | D | live | no effect in DM |
+| 8 | `ig_botrevenge` | grudge against a repeat killer | B | parked | trigger rule undecided (Billy) |
+| 9 | `ig_botsling` | slingshots, chains | A | live | 9.1 slingshots/bot/min |
+| 10 | `ig_botfighthook` | hook mid-fight, reposition | B | live | |
+| 11 | `ig_botstrafe 1` | straight strafe jumping | C | parked | no gain; replaced by IG-31 (`2`) |
+| 13 | `ig_botpadhook` | Billy's jump-pad hook tricks | A | live | variety, not speed |
+| 14 | `ig_botstrafehack` | bots land like Q2PRO clients | C | live | no change, parity |
+| 15 | `ig_moverec` | record a player's movement | -- | tool | |
+| 16 | -- | (number not used) | | | |
+| 17 | `ig_botpullhop` | hop off the floor while pulled | A | live | 301 -> 313 u/s |
+| 18, 19 | `ig_scoremap`, `ig_votemaplist` | map on scoreboard, vote map list | M | live | |
+| 20 | `ig_botstairhook` | stairwell wall hook | A | live | |
+| 21 | `ig_botaffinity` | hook affinity per character | A | live | |
+| 22, 23 | `ig_endvote`, `ig_menufast` | end-of-match map vote, fast menus | M | live | |
+| 24 | `ig_nofallfx` | no landing dip or grunt | B | live | Billy: "feels great" |
+| 25 | `ig_railsplash` | rail jumping (shooter only) | B | trial | Billy: "seems good" |
+| 26 | `ig_botroutes` | replay recorded routes | -- | parked | 0/12 finished; rework around hook events |
+| 27 | `ig_botpeace` | bots only move | -- | tool | |
+| 28 | `ig_botaffinitychance` | affinity = slingshot chance | A | trial | spread sd 1.43 -> 1.67 |
+| 29 | `ig_botwalkway` | slingshots stay on walkways near lava | C | trial | q2rdm11 lava 0.39 -> 0.23/min |
+| 30 | `ig_botunstuck` | stuck bots back to a spawn point | C | trial | fixes q2dm1pro lift trap |
+| 31 | `ig_botstrafe 2`, `ig_botjumpland` | strafe-jump chains | C | trial | chains 7 -> 20%, >400 u/s 16 -> 19% |
+| 32 | `ig_botclimbrun 2` | let go over the ledge | A | trial | hang 0.19 -> 0.06 s |
+| 33 | `ig_lavarescue` | lava/pits respot, no frag lost | B | ready | q2rdm11 suicides 0.33 -> 0 |
+| 34 | `hook_type`, `ig_hookvote` | LMCTF hook style, vote row | server.cfg | ready (vote on 27913 only) | LMCTF bots 238 -> 287 u/s |
+| 35 | `ig_botfuncwall` | stand on func_wall pads, no circling | B | trial | circling 437 -> 311 |
+| 36 | `ig_botclimbaim`, `ig_botclimbland` | climbs land in the middle; climb tables | B | trial | landed 88.5 -> 91.3%, centred 44 -> 59%; Billy: "looks great" |
+| 37 | `ig_drill` | climb drill | -- | tool | |
+| 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
+| 39 | `ig_botarcsafe` | flight check before let-go / hop | B | WIP | neutral so far |
+
+Config-only change, not an IG switch: `allow_railgun 0` in instagib.cfg (no railgun/slug pickups, ready).
+
 ## IG-1: `ig_noblaster` -- no blaster in the OSP loadout
 
 - **Requirement:** with `ig_noblaster 1`, players and bots under the OSP rulesets spawn without
@@ -626,4 +680,27 @@ behaviour), so the roster as a whole hooks somewhat more.
   src/ig/ig_bot.c (IG_DrillCommand). igbench now copies a map's `.climbs` and `.route` with its .aas.
 - **Why:** Billy: "are you able to reproduce a bot in that location and grappling?" -- matches only
   climb each route now and then; the drill gives every route clean tries, side by side.
+
+## IG-38: `ig_botstrafeplan` -- strafe chains plan ahead (off)
+
+- **Requirement:** with `ig_botstrafe 2` and `ig_botstrafeplan 1` (brain libvar `ig_strafeplan`), a
+  strafe-jump chain reads the route ahead and starts only with a 400-unit runway clear of sharp turns,
+  narrow gaps and lava; it keeps hopping only while the first of those is further than half a second
+  away at the bot's speed, and stops (lands and runs) before it.
+- **Why:** Billy (2026-11-23): bots lose control in chains; flying up q2rdm11's lava-room stairs they
+  turn left and momentum carries them into the lava.
+- **Tested (2026-11-24):** q2rdm11, 10 matches: lava rescues 0.52 -> 0.335/bot-min, air collisions
+  6.64 -> 5.48/bot-min. 28 maps: neutral except time over 400 u/s -1 point (the narrow-gap check is too
+  strict; loosen it). Trial on 27913.
+
+## IG-39: `ig_botarcsafe` -- a flight check before letting go or hopping (WIP, off)
+
+- **Requirement:** `ig_botarcsafe 1` (libvar `ig_arcsafe`): before a slingshot or fight hook lets go,
+  or a strafe hop, the brain simulates the flight; it holds on (up to 0.8 s) or skips the hop when the
+  flight would end in lava or slime or a drop of 400+. Hooks ignore wall knocks (holding for them cost
+  fight hooks 12 u/s); strafe hops also refuse a wall at more than 350 u/s.
+- **Why:** the lava trips IG-38 leaves (q2rdm11: after strafe hops 24, slingshots 21, climbs 10, fight
+  hooks 8 in 10 matches).
+- **Tested so far:** q2rdm11, 10 matches: neutral (lava 0.335 -> 0.328/bot-min, speed unchanged).
+  The check flies a straight hop while the chain steers in the air; next it must follow that steering.
 

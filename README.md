@@ -464,6 +464,8 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_drill` | Testing aid: one bot drills every hook-climb route (or one, over and over) and logs each try | 37 |
 | `ig_botfuncwall` | Bots treat a `func_wall` they stand on as part of the map: they no longer circle q2rdm11's item pads (Q3 took it for an obstacle and walked them about at random) | 35 |
 | `ig_lavarescue` | Lava, slime and pits put you back at a spawn point instead of killing you: no frag lost (Corkscrew's pit-fall recovery) | 33 |
+| `ig_botstrafeplan` | Strafe-jump chains read the route ahead: start only with a 400-unit runway, stop before sharp turns, narrow gaps and lava (q2rdm11 lava trips 0.52 -> 0.335/bot-min) | 38 |
+| `ig_botarcsafe` | Work in progress: before letting go of a hook or hopping, the bot checks where the flight ends and holds on rather than land in lava or a pit | 39 |
 
 Measuring: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py`
 (seeded, frame-counted bot matches compared with confidence intervals).
