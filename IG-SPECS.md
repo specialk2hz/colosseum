@@ -875,6 +875,17 @@ behaviour), so the roster as a whole hooks somewhat more.
   left pending until the next fight); a fight hook's let-go hands its flight to the planner, which hops
   the landing through its simulation (the old IG_Hop after every fight-hook let-go only ran in the old
   slingshot step). q2rdm11 (6 matches): lava trips 0.173 -> 0.104, the rest level.
+- **Strafe jumping (2026-11-25).** Billy wants it like his. His route8 session, no hook for 1.5 s:
+  chains of ~4 hops from 330 to 542 u/s (best 737), +58 u/s a second, 31% of the time over 400. Bots
+  (planner): 300 -> 344, +2 u/s a second, 1% over 400. Two causes: (1) `IGX_AirWish` wished along the
+  route when it lay within the strafe angle -- along the velocity above 300 Q2 adds nothing; now
+  always at the strafe-jump angle (acos(285/speed)) on the route's side, so a straight run swings
+  across it; (2) 40% of air time is in fights, where the planner's flight steered along the velocity
+  and the stock attack move gave no input: now, airborne in a fight and not hooked, the bot strafes at
+  that angle with the side swapped every think (flown first, as everything). Measured per think: 10-30
+  degrees off the velocity +14 u/s, 30-60 +11. q2rdm11 chains 300 -> 386 u/s (still ~3 hops: they end
+  sooner than Billy's). 28 maps vs v1.4: 322 -> 334 u/s, over 400 17.4 -> 20.1%, frags 4.62 -> 4.44 and
+  suicides 0.05 -> 0.08 (both within noise, both the wrong way). Next: longer chains.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
