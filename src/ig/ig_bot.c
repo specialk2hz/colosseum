@@ -64,6 +64,7 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_walkway", gi.cvar("ig_botwalkway", "0", 0)->value ? "1" : "0");   // IG-29
     lib->funcs.BotLibVarSet("ig_movedebug", gi.cvar("ig_movedebug", "0", 0)->string);   // diagnostic: log seek moves
     lib->funcs.BotLibVarSet("ig_funcwall", gi.cvar("ig_botfuncwall", "0", 0)->value ? "1" : "0");   // IG-35
+    lib->funcs.BotLibVarSet("ig_padbounce", gi.cvar("ig_botpadbounce", "0", 0)->value ? "1" : "0");   // IG-42
     // IG-37: the climb drill (a testing aid): mode, tries per route, aim, pause, and the point for mode 2
     {
         float pt[3] = { 0, 0, 0 };

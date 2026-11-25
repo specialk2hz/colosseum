@@ -54,6 +54,7 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | stopped | neutral; replaced by the planner (IG-40) |
+| 42 | `ig_botpadbounce` | steer off a pad that bounces a bot straight up (bot frozen forever) | B | trial | q2rdm11 6 bots x 8 matches: bots frozen 2+ s 4 -> 0; other stats unchanged |
 | 41 | `ig_chasespeed` | chase-camera speedometer under the chase line | M | trial | -- |
 | 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | WIP (`ig_botplan`) | v1 works: 28 maps 309 -> 330 u/s, upper 27.7 -> 31.1%, frags +5%; q2rdm11 lava trips halved |
 
@@ -911,3 +912,19 @@ behaviour), so the roster as a whole hooks somewhat more.
   the chasing text" -- to watch bots' (and players') speed.
 - **Tested:** on 27913 by Billy.
 
+## IG-42: `ig_botpadbounce` -- off a pad that bounces a bot straight up (off)
+
+- **Requirement:** `ig_botpadbounce 1` (libvar `ig_padbounce`): in BotMoveToGoal's airborne branch, when
+  no reachability is being finished (stock: no input at all), a bot that has been in the air 1 s with
+  under 50 u/s across steers along its route from the area it is in (or straight at its goal when that
+  area has no route). Logs `ig: padbounce c area a reach r at x y z` once per bounce run.
+  Code: botlib/be_ai_move.c IG_AirNoRoute.
+- **Why:** Billy (2026-11-25, 27913, peace mode): "bunch of bots stuck on a jump pad". The q2rdm11 pad at
+  (-880, 973, -32) throws a bot straight up; one that drops onto it from the upper level has no pad
+  reachability (its area 1250 has no route), lands back on the pad every launch and never touches the
+  ground, so it never picks a route: frozen for good. Others then stood on it (three stacked at zero
+  speed). The stuck watchdog (IG-30) ignores bots giving no input, so it never fired.
+- **Measured:** q2rdm11, 6 bots, 4 seeds, peace off and on, `ig_moverec 2`: bots frozen 2+ s with no
+  input 1+3 -> 0+0; the fix fired twice in 8 matches, both on that pad. Frags, speed, hooks, upper time
+  unchanged (all inside the noise).
+- **Tested:** on 27913.
