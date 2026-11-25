@@ -849,6 +849,22 @@ behaviour), so the roster as a whole hooks somewhat more.
   route's own jumps (ledges, gaps). 1530 -> 350 (-77%); of those left, 200 are slingshot starts whose
   hook fired, 141 (0.3/bot-min) starts that changed their mind. Frags 4.43 -> 4.47, 337 -> 340 u/s,
   hooks, upper, suicides level.
+- **Pad top (WIP, off: libvar `ig_planpadsling`).** Billy recorded his pad trick (2026-11-25, q2rdm11,
+  work/hook-live/billy-route-2026-11-25.log; "a jump pad into a grapple and strafe jumping to get
+  across the map fast"): the vertical pad at (1551, 763) throws him straight up (718 up, 91 across);
+  rising he turns ~150 degrees; just past the top (falling at 214) he hooks LEVEL and far along the
+  upper walkway (4 up, a wall ~480 out; 0.30 s hook flight), a 0.27 s pull to 938 u/s, lets go still
+  rising, clips the walkway wall (706 kept) and hops it 4 times with no frame on the ground (jump
+  held before each landing), ~2000 units at 706 u/s. Built: in a pad flight the planner runs in pad
+  mode (IG_PlanPadTop): the route from the pad's landing (or toward the goal), "run" = ride the pad,
+  and once a flight, below 150 u/s up (`ig_planpadtopvz`), slingshots to IGA_PADTOP anchors (+-16
+  yaw, 6 down to 12 up, 300+ units, walls allowed; price x `ig_planpadmul` 0.3), simulated like any
+  option; the old end-of-arc hook stands down while it is on. q2rdm11/campgrounds/tltf2 x 6: 45
+  pad-top slingshots in 862 launches; distance in the 3 s after a launch 1010 -> 1031 (noise). WHY
+  so few: the bots never take Billy's pads -- 0 launches from (1551, 763) and 1 from its twin
+  (-880, 973) in 6 q2rdm11 matches. These pads push straight up with no landing of their own; bspc
+  made no reachability through them (the twin is the pad bots got stuck bouncing on, IG-42). Next:
+  pad reachabilities for vertical pads (apex -> floors reachable by air control or a hook).
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
