@@ -832,6 +832,12 @@ behaviour), so the roster as a whole hooks somewhat more.
   (+9%), rail acc 28.1 vs 25.0%, suicides 0.15 vs 0.35/bot (-57%), contacts +11%, 353 vs 334 u/s,
   upper level 25.6 vs 28.5%. A faster, closer fight at the same K/D; still off (Billy to watch).
   Bench data work/fight, script work/plan/fightvs.py.
+  **Stances** (`ig_pfstance 1`; Billy: "I dont necessarily want them always closing in though, railgun
+  is about angles and keeping distance sometimes"): each fight (new enemy, or every 3-6 s) picks a
+  range to hold -- close 250, mid 550, long 900 (+-150 free), odds from aggression: close 0.15 + 0.5a,
+  long 0.45 - 0.4a; `ig_pfnear` then prices distance either side of it. Same 5 seeds: K/D 0.951 (null
+  0.954, always-close 0.946), kills/bot 21.4 (23.4 / 25.5), rail acc 22.2% (25.0 / 28.1), suicides 0.17
+  (0.35 / 0.14), upper 26.5% (28.5 / 25.6). Range sets the pace, not the K/D. On 27913 for Billy.
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
