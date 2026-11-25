@@ -869,6 +869,11 @@ behaviour), so the roster as a whole hooks somewhat more.
   100%), 0.5 s after 327 u/s (Billy ~900), lava 0.173 (v1.5 0.195), frags 4.02 -> 3.79, speed level.
   Checked properly, most landing hops at ~940 u/s on q2rdm11 meet a wall or a turn: Billy picks lines
   with room; the planner does so only where the simulation finds one.
+  **Two old behaviours the planner had dropped, back:** a reposition urged after a kill or two misses
+  (IG-10) is taken while travelling as a strong reason (0.5 s) to hook away now, and spent (it had been
+  left pending until the next fight); a fight hook's let-go hands its flight to the planner, which hops
+  the landing through its simulation (the old IG_Hop after every fight-hook let-go only ran in the old
+  slingshot step). q2rdm11 (6 matches): lava trips 0.173 -> 0.104, the rest level.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
