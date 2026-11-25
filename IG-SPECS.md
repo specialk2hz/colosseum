@@ -881,6 +881,16 @@ behaviour), so the roster as a whole hooks somewhat more.
   mostly where a hop comes down on the face of the walkway's raised step (x ~590: 790 -> 255 u/s);
   Billy's hops land on top of it. Steeper hook prices changed nothing. 28 maps x 2 (all four vs
   none): everything level (334.6 vs 333.5 u/s, frags 4.84 vs 4.81, hooks 14.5 vs 14.2/min).
+- **The view in a strafing flight** (`ig_planflightview`, libvar, default 2). Billy on the drill:
+  "the model converts into strafe jumping backwards". With no enemy the view was the stock
+  look-ahead (or a random roam spot), clamped near the push direction -- 70-90 degrees off the
+  travel at speed -- and chased a target that jumped around at its 360 deg/s limit: the model spun,
+  facing backwards in 43% of fast frames, 79 degrees off the travel (median). Now, on a flight the
+  planner steers above 250 u/s: the travel, leaning a tenth toward the push (mode 2; mode 1: 45
+  degrees from the push), level. Drill: backwards 43 -> 2%, off the travel 79 -> 9 degrees (Billy's
+  route: 5), walkway 583 -> 643 u/s, median 6.2 -> 6.0 s. 28 maps x 2: level (frags 4.81 vs 4.77,
+  rail acc 26.1 vs 25.9, to contact 2.77 vs 2.82 s). Diagnostic: libvar `ig_viewdebug 1` logs
+  `igview` (view, ideal, move direction) each think.
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
