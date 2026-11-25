@@ -822,6 +822,14 @@ behaviour), so the roster as a whole hooks somewhat more.
   (`ig_planhookpick 0`) changed nothing. 28 maps at 0.5: hooks 14.8/min, slingshots 5.8/bot/min (old
   code 5.1), 326 u/s (no planner 309), frags 4.58, suicides 0.05. At 0.8: 12.5 hooks/min, 318 u/s.
   Per map and per style later, from Billy's recordings.
+- **v1.4: anchor classes.** Billy: "more slingshots and fewer random wall grapples for no reason".
+  A flat price cut both. Anchors now come in three classes, priced apart: SLING (along the route,
+  +-12 degrees, 6/12/18 down, 250+ units: his slingshot, price x `ig_planslingmul` 0.3), UP (25 up,
+  only where the route climbs 48+ within 500 units: stairwell/ledge, x `ig_planupmul` 1), SIDE (40 off
+  the route, 8 up or down: a corner turn, x `ig_plansidemul` 2). The slingshot line names the class.
+  28 maps vs no planner: slingshots 5.1 -> 7.2/bot/min, hooks 12.4 -> 16.3/min, of the planner's hooks
+  77% sling, 13% up, 11% side; 322 u/s, frags 4.62, suicides 0.05. in2obl: sling 71%, slingshots 2.9 ->
+  5.2/bot/min (at slingmul 0.5).
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
