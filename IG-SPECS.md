@@ -858,6 +858,17 @@ behaviour), so the roster as a whole hooks somewhat more.
   347-355 u/s overall, BUT lava trips 0.195 -> 0.29/bot-min (the mid-fight flight handling hops and lets
   go unchecked): not deployed. Next: let go before the pull drags to the floor; simulate the mid-fight
   flight like everything else; then hop chains at speed.
+  **Then:** (a) every 50 ms pulled along the floor costs (`ig_planpullfloor` 0.25 s) and a simulated
+  slingshot lets go when the floor is within a think's fall -- let go in the air 50 -> 98%, let-go speed
+  673 -> 939 (Billy ~900); (b) the mid-fight flight is simulated before it is steered or hopped, and its
+  hook let go only when that is safe; (c) a landing hop is decided with every let-go and favoured like
+  a flick's fire (`PLAN_COMMIT`) until it is done, on the ground just after touchdown too -- through the
+  simulation: forced, it hopped 77% of landings but doubled wall hits (4.5 -> 8.1/bot-min), raised lava
+  trips and cost 13% of frags; (d) slingshot options are flown with that finish (`ig_planslinghop`), so
+  anchors whose line has room to hop score best. q2rdm11, planner slingshots: landing hopped 39% (Billy
+  100%), 0.5 s after 327 u/s (Billy ~900), lava 0.173 (v1.5 0.195), frags 4.02 -> 3.79, speed level.
+  Checked properly, most landing hops at ~940 u/s on q2rdm11 meet a wall or a turn: Billy picks lines
+  with room; the planner does so only where the simulation finds one.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
