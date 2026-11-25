@@ -838,6 +838,17 @@ behaviour), so the roster as a whole hooks somewhat more.
   long 0.45 - 0.4a; `ig_pfnear` then prices distance either side of it. Same 5 seeds: K/D 0.951 (null
   0.954, always-close 0.946), kills/bot 21.4 (23.4 / 25.5), rail acc 22.2% (25.0 / 28.1), suicides 0.17
   (0.35 / 0.14), upper 26.5% (28.5 / 25.6). Range sets the pace, not the K/D. On 27913 for Billy.
+- **No jumping in place** (`ig_planhopmin`, libvar, default 250 u/s; 0 = off). Billy (27913): "the bots
+  sometimes just jump in place when they dont have any movement, that shouldnt be happening, the jumping
+  should be in use for movement purposes". Measured (8 maps x 2, `ig_moverec 2`, a jump = leaving the
+  ground at 200-300 u/s up from under 100 u/s across): 1530 such jumps (3.2/bot-min), mostly landing
+  hops after a slow landing, the stock fight move's jumps (jumper trait), fight-planner hops and the
+  planner's hop option (after a respawn). Now: on the ground the hop and landing-hop options need 250
+  u/s, fight hops too, and a last check on the final input (IGX_NoStandingJump) drops any jump the
+  planner, fight planner or stock fight move set under 250 u/s -- keeping the slingshot's start and the
+  route's own jumps (ledges, gaps). 1530 -> 350 (-77%); of those left, 200 are slingshot starts whose
+  hook fired, 141 (0.3/bot-min) starts that changed their mind. Frags 4.43 -> 4.47, 337 -> 340 u/s,
+  hooks, upper, suicides level.
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
