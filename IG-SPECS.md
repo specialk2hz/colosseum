@@ -830,6 +830,20 @@ behaviour), so the roster as a whole hooks somewhat more.
   28 maps vs no planner: slingshots 5.1 -> 7.2/bot/min, hooks 12.4 -> 16.3/min, of the planner's hooks
   77% sling, 13% up, 11% side; 322 u/s, frags 4.62, suicides 0.05. in2obl: sling 71%, slingshots 2.9 ->
   5.2/bot/min (at slingmul 0.5).
+- **v1.5: slingshots hook the floor.** Billy on 27913 (q2rdm4): still "random wall grapples instead of
+  ground movement". Of q2rdm4's slingshot-class hooks, 575 of 898 were walls ~400 units out (a
+  corridor's end or turn): from the eye on the ground, 12 and 18 down meet the floor inside the 250
+  minimum, so only 6 down survived and it often met a wall first. Now SLING anchors are 4/8/12 down,
+  180+ units at the flick (the bot jumps before it fires, so the hook bites further), and must be
+  floor or a wall 600+ units out. q2rdm4 (6 matches): 741 floor, 72 far wall; 287 -> 306 u/s vs no
+  planner, slingshots 3.9 -> 6.8/bot/min. The slingshot line says floor/wall/ceiling.
+- **Open: "pull hop".** Billy: "pull hops are the start to the fastest movement". The let-go speed
+  depends on how the pull ends (q2rdm11): a jump in the let-go step keeps ~930 u/s, a let-go in the
+  air 720-850, on the floor 180-560 (friction takes the first step: OSP's pull SETS the velocity each
+  step, so a hop during the pull is wiped at once). Hopping through the pull (delayed jump every think)
+  put bots on the floor more (40 vs 31%); one jump at the let-go scored ~1.1 s worse in the planner (it
+  flies 1000+ units down corridors into walls). Billy may mean something else: waiting for his recorded
+  demonstration (27913, chat start/stop). Experiment kept as work/plan/pullhop-experiment.patch.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
