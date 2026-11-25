@@ -67,6 +67,7 @@ not built. "Planner" says how the planner must express it; "Verify" is the check
 | P1 | **Hook affinity:** runners vs grapple masters (character trait 49) | built IG-21/28 | a weight on hook options |
 | P2 | **Variety in execution:** among near-best options pick by weighted chance, not the single best | todo | core of option choice |
 | P3 | **Risk taking:** how close to hazards a bot will fly | todo | a weight on the hazard score |
+| P5 | **Strafe skill:** share of the most speed a strafe adds (0.45 casual .. 0.9 near perfect; Billy ~0.65) | built (IG-40, characteristic 50) | the strafe angle |
 | P4 | Crouching, jumping habits | stock Q3 characteristics | unchanged; comes with friend bots |
 
 ## Verification pass (before the planner ships)
