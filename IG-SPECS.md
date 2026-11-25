@@ -818,6 +818,20 @@ behaviour), so the roster as a whole hooks somewhat more.
   to hit), upper level -4 points. Head to head (`ig_pfodd 1`: odd clients on it, 28 maps x 4, 6 bots):
   K/D 0.99 vs 1.00 stock, pit falls 0.11 vs 0.29 a bot, 6% fewer fights. Even, slower-paced, worse
   positioned: left off until it values position (high ground, cover) better.
+  **2026-11-25, position and range** (head to head, `ig_pfodd 1`, 28 maps x 5 seeds, 6 bots; read
+  against a NULL run with stock fights for all -- the odd/even split alone gives odd K/D 0.94-0.96 vs
+  even 1.00-1.03, the slots draw different characters). New libvars, all default to the old scoring:
+  `ig_pfroute` (cost per second of travel to the long-term goal, from the goal stack), `ig_pfhigh`
+  (high ground, was a fixed 0.03), `ig_pfnear`/`ig_pfnearat` (cost per think per 1000 units beyond
+  `nearat`). Finding: the old fight planner lost on AIM, not position -- rail accuracy 21.9% vs 24.9%
+  null -- because it never closed in (stock walks to 140 units; a rail's aim error is an angle).
+  Ruled out by test: sideways-speed reward, hops, peeking, and leading the aim by the bot's own
+  velocity (`ig_aimlead` 0.05/0.1 s: level / worse; removed). Route 0.3 and high 0.1 alone: upper
+  level back to null, K/D unchanged. Best: `ig_pfroute 0.3 ig_pfhigh 0.1 ig_pfnear 0.3 ig_pfnearat 200
+  ig_pflat 0.3`: odd bots vs null over 5 seeds: K/D 0.946 vs 0.954 (level), kills/bot 25.5 vs 23.4
+  (+9%), rail acc 28.1 vs 25.0%, suicides 0.15 vs 0.35/bot (-57%), contacts +11%, 353 vs 334 u/s,
+  upper level 25.6 vs 28.5%. A faster, closer fight at the same K/D; still off (Billy to watch).
+  Bench data work/fight, script work/plan/fightvs.py.
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
