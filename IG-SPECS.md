@@ -844,6 +844,20 @@ behaviour), so the roster as a whole hooks somewhat more.
   put bots on the floor more (40 vs 31%); one jump at the let-go scored ~1.1 s worse in the planner (it
   flies 1000+ units down corridors into walls). Billy may mean something else: waiting for his recorded
   demonstration (27913, chat start/stop). Experiment kept as work/plan/pullhop-experiment.patch.
+- **WIP: Billy's slingshot, from his demo** (27913, 2026-11-25, 5 marked tries, 8 ms commands). He
+  jumps 130-200 ms before firing, fires in the air 10-19 down, the hook bites 160-290 ms later, he lets
+  go 80-180 ms after the bite STILL IN THE AIR (860-940 u/s), has jump down before he lands (off the
+  floor again within 8 ms), and hops on, holding 860-930 u/s for a second or more. The "fast start" is
+  the start of this slingshot (Billy: "slingshots and fast starts are the same"); "pull hop" (hopping
+  during the pull) was a wrong reading of his older data and is shelved. Built so far: a landing-hop
+  option (`landhop`: jump down coming down), made sticky once chosen and part of every planner let-go
+  unless unsafe; a flow value (`ig_planflow`, s per 300 u/s of average speed kept over the flight);
+  the planner keeps steering its own flight through a fight that starts mid-air and lets go of its own
+  hook there. Planner slingshots, q2rdm11: landing hopped 18 -> 34% (Billy 100%), let-go speed 673 ->
+  757 (Billy ~900), let go in the air 50% (Billy 100%), 0.5 s later 310 -> 315 u/s (Billy ~900); 336 ->
+  347-355 u/s overall, BUT lava trips 0.195 -> 0.29/bot-min (the mid-fight flight handling hops and lets
+  go unchecked): not deployed. Next: let go before the pull drags to the floor; simulate the mid-fight
+  flight like everything else; then hop chains at speed.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
