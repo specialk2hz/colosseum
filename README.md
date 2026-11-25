@@ -469,6 +469,7 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_chasespeed` | A speedometer for chase cameras: the chased player's speed in small text under the "Chasing" line | 41 |
 | `ig_botplan` | Work in progress: the movement planner. Each think a bot tries a few moves a second ahead in Quake II's own movement (run, strafe-hop, slingshot to several anchors, hold or let go of its hook), scores where each leaves it on its route, and makes one of the best; replaces the trick-by-trick movement while on | 40 |
 | `ig_botpadbounce` | Bug fix: a bot dropped onto a jump pad that throws it straight up no longer bounces there forever; after a second in the air it steers along its route, so the next launch carries it off | 42 |
+| `ig_botpadreach` | Bots learn the jump pads that only throw you straight up (q2rdm11's two): at the top they hook across to the floor beyond, as players do. Needs the bots' hook; takes effect on the next map | 43 |
 
 Measuring: `sv igstats` (per-player counters, per-hook and per-pad-flight lines) and `tools/igbench.py`
 (seeded, frame-counted bot matches compared with confidence intervals).

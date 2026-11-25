@@ -54,6 +54,7 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | stopped | neutral; replaced by the planner (IG-40) |
+| 43 | `ig_botpadreach` | routes through straight-up jump pads, taken with a hook from the top | B | trial | q2rdm11: 15 routes; drill: far floors 0/54 -> 54/66 with the pad top; 28 maps level, q2rdm11 +10 u/s, upper +4.8 pts |
 | 42 | `ig_botpadbounce` | steer off a pad that bounces a bot straight up (bot frozen forever) | B | trial | q2rdm11 6 bots x 8 matches: bots frozen 2+ s 4 -> 0; other stats unchanged |
 | 41 | `ig_chasespeed` | chase-camera speedometer under the chase line | M | trial | -- |
 | 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | WIP (`ig_botplan`) | v1 works: 28 maps 309 -> 330 u/s, upper 27.7 -> 31.1%, frags +5%; q2rdm11 lava trips halved |
@@ -974,4 +975,33 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Measured:** q2rdm11, 6 bots, 4 seeds, peace off and on, `ig_moverec 2`: bots frozen 2+ s with no
   input 1+3 -> 0+0; the fix fired twice in 8 matches, both on that pad. Frags, speed, hooks, upper time
   unchanged (all inside the noise).
+- **Tested:** on 27913.
+
+## IG-43: `ig_botpadreach` -- routes through straight-up jump pads (off)
+
+- **Requirement:** `ig_botpadreach 1` (libvar `ig_padreach`; only with the bots' hook, read at map
+  load). For each trigger_push that throws (nearly) straight up -- under 200 u/s across, 300+ up --
+  whose pad area has no pad route out, IG_PadReachAtLoad (botlib/be_ig_hook.c, after the links and
+  settings are set up, before the routing) takes the top of its arc and, from it, the floors in
+  sight 150-900 units across, 350 below to 32 above the top, no lava/slime/pad, in the pad's routing
+  cluster (the routing ignores a route out of its cluster); the farthest in each of 8 directions
+  becomes a TRAVEL_JUMPPAD route (time: up + 0.3 s hook flight + distance/800 + `ig_padreachprice`
+  0.2 s). The pad area's block of routes moves to the end of the table, so no other route number
+  changes (the climb tables and recorded routes name routes by number); IG-6's per-route marks grow
+  with it. In the flight the planner's pad top (IG-40, `ig_planpadsling`) hooks toward the landing
+  or along the route past it; anchors toward the landing were added because the drill's goal is the
+  landing itself. Log: `ig: padreach area A -> B end x y z time t top z`.
+- **Why:** Billy's pad trick (recorded 2026-11-25, IG-40 "Pad top"): q2rdm11's up-pads lead nowhere in
+  bspc's routes (air control alone cannot leave them), so bots never took them (0 launches in 6
+  matches) and one dropped onto them bounced forever (IG-42).
+- **Measured:** q2rdm11: 15 routes from 2 pads (1600 768: 8; the one at -832 960 already had a pad
+  route; 1152 192: 7); tltf2: 1 pad, every floor in another cluster, none. Pad drill (`ig_paddrill 1
+  ig_paddrillforce 1`, one bot, peace; testing aid: placed 48 units short of each new route in turn
+  with its landing as goal, "ok" standing on that floor within 6 s): the near floors (6 routes) are
+  reached by riding alone either way; the far ones, Billy's walkway among them: ride only 0/54,
+  with the pad top 54/66 (route 4053 18/18, 4059 16/16, 4060 15/16, the twin's 4063 5/16). In play
+  bots seldom pass those pads (0.14% of their time within 300 units) and the hook climbs beside
+  them are as cheap, so the routes are rare -- but 28 maps x 2, all on vs off: everything level;
+  q2rdm11 358.7 vs 348.8 u/s and upper level 54.8 vs 50.0% (both intervals exclude 0), frags 4.20 vs
+  4.42 (noise).
 - **Tested:** on 27913.

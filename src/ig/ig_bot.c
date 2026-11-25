@@ -65,6 +65,8 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_movedebug", gi.cvar("ig_movedebug", "0", 0)->string);   // diagnostic: log seek moves
     lib->funcs.BotLibVarSet("ig_funcwall", gi.cvar("ig_botfuncwall", "0", 0)->value ? "1" : "0");   // IG-35
     lib->funcs.BotLibVarSet("ig_padbounce", gi.cvar("ig_botpadbounce", "0", 0)->value ? "1" : "0");   // IG-42
+    lib->funcs.BotLibVarSet("ig_padreach", use && gi.cvar("ig_botpadreach", "0", 0)->value ? "1" : "0");   // IG-43, read at map load
+    lib->funcs.BotLibVarSet("ig_paddrill", gi.cvar("ig_paddrill", "0", 0)->string);   // IG-43: the pad drill (a testing aid)
     // IG-37: the climb drill (a testing aid): mode, tries per route, aim, pause, and the point for mode 2
     {
         float pt[3] = { 0, 0, 0 };
@@ -231,7 +233,7 @@ bool IG_DrillCommand(edict_t *ent)
 
     if (Q_stricmp(gi.argv(0), "igdrillpos"))
         return false;
-    if (!gi.cvar("ig_drill", "0", 0)->integer || !ent->client || !(ent->flags & FL_BOT) || ent->health <= 0)
+    if ((!gi.cvar("ig_drill", "0", 0)->integer && !gi.cvar("ig_paddrill", "0", 0)->integer) || !ent->client || !(ent->flags & FL_BOT) || ent->health <= 0)
         return true;
     // one argument, "x_y_z_yaw": a bot command reaches the game with its first argument only
     if (sscanf(gi.argv(1), "%f_%f_%f_%f", &origin[0], &origin[1], &origin[2], &angles[YAW]) != 4)
