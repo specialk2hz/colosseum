@@ -904,6 +904,18 @@ behaviour), so the roster as a whole hooks somewhat more.
   -> 72%, average chain 2.0 -> 3.4 hops, chains of 3+ 23 -> 50%. 28 maps x 2 with fights, on vs off:
   level (334.3 vs 333.1 u/s, frags 4.77 vs 4.76, suicides 0.08 vs 0.07) except brutalo, suicides
   1.08 -> 1.27/min (interval excludes 0): its edges.
+- **Corners** (Billy, watching roaming bots on 27913: "hitting the end of the walls before changing
+  directions instead of curving"; the hops before q2rdm11's railgun overlook hit the wall before
+  turning). The route's way was the next step's start -- a corner -- until within 40 units of it.
+  Added a look-ahead (`ig_planlook`, `ig_planlookdist` 500): once a think, the route walked on
+  through plain walking steps, the farthest point in a straight line (body trace raised a step,
+  floor under the line, no lava/slime) steered at by the decision and the simulation until reached.
+  Neutral alone (air wall hits 14.5 vs 14.1/bot-min). The hop habit was the wall-hitter: roaming, 4
+  maps x 2, 3 bots -- no habit 53% hopped / 10.3 air wall hits per bot-min; habit unchecked 71% /
+  14.1; habit only where the hop's simulation hits no wall (200+ u/s lost) within the first 4 thinks
+  (`ig_planwallsoon` 4, default) 59% / 11.9; within 7: 56% / 10.8. A fast bot barely turns in the
+  air (~30 deg/s at 600 u/s): a hop just before a corner carries it into the wall. Billy hops and
+  curves: how he sets a turn up is the corner recording still to make.
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
