@@ -891,6 +891,19 @@ behaviour), so the roster as a whole hooks somewhat more.
   route: 5), walkway 583 -> 643 u/s, median 6.2 -> 6.0 s. 28 maps x 2: level (frags 4.81 vs 4.77,
   rail acc 26.1 vs 25.9, to contact 2.77 vs 2.82 s). Diagnostic: libvar `ig_viewdebug 1` logs
   `igview` (view, ideal, move direction) each think.
+- **Hop chains everywhere** (Billy: chain the route with strafe jumps and hooks; first, hop every fast
+  landing). Roaming (peace), 4 maps (q2rdm11, campgrounds, q2dm1, ztn2dm3): 52% of landings above 350
+  u/s were hopped (Billy nearly all). Of the flat ones: ~500 "run" (or "let go") picked by chance
+  over a near-equal "hop the landing"; ~100 landings that came inside the think while still rising
+  (steps, stairs), before the jump went down; ~260 with jump down in the step that landed -- Quake II
+  checks the jump at a step's start -- and "run" on the next think. Now (libvars, default on): in the
+  air at 300+ u/s, or on the think after a landing with the hop pending, a "run"/"let go" pick gives
+  way to "hop the landing" unless that is 0.5 s worse (`ig_planairhop`, `ig_planairhopspeed` 300,
+  `ig_planairhopmargin` 0.5); still rising but down within the think, a delayed jump (released the
+  first half-think, pressed the second; `ig_planlatejump`; EA_IGMove jump 2). Same 4 maps: hopped 52
+  -> 72%, average chain 2.0 -> 3.4 hops, chains of 3+ 23 -> 50%. 28 maps x 2 with fights, on vs off:
+  level (334.3 vs 333.1 u/s, frags 4.77 vs 4.76, suicides 0.08 vs 0.07) except brutalo, suicides
+  1.08 -> 1.27/min (interval excludes 0): its edges.
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
