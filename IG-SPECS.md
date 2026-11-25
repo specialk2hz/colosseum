@@ -916,6 +916,17 @@ behaviour), so the roster as a whole hooks somewhat more.
   (`ig_planwallsoon` 4, default) 59% / 11.9; within 7: 56% / 10.8. A fast bot barely turns in the
   air (~30 deg/s at 600 u/s): a hop just before a corner carries it into the wall. Billy hops and
   curves: how he sets a turn up is the corner recording still to make.
+- **Billy's corner recordings** (2026-11-25, no bots, no hooks: work/hook-live/billy-corners-2026-11-25.log,
+  billy-corners2-2026-11-25.log; 13 + 25 turns). Gentle turns (50-75 deg) he hops through, on the
+  ground 13-35%, keeping 300-390 u/s; sharp turns in open space (109 deg at 460, a U-turn at 486) he
+  also hops through, 0-12% on the ground; sharp tight ones he stops hopping before -- on the last
+  hop forward released, side key only, the view turned ~55 degrees in the air -- lands and turns on
+  the ground (610 -> 130-180 u/s), then rebuilds. Room decides, not the angle. Billy vs the bots
+  (roaming, 50 ms samples): fast landings hopped 66/59% vs 58%, average speed 382/396 vs 333, air
+  wall hits 6.5/2.8 vs 11.9 per minute: the bots hop as often; they hit walls 2-4x as often and are
+  ~60 u/s slower. A corner check on the hop habit (`ig_planturnhop`: no habit hop when the route
+  turns more than N degrees within a hop's reach): 70 -> wall hits 10.4, hops 54%, 324 u/s; 100
+  (default) 11.5 / 57% / 332; off 11.9 / 58% / 333.
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
