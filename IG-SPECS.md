@@ -886,6 +886,17 @@ behaviour), so the roster as a whole hooks somewhat more.
   degrees off the velocity +14 u/s, 30-60 +11. q2rdm11 chains 300 -> 386 u/s (still ~3 hops: they end
   sooner than Billy's). 28 maps vs v1.4: 322 -> 334 u/s, over 400 17.4 -> 20.1%, frags 4.62 -> 4.44 and
   suicides 0.05 -> 0.08 (both within noise, both the wrong way). Next: longer chains.
+- **Strafe skill per bot (2026-11-25).** Billy: "some great bots and some not so great in the game at
+  once". The theoretical limit (perfect angle, a jump every landing frame, from 300 u/s): 540 u/s after
+  500 units, 664 after 1000, 823 after 2000, 933 after 3000; 50 ms and 8 ms steps give the same limit.
+  A bot's wish holds for two 50 ms pmoves, and the one-step best angle acos(285/v) adds +12.3 a think at
+  350 u/s where the two-step best (39.6 degrees) adds +23.6: `IGX_StrafeAngle` uses the two-step best
+  (a table by speed, made once) and, for a skill s < 1, the wider angle that adds s times it. The skill
+  is characteristic 50 (`CHARACTERISTIC_IG_STRAFE`, read with `Characteristic_IGFloat`, which is silent
+  when it is unset) or 0.45 + 0.45 x (jumper + attack skill)/2; libvar `ig_planstrafeskill` 0..1 sets it
+  for all (testing). Measured, planner strafing at 330-380 u/s: skill 1.0 +22 a think, 0.65 +15, 0.45 +10
+  (targets 23.6 / 15.3 / 10.6). Stock bots at bot skill 3: 0.56 (Ranger) .. 0.84 (Xaero); Billy ~0.65.
+  28 maps vs the build before: over 400 u/s 20.1 -> 21.8%, the rest level.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
