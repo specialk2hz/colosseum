@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 */
 #include "g_local.h"
 #include "tourney/osp_hooks.h"
+#include "ig/ig.h"   // IG: IG-41 the chase speedometer
 
 void UpdateChaseCam(edict_t *ent)
 {
@@ -168,7 +169,7 @@ void UpdateChaseCam(edict_t *ent)
     if ((G_Ruleset() == RULESET_CTF || G_IsOspRuleset()) &&
         ((!ent->client->showscores && !G_MenuActive(ent) &&
           !ent->client->showinventory && !ent->client->showhelp &&
-          !(level.framenum & 31)) || ent->client->update_chase)) {
+          (!(level.framenum & 31) || IG_ChaseSpeedOn())) || ent->client->update_chase)) { // IG: IG-41 speed every frame
         char s[MAX_STRING_CHARS];
 
         ent->client->update_chase = false;
@@ -192,6 +193,7 @@ void UpdateChaseCam(edict_t *ent)
         else
             Q_snprintf(s, sizeof(s), "xv 0 yb -68 string2 \"Chasing %s\"",
                        targ->client->pers.netname);
+        IG_ChaseSpeed(targ, s, sizeof(s), G_IsOspRuleset()); // IG: IG-41 the chased player's speed
 
         gi.WriteByte(svc_layout);
         gi.WriteString(s);

@@ -54,6 +54,7 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | stopped | neutral; replaced by the planner (IG-40) |
+| 41 | `ig_chasespeed` | chase-camera speedometer under the chase line | M | trial | -- |
 | 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | WIP (`ig_botplan`) | v1 works: 28 maps 309 -> 330 u/s, upper 27.7 -> 31.1%, frags +5%; q2rdm11 lava trips halved |
 
 The tricks these features carry, and how the movement planner must keep each one: `BOT-TRICKS.md`.
@@ -876,4 +877,15 @@ behaviour), so the roster as a whole hooks somewhat more.
   slingshot step). q2rdm11 (6 matches): lava trips 0.173 -> 0.104, the rest level.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
+
+## IG-41: `ig_chasespeed` -- a speedometer for chase cameras (off)
+
+- **Requirement:** `ig_chasespeed 1`: a spectator chasing a player sees that player's horizontal speed
+  as small text under the "Chasing" line (`612 ups`; OSP: xv 44 yb -51, others xv 0 yb -60). It rides
+  on the chase layout (UpdateChaseCam, g_chase.c), which is then sent every frame instead of every 32
+  frames -- about 60 bytes a frame per spectator, and not while a scoreboard or menu holds the layout.
+  A statusbar stat would have been the big HUD digits. Code: src/ig/ig_hud.c.
+- **Why:** Billy (2026-11-25): "an on screen speedometer for chase modes ... out of the way, maybe near
+  the chasing text" -- to watch bots' (and players') speed.
+- **Tested:** on 27913 by Billy.
 

@@ -34,6 +34,10 @@ void IG_MoveRecord(edict_t *ent, const usercmd_t *ucmd, bool onground);
 int IG_ScoreMapLine(char *buf, size_t size, int outlen);
 bool IG_VoteMapList(edict_t *ent);
 
+// IG-41: a speedometer under the chase line (ig_hud.c).
+bool IG_ChaseSpeedOn(void);
+void IG_ChaseSpeed(const edict_t *targ, char *s, size_t size, bool osp);
+
 // IG-22: the end-of-match map vote (ig_endvote.c).
 void IG_EndVoteFrame(void);
 bool IG_EndVoteCommand(edict_t *ent, const char *cmd);

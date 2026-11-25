@@ -312,7 +312,7 @@ BOT_SRC = \
 # src/ig/ -- the instagib fork's own code (IG-SPECS.md).  Appended last so
 # a rebase onto upstream touches nothing above.  // IG:
 IG_SRC = \
-	ig/ig_main.c ig/ig_stats.c ig/ig_bot.c ig/ig_menu.c ig/ig_endvote.c ig/ig_rail.c ig/ig_route.c ig/ig_hook.c
+	ig/ig_main.c ig/ig_stats.c ig/ig_bot.c ig/ig_menu.c ig/ig_endvote.c ig/ig_rail.c ig/ig_route.c ig/ig_hook.c ig/ig_hud.c
 
 GAME_SRC = \
 	g_ai.c g_chase.c g_cmds.c g_combat.c g_func.c g_items.c g_main.c \
