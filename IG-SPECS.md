@@ -866,6 +866,21 @@ behaviour), so the roster as a whole hooks somewhat more.
   (-880, 973) in 6 q2rdm11 matches. These pads push straight up with no landing of their own; bspc
   made no reachability through them (the twin is the pad bots got stuck bouncing on, IG-42). Next:
   pad reachabilities for vertical pads (apex -> floors reachable by air control or a hook).
+- **Billy's line, drilled** (IG-43 pad drill route mode: `ig_paddrillstart 1418_738_96_0
+  ig_paddrillgoal -963_1087_280 ig_paddrillreach 4060 ig_paddrillvia 300_1110_344`, one bot, peace).
+  Billy, watching: "I was hoping to have just the one grapple and strafe jumping used to keep
+  momentum ... the grapple as the start to the speed". Found and fixed (libvars, default on):
+  `ig_planplainlandhop` -- the landing-hop option pressed jump only after a hook's let-go, so on a
+  plain flight it was "run" and the bot landed flat; `ig_planpadover` -- a pad's flight ends at its
+  first landing (a landing hopped at once kept the stock pad travel "finishing", the next hop was
+  flown in pad mode, no landing hop: 808 -> 396 u/s); `ig_planlandhopbonus` 0.25 -- in the air at
+  400+ u/s the landing hop is the habit; `ig_planfasthook` (`ig_planfasthookdiv` 150) -- above 450
+  u/s a hook's price grows with speed. Drill (2 x 5 min): median 7.1 -> 6.2 s (best 5.0; Billy ~5.5),
+  walkway average 497 -> 583 u/s (Billy 706), extra hooks after the pad's 2.3 -> 1.5 a try, fast
+  landings hopped 79%. The extra hooks now come after speed is lost (98 of 126 at 200-600 u/s),
+  mostly where a hop comes down on the face of the walkway's raised step (x ~590: 790 -> 255 u/s);
+  Billy's hops land on top of it. Steeper hook prices changed nothing. 28 maps x 2 (all four vs
+  none): everything level (334.6 vs 333.5 u/s, frags 4.84 vs 4.81, hooks 14.5 vs 14.2/min).
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
