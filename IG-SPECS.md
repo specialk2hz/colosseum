@@ -757,7 +757,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   wish on the ground, the strafe-jump angle toward the route in the air, the jump pressed while coming
   down, the game's `ig_botjumpland` hold) and costed: time + the navigation's travel time from where it
   ends - 0.35 s per 300 u/s carried along the route + 0.15 s per hard wall hit + a hook price
-  (`ig_planhookcost`, 0.3 s at affinity 0.55, scaled by the bot's hook affinity). Lava or slime touched,
+  (`ig_planhookcost`, 0.5 s at affinity 0.55 since v1.3, was 0.3, scaled by the bot's hook affinity). Lava or slime touched,
   or a pit or lava under where it comes down: out. A pick among those within 0.06 s of the best, hooks
   weighted by affinity; the option under way is favoured by 0.04 s. Steps back for anything the
   navigation does itself (ladders, lifts, climb routes, pads), and keeps for now: the jump-pad hooks
@@ -816,6 +816,12 @@ behaviour), so the roster as a whole hooks somewhat more.
   to hit), upper level -4 points. Head to head (`ig_pfodd 1`: odd clients on it, 28 maps x 4, 6 bots):
   K/D 0.99 vs 1.00 stock, pit falls 0.11 vs 0.29 a bot, 6% fewer fights. Even, slower-paced, worse
   positioned: left off until it values position (high ground, cover) better.
+- **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
+  taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
+  8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
+  (`ig_planhookpick 0`) changed nothing. 28 maps at 0.5: hooks 14.8/min, slingshots 5.8/bot/min (old
+  code 5.1), 326 u/s (no planner 309), frags 4.58, suicides 0.05. At 0.8: 12.5 hooks/min, 318 u/s.
+  Per map and per style later, from Billy's recordings.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
