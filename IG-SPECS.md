@@ -1084,6 +1084,12 @@ behaviour), so the roster as a whole hooks somewhat more.
   previously didnt"; with the view only (`ig_planpadair 0`): "jump pads look a lot better". The bench had shown no
   loss (hook-free flights landing within 160 units: old 84%, both 88%, view only 86%, 12 seeds), so the miss is
   one the bench does not count. IG_PlanPadAir stays in the code, default 0; the stock steering is back.
+- **Look-ahead fix (2026-11-26):** IGX_LookAhead filled its route points with `VectorCopy(r.start, pts[n++])`;
+  VectorCopy is a macro that evaluates its target three times, so n moved 3 per copy, x/y/z landed in different
+  points and the writes ran past pts[16]. FreeBSD's stack protector aborted the server the first time a bot planned
+  (Billy's own build); on Linux the look-ahead silently read bad points. Fixed (separate n++); no other Vector* call
+  in game_q3/, botlib/ or the game side has a side effect in an argument. 28 maps x 3 seeds, trials on: time over
+  400 u/s 19.8 -> 21.0% (significant), units/s 325.6 -> 328.0, frags, suicides, hooks level.
 
 ## IG-46: `ig_botgapjumps` -- routes that jump gaps (off); `ig_botroutemomentum` (WIP, off)
 
