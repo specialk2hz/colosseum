@@ -1068,7 +1068,9 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Measured:** q2dm1 + q2dm1pro, 4 bots, fights on, 6 seeds, off vs on: bot time in the pool room
   (x -100..720, y -140..330) 7.4 -> 4.0% and 10.7 -> 7.9%; time in water 5.1 -> 2.5% and 7.0 -> 4.5%;
   water entries per bot-minute 0.55 -> 0.36 and 0.84 -> 0.61. Frags, accuracy, hooks, speed and
-  upper-level time within noise. Not yet measured on the other maps.
+  upper-level time within noise. 28 maps x 2 seeds, 5 bots, off vs on: every pooled figure level (frags
+  4.48 vs 4.43, 338 vs 337 u/s, slingshots 5.49 vs 5.55, crowded 31.8 vs 31.1%); per-map flags with 2
+  seeds go both ways (semper06 frags -0.8, alkdm15 +0.4, fragile crowded -17 pts), read as noise.
 - **Tested:** on 27913 (Billy, from 2026-11-26).
 
 ## IG-43: `ig_botpadreach` -- routes through straight-up jump pads (off)
