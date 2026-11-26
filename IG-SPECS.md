@@ -927,6 +927,16 @@ behaviour), so the roster as a whole hooks somewhat more.
   ~60 u/s slower. A corner check on the hop habit (`ig_planturnhop`: no habit hop when the route
   turns more than N degrees within a hop's reach): 70 -> wall hits 10.4, hops 54%, 324 u/s; 100
   (default) 11.5 / 57% / 332; off 11.9 / 58% / 333.
+  Billy's 55 turns matched with bot passes (q2rdm11, peace, 6 x 10 min, same spot and headings in/out):
+  per turn Billy in 394 / low 288 / out 385 u/s, ground 33%, wall hits 0.05; bots 402 / 234 / 388, 35%,
+  0.23 -- close, except the corners the bots enter far faster (U-turn 477 1616: 726 vs 432; 1674 883:
+  630 vs 148) and hit. Two thirds of the bots' air wall hits come within 1.5 s of a hook let-go,
+  mostly at 700+ u/s: slingshots into corners. A heavier wall penalty everywhere (`ig_planwallmul`
+  2/4) makes bots cautious all round (hops 56 -> 53/48%, 330 -> 321/314 u/s); only after a let-go
+  (`ig_planreleasewallmul`, default 3): roaming 4 maps x 2 -- air wall hits 11.5 -> 7.6/bot-min
+  (Billy 3-6), slingshots 16.8 -> 12.8/bot-min, 330 -> 319 u/s, hops 56 -> 49%. 28 maps x 2 with
+  fights: slingshots 5.27 -> 3.82/bot/min and hooks 14.5 -> 12.8/min (both intervals exclude 0),
+  330 vs 335 u/s, frags 4.71 vs 4.79 (noise). For Billy to judge on 27913.
 - **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
   taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
