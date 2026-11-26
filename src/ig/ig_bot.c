@@ -66,6 +66,7 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_funcwall", gi.cvar("ig_botfuncwall", "0", 0)->value ? "1" : "0");   // IG-35
     lib->funcs.BotLibVarSet("ig_padbounce", gi.cvar("ig_botpadbounce", "0", 0)->value ? "1" : "0");   // IG-42
     lib->funcs.BotLibVarSet("ig_roamgoal", gi.cvar("ig_botroamgoal", "0", 0)->value ? "1" : "0");   // IG-44
+    lib->funcs.BotLibVarSet("ig_routemomentum", gi.cvar("ig_botroutemomentum", "0", 0)->value ? "1" : "0");   // IG-46, read at map load
     lib->funcs.BotLibVarSet("ig_padreach", use && gi.cvar("ig_botpadreach", "0", 0)->value ? "1" : "0");   // IG-43, read at map load
     lib->funcs.BotLibVarSet("ig_paddrill", gi.cvar("ig_paddrill", "0", 0)->string);   // IG-43: the pad drill (a testing aid)
     // IG-37: the climb drill (a testing aid): mode, tries per route, aim, pause, and the point for mode 2
