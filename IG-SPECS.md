@@ -54,6 +54,7 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | stopped | neutral; replaced by the planner (IG-40) |
+| 44 | `ig_botroamgoal` | fair random roam goal: floor spots weighted by size, no water | D | trial | q2dm1/q2dm1pro 6 seeds: pool room time 7.4 -> 4.0% / 10.7 -> 7.9%, in water 5.1 -> 2.5% / 7.0 -> 4.5%; frags, speed, hooks unchanged |
 | 43 | `ig_botpadreach` | routes through straight-up jump pads, taken with a hook from the top | B | trial | q2rdm11: 15 routes; drill: far floors 0/54 -> 54/66 with the pad top; 28 maps level, q2rdm11 +10 u/s, upper +4.8 pts |
 | 42 | `ig_botpadbounce` | steer off a pad that bounces a bot straight up (bot frozen forever) | B | trial | q2rdm11 6 bots x 8 matches: bots frozen 2+ s 4 -> 0; other stats unchanged |
 | 41 | `ig_chasespeed` | chase-camera speedometer under the chase line | M | trial | -- |
@@ -1047,6 +1048,28 @@ behaviour), so the roster as a whole hooks somewhat more.
   input 1+3 -> 0+0; the fix fired twice in 8 matches, both on that pad. Frags, speed, hooks, upper time
   unchanged (all inside the noise).
 - **Tested:** on 27913.
+
+## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
+
+- **Requirement:** `ig_botroamgoal 1` (libvar `ig_roamgoal`). With no item to fetch (instagib:
+  always) and no hunt trace (IG-7), BotChooseLTGItem falls back to AAS_RandomGoalArea; with the
+  switch on, a one-line hook there calls IG_RandomGoalArea (botlib/be_ig_roamgoal.c) instead. Once
+  per map it lists the floor areas -- reachable, ground face over 300, the trace down from the centre
+  lands in the area, no water, lava, slime or do-not-enter -- each weighted by its floor size, so a
+  goal is a uniform spot on the map's floor. Each call picks among those reachable from the bot,
+  at least 256 units away, with a travel time (8 tries). AAS_MarkReachableAreas lost its `static`
+  for it. Debug: libvar `ig_roamgoaldebug` prints the list size at build.
+- **Why:** Billy, 2026-11-26, q2dm1/q2dm1pro: "we end up with everyone in that room or in the water
+  too often". Stock picks a random area index and takes the first acceptable area from there,
+  accepting any swimming area outright while a floor area must pass the ground check -- so the pool
+  is a goal far more often than its size, and an area just after a long run of rejected ones is
+  favoured. The same water time with stock bots (planner off, or no IG switches at all) showed it was
+  the goal, not the movement.
+- **Measured:** q2dm1 + q2dm1pro, 4 bots, fights on, 6 seeds, off vs on: bot time in the pool room
+  (x -100..720, y -140..330) 7.4 -> 4.0% and 10.7 -> 7.9%; time in water 5.1 -> 2.5% and 7.0 -> 4.5%;
+  water entries per bot-minute 0.55 -> 0.36 and 0.84 -> 0.61. Frags, accuracy, hooks, speed and
+  upper-level time within noise. Not yet measured on the other maps.
+- **Tested:** on 27913 (Billy, from 2026-11-26).
 
 ## IG-43: `ig_botpadreach` -- routes through straight-up jump pads (off)
 
