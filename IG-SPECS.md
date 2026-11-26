@@ -1057,6 +1057,15 @@ behaviour), so the roster as a whole hooks somewhat more.
   0.5 cuts fight hooks 4.88 -> 3.01 a bot-minute, all hooks 12.8 -> 11.1, frags, accuracy, speed level (on 27913);
   a quarter (0.1 / 6 s / 0.1 / 0.25) 1.75 a minute but -13 u/s.
 
+- **Fight style tried, dropped (2026-11-26).** Billy (27913 logs with bots recorded, 377 shots) vs bots, 2 s around a
+  shot: speed 283 vs 286, airborne 33 vs 52%, back key 8 vs 28%, strafe flips 1.1 vs 2.3 a second -- but on the
+  ground only the flips are level (most bot flips are the air strafe swapping sides per hop), and by body motion
+  near an enemy he and they move alike (moving frames: toward 38 vs 41%, across 38 vs 35%, away 24 vs 24%; range
+  ~500 vs ~450). 97% of bot shots come from the Battle_Fight node. A replacement for BotAttackMove (strafes held
+  0.6-1.3 s, a stance range kept by circling, jumps only when moving) left those figures level and cost frags
+  4.11 -> 3.60 and rail accuracy 23.9 -> 20.4% (6 maps x 2): removed (source kept out of tree). Remaining real
+  gaps: airborne when shooting (35 vs 53%), view on the travel direction (58 vs 49% of moving frames).
+
 ## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
 
 - **Requirement:** `ig_botroamgoal 1` (libvar `ig_roamgoal`). With no item to fetch (instagib:
