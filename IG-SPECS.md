@@ -1066,7 +1066,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   4.11 -> 3.60 and rail accuracy 23.9 -> 20.4% (6 maps x 2): removed (source kept out of tree). Remaining real
   gaps: airborne when shooting (35 vs 53%), view on the travel direction (58 vs 49% of moving frames).
 
-- **Pad flights: view and air control (2026-11-26, libvars `ig_planpadview` and `ig_planpadair`, default 1,
+- **Pad flights: view and air control (2026-11-26, libvars `ig_planpadview` default 1 and `ig_planpadair` default 0,
   with the planner).** Billy on 27913, q2rdm11's twin pads in the big room: "they look like they're spinning ...
   they should be facing the direction they want to land unless they are trying to do a trick or shoot someone",
   and "not bouncing to the optimal spot". In a pad flight the planner did not steer, so the view fell to the roam
@@ -1079,6 +1079,10 @@ behaviour), so the roster as a whole hooks somewhat more.
   bots, 16 seeds, off vs on: twin-pad flights landing up on the ledge 56 -> 76% (24/43 vs 19/25); view vs
   travel 49 -> 26 deg (flights with no hook: 49 -> 10 deg). Still: the view turns ~150 deg/s on hook-free
   flights (the turn at the launch). On 27913.
+  **Air control dropped (2026-11-26):** Billy, with both on: "still seeing bots miss the landing spot when they
+  previously didnt"; with the view only (`ig_planpadair 0`): "jump pads look a lot better". The bench had shown no
+  loss (hook-free flights landing within 160 units: old 84%, both 88%, view only 86%, 12 seeds), so the miss is
+  one the bench does not count. IG_PlanPadAir stays in the code, default 0; the stock steering is back.
 
 ## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
 
