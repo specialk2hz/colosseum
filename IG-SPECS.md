@@ -1049,6 +1049,14 @@ behaviour), so the roster as a whole hooks somewhat more.
   unchanged (all inside the noise).
 - **Tested:** on 27913.
 
+- **Fight hooks halved (2026-11-26, IG-40 tuning).** Billy on 27913: bots grapple the walls too much, "its being
+  overused". His hooks (919 recorded): short taps, anchor 327 units away and 28 below; 34% anchored 64+ above him.
+  Bots' (860): anchor 557 away, 81 above; fight hooks (incl. repositions) were 35% of them, 80% high on walls.
+  New libvars (defaults = old constants): `ig_fighthookchance` 0.5, `ig_fighthookidle` 0.03, `ig_fighthookcooldown`
+  2.5, `ig_repokill` 0.4, `ig_repomisses` 2, `ig_repomisschance` 1. 6 maps x 3 seeds, fights: 0.25 / 4 s / 0.2 /
+  0.5 cuts fight hooks 4.88 -> 3.01 a bot-minute, all hooks 12.8 -> 11.1, frags, accuracy, speed level (on 27913);
+  a quarter (0.1 / 6 s / 0.1 / 0.25) 1.75 a minute but -13 u/s.
+
 ## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
 
 - **Requirement:** `ig_botroamgoal 1` (libvar `ig_roamgoal`). With no item to fetch (instagib:
