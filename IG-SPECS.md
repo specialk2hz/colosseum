@@ -54,6 +54,8 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | trial | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | stopped | neutral; replaced by the planner (IG-40) |
+| 46 | `ig_botgapjumps` (+ `ig_botroutemomentum`, WIP) | routes jump gaps: bspc's gap jumps priced at their flight, missing ones added | B | trial | q2rdm11 pad-to-walkway drill 4/144 -> 165/165 finished; route from the pad landing 9.5 -> 3.3 s; 28 maps x 4: everything level |
+| 46 | `ig_botgapjumps` (+ `ig_botroutemomentum`, WIP) | routes jump gaps: bspc's gap jumps priced at their flight, missing ones added | B | trial | q2rdm11 pad-to-walkway drill 4/144 -> 165/165 finished; route from the pad landing 9.5 -> 3.3 s; 28 maps x 4: everything level |
 | 44 | `ig_botroamgoal` | fair random roam goal: floor spots weighted by size, no water | D | trial | q2dm1/q2dm1pro 6 seeds: pool room time 7.4 -> 4.0% / 10.7 -> 7.9%, in water 5.1 -> 2.5% / 7.0 -> 4.5%; frags, speed, hooks unchanged |
 | 43 | `ig_botpadreach` | routes through straight-up jump pads, taken with a hook from the top | B | trial | q2rdm11: 15 routes; drill: far floors 0/54 -> 54/66 with the pad top; 28 maps level, q2rdm11 +10 u/s, upper +4.8 pts |
 | 42 | `ig_botpadbounce` | steer off a pad that bounces a bot straight up (bot frozen forever) | B | trial | q2rdm11 6 bots x 8 matches: bots frozen 2+ s 4 -> 0; other stats unchanged |
@@ -1083,6 +1085,56 @@ behaviour), so the roster as a whole hooks somewhat more.
   previously didnt"; with the view only (`ig_planpadair 0`): "jump pads look a lot better". The bench had shown no
   loss (hook-free flights landing within 160 units: old 84%, both 88%, view only 86%, 12 seeds), so the miss is
   one the bench does not count. IG_PlanPadAir stays in the code, default 0; the stock steering is back.
+
+## IG-46: `ig_botgapjumps` -- routes that jump gaps (off); `ig_botroutemomentum` (WIP, off)
+
+- **Requirement:** `ig_botgapjumps 1` (libvar `ig_gapjumps`, read at map load; IG_GapJumpsAtLoad in
+  botlib/be_ig_jump.c, after IG-43's pad routes). (1) **Reprice** (`ig_gapjumpreprice`, default 1):
+  every bspc TRAVEL_JUMP that is level (within 48 units of height, 32+ across) over a floor -- not
+  lava, slime or nothing -- and whose flight (AAS box, 300-400 u/s, the jump velocity) lands in its
+  area costs flight + `ig_gapjumpprice` 0.3 s when that is cheaper than bspc's price. (2) **Add**:
+  from each grounded area's centre, 16 directions to the floor's edge, a floor at the same height
+  40-`ig_gapjumpmax` 260 units on, same cluster, no route between the two areas yet, the same floor
+  test and flight: a TRAVEL_JUMP route, the narrowest per pair of areas, appended as IG-43's are (no
+  route number changes). Debug: `ig_gapjumpdebug 1` lists both; 2/3 with `ig_gapjumpwatchx/y` print
+  every rejected edge and area near a point. `ig_botroutemomentum` (be_ig_route.c, x0.6 the walking
+  time of a straight crossing up to 20 degrees of turn, unchanged from 70) is built but not measured.
+- **Why:** Billy (2026-11-25): bots should find fast lines like his q2rdm11 pad-and-walkway route
+  themselves ("that sort of optimization is what I would love to see done automatically"). The route
+  from the pad's landing went down into the pit and up the teleporter because bspc priced the
+  walkway's two gaps (x 1072-1232, y 1091 and y 408-432) at 7.28 s and 37.28 s; the only crossings
+  bots made were improvised hooks and fast strafe hops (Billy 2026-11-26).
+- **Measured:** q2rdm11: 19 jumps repriced (both walkway gaps 7.28 s -> 1.0 s), 7 added; route from
+  the pad landing (area 141) 9.47 -> 3.28 s. Pad-to-walkway drill (`ig_paddrill`, start 1418 738 96,
+  pad reach 4060, goal -963 1087 280, one bot, peace, 6 seeds): off 4/144 finished (the rest timed
+  out), on 165/165, median 10.3 s from the drill start (Billy's line 5-6 s: the next gap). q2rdm11 5
+  bots x 12 seeds fighting: all level (upper +1.2 pts, in the noise). 28 maps x 4 seeds: everything
+  level, no map changed significantly. Added per map: 0-21; repriced: 1-60. On 27913 from 2026-11-26.
+
+## IG-46: `ig_botgapjumps` -- routes that jump gaps (off); `ig_botroutemomentum` (WIP, off)
+
+- **Requirement:** `ig_botgapjumps 1` (libvar `ig_gapjumps`, read at map load; IG_GapJumpsAtLoad in
+  botlib/be_ig_jump.c, after IG-43's pad routes). (1) **Reprice** (`ig_gapjumpreprice`, default 1):
+  every bspc TRAVEL_JUMP that is level (within 48 units of height, 32+ across) over a floor -- not
+  lava, slime or nothing -- and whose flight (AAS box, 300-400 u/s, the jump velocity) lands in its
+  area costs flight + `ig_gapjumpprice` 0.3 s when that is cheaper than bspc's price. (2) **Add**:
+  from each grounded area's centre, 16 directions to the floor's edge, a floor at the same height
+  40-`ig_gapjumpmax` 260 units on, same cluster, no route between the two areas yet, the same floor
+  test and flight: a TRAVEL_JUMP route, the narrowest per pair of areas, appended as IG-43's are (no
+  route number changes). Debug: `ig_gapjumpdebug 1` lists both; 2/3 with `ig_gapjumpwatchx/y` print
+  every rejected edge and area near a point. `ig_botroutemomentum` (be_ig_route.c, x0.6 the walking
+  time of a straight crossing up to 20 degrees of turn, unchanged from 70) is built but not measured.
+- **Why:** Billy (2026-11-25): bots should find fast lines like his q2rdm11 pad-and-walkway route
+  themselves ("that sort of optimization is what I would love to see done automatically"). The route
+  from the pad's landing went down into the pit and up the teleporter because bspc priced the
+  walkway's two gaps (x 1072-1232, y 1091 and y 408-432) at 7.28 s and 37.28 s; the only crossings
+  bots made were improvised hooks and fast strafe hops (Billy 2026-11-26).
+- **Measured:** q2rdm11: 19 jumps repriced (both walkway gaps 7.28 s -> 1.0 s), 7 added; route from
+  the pad landing (area 141) 9.47 -> 3.28 s. Pad-to-walkway drill (`ig_paddrill`, start 1418 738 96,
+  pad reach 4060, goal -963 1087 280, one bot, peace, 6 seeds): off 4/144 finished (the rest timed
+  out), on 165/165, median 10.3 s from the drill start (Billy's line 5-6 s: the next gap). q2rdm11 5
+  bots x 12 seeds fighting: all level (upper +1.2 pts, in the noise). 28 maps x 4 seeds: everything
+  level, no map changed significantly. Added per map: 0-21; repriced: 1-60. On 27913 from 2026-11-26.
 
 ## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
 
