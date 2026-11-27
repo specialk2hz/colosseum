@@ -112,6 +112,8 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_plan", plan ? "1" : "0");   // with or without the hook: no hook, no hook options (bot_grapple)
     // ...which simulates the game's half of strafe chains (IG-31): the landing hop, folded into ig_botplan
     lib->funcs.BotLibVarSet("ig_jumpland", plan ? "1" : "0");
+    // IG-48 (trial): climbs as planner moves, with the hook
+    lib->funcs.BotLibVarSet("ig_planclimb", use && plan && gi.cvar("ig_botplanclimb", "0", 0)->value ? "1" : "0");
     lib->funcs.BotLibVarSet("ig_hookstyle", IG_HookType() == IG_HOOK_LMCTF ? "1" : "0");  // IG-40: the pull the planner simulates
     lib->funcs.BotLibVarSet("ig_slingup", IG_HookType() == IG_HOOK_LMCTF ? "100" : "0");   // IG-34: LMCTF slings hook up
     // the server's hook_sky, for the lava escape (IG-9)
