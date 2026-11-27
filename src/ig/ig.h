@@ -52,9 +52,6 @@ bool IG_NoFallFx(edict_t *ent);
 void IG_RailSplash(edict_t *self, const trace_t *tr);
 
 // IG-26: bots replay recorded routes (ig_route.c).
-bool IG_RouteInput(edict_t *bot, usercmd_t *ucmd);
-void IG_RouteAfter(edict_t *bot);
-bool IG_RouteBlocksCommand(edict_t *bot);
 // the OSP hook commands the Q3 brain is given (ig_bot.c)
 #define IG_HOOKON   "hook"
 #define IG_HOOKOFF  "unhook"
@@ -81,7 +78,6 @@ int  IG_HookVoteNext(int state);
 const char *IG_HookVoteLabel(int state);
 bool IG_HookVoteArg(edict_t *ent, char **arg);
 void IG_HookVoteApply(const char *value);
-bool IG_BotHookCommand(const char *cmd);
 
 // IG-30: a bot stuck in solid or in one spot goes back to a spawn point (ig_bot.c).
 void IG_BotUnstuck(edict_t *ent, const usercmd_t *ucmd);

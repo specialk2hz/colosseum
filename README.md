@@ -438,28 +438,23 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 | `ig_bothook` | Quake III bots use the offhand hook on climb routes; the master switch for every hook feature below (needs the OSP hook enabled) | 6 |
 | `ig_botroam` | Bots with nothing to pick up hunt where they last saw or heard an enemy, or take high ground, instead of wandering at random | 7 |
 | `ig_botrevenge` | A bot killed twice by the same player hunts them for a while | 8 |
-| `ig_botsling` | Slingshots: jump, hook the floor or a far wall ahead, let go quickly, hop, chain | 9 |
 | `ig_botfighthook` | Hooks mid-fight, and a reposition after a kill or two misses | 10 |
 | `ig_botpadhook` | Hook into a jump pad and let go just before it; a short hook toward the landing at the end of the arc | 13 |
 | `ig_botstrafehack` | Bots land like Q2PRO clients (no post-landing jump lock) | 14 |
 | `ig_moverec` | Logs a player's movement (`2`: bots too), for copying it into the bots | 15 |
-| `ig_botpullhop` | Hop off the floor while a slingshot pulls, so friction doesn't eat the pull | 17 |
 | `ig_scoremap` | The OSP scoreboard shows the map's file name | 18 |
 | `ig_votemaplist` | The vote menu's Map row opens a list to pick from | 19 |
-| `ig_botstairhook` | Hook a stairwell's wall to slingshot up it, some of the time | 20 |
 | `ig_botaffinity` | Each bot's hook affinity (character trait 49, or worked out from its personality) decides how much it grapples | 21 |
 | `ig_endvote` | When a match ends, players vote for the next map from a menu (`ig_endvotemaps` maps, default 4: the rotation's pick plus random ones from the mode's map list; `ig_endvotetime` seconds, default 15, or until everyone has voted). Console: `mapvote [n]` | 22 |
 | `ig_menufast` | OSP menus redraw on the key press instead of 0.2 s after the last one | 23 |
 | `ig_nofallfx` | With falling damage off (dmflags 8), a hard landing has no view dip or grunt either | 24 |
 | `ig_railsplash` | Rail jumping: a slug hitting a wall or floor pushes players away from the impact, no damage (`1` the shooter, `2` everyone; `ig_railsplash_kick` 900, `ig_railsplash_radius` 120) | 25 |
-| `ig_botroutes` | Bots sometimes replay a person's recorded route (`q3bot/maps/<map>.route`, made with the server repo's `tools/route-extract.py`), only on the hook style it was recorded with; lets go of a hook that stalls; experimental | 26 |
 | `ig_botpeace` | Bots pick no enemies and hunt nobody, they only move: for watching their movement | 27 |
 | `ig_botwalkway` | Near lava, slingshots and chains stay on the walkway instead of flying off its edge | 29 |
 | `ig_botunstuck` | A bot stuck inside something solid (q2dm1pro's lift) or in one spot for 10 s goes back to a spawn point, frags untouched | 30 |
 | `hook_type lmctf`, `ig_hookvote "osp lmctf"` | Hook styles: LMCTF 6.0's hook (800 u/s, gravity while pulled, glide-in, no sky, its model, cable and sounds) beside OSP's; the vote menu's hook row picks Disabled / OSP / LMCTF. Bots use it too (they get the live hook speeds; within 13 u/s of what LMCTF's speed allows). Needs lmctf-hook.pak in the gamedir | 34 |
 | `ig_drill` | Testing aid: one bot drills every hook-climb route (or one, over and over) and logs each try | 37 |
 | `ig_lavarescue` | Lava, slime and pits put you back at a spawn point instead of killing you: no frag lost (Corkscrew's pit-fall recovery) | 33 |
-| `ig_botarcsafe` | Work in progress: before letting go of a hook or hopping, the bot checks where the flight ends and holds on rather than land in lava or a pit | 39 |
 | `ig_chasespeed` | A speedometer for chase cameras: the chased player's speed in small text under the "Chasing" line | 41 |
 | `ig_botplan` | The bots' movement layer. Each think a bot tries a few moves a second ahead in Quake II's own movement (run, strafe-hop, slingshot to several anchors, climb, let go) and picks among the best. With it come strafe-jump chains that plan ahead and hop every landing, hook climbs that land in the middle and let go over the ledge, slingshots as often as the bot's hook affinity, pad slingshots, no circling on item pads and no bouncing forever on a jump pad (IG-28, 31, 32, 35, 36, 38, 42 folded in, ig-0.5). Without the hook it still strafe-jumps | 40 |
 | `ig_botnav` | The bots' map knowledge: they jump gaps instead of detouring round them, take the jump pads that throw you straight up with a hook from the top, and roam to fair spots on the floor instead of the water (IG-43, 44, 46 folded in, ig-0.5). Takes effect on the next map | 46 |
