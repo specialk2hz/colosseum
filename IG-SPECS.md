@@ -1187,6 +1187,11 @@ behaviour), so the roster as a whole hooks somewhat more.
   from a standstill 71 -> 15%, speed at the fire 0 -> 285 u/s, landing up top 54 -> 53% (~280 -> ~390 climbs).
   28 maps x 4: all level, slingshots/bot/min +0.9 (the climbs). LMCTF's hook, 28 maps: hooks that climbed 38.9 ->
   36.2% (significant), so off with it for now.
+- **Stall fix (2026-11-27):** Billy saw a bot (Grunt) sit in the twin-pad room before falling back to a stop-and-hook
+  climb: the stock travel stood down whenever the planner had seen the climb, also on thinks the planner did not move
+  the bot, and the give-up clock restarted when the route flipped between two climbs. Now the planner owns a climb
+  only on a think it moves the bot, and one give-up stretch covers every climb inside it. 4 maps x 4: stalls (1.5 s+
+  standing) 79 -> 34 (stock 43), fired from a standstill 26% (stock 71%), climbs landing up top unchanged at 53%.
 
 ## IG-47: `ig_botfastjumps` -- momentum jumps and the lip slingshot (trial)
 
