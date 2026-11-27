@@ -1243,6 +1243,17 @@ behaviour), so the roster as a whole hooks somewhat more.
   goal in front of the doorway (-976 330) the route-line lip slingshot lands centred on its own: median x -1007, 52% in
   line with the opening, 2.70 s from the spawn. A doorway search with steering to a landing on the doorway's axis
   (`ig_fastjumpdoor`, `ig_fastjumpdoorsteer`) added nothing there (57%, 2.75 s, more missed hooks): kept, off.
+- **Billy's lip slingshot, measured (2026-11-28, `work/hook-live/billy-ztn2dm3-gap-and-stairs-2026-11-28.log`):** his
+  fastest runs (start to doorway 1.34-1.58 s, against 1.92-2.05 down the stairs): running west along the ledge he
+  fires in the air at ~350 u/s, 17.6 deg down at the lip ~220 units ahead, holds 1 frame, lets go 130 short of the
+  anchor at 943 u/s, and the line carries him over the gap and through the doorway. The bots let go of 40% of their
+  lip hooks before the bite (replanning while the hook flew). Now: lip anchors from 14 deg down, a one-think let-go
+  option for lip anchors, and a fired hook of ours is held until it bites (`ig_planhookcommit` 0.4 s; every hook,
+  not only the lip's, unless every hold is bad). ztn2dm3 drill: hooks that hit nothing 66 -> 26, lip floor
+  slingshots 91 -> 151, best from x -330 to the doorway 2.45 -> 1.15 s (Billy 1.03); let-go ~800 u/s (Billy 943).
+  28 maps x 4: +5.2 u/s (significant, the commit), the rest level. Variety (Billy: "50/50 lip grapple and strafe
+  jumping stairs"): every `ig_fastjumproll` 8 s a bot rolls whether it takes momentum jumps, at
+  `ig_fastjumpchance` 0.5 -- the drill 59% jump / 40% stairs (stairs 2.05 s, Billy 1.95).
 
 ## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
 
