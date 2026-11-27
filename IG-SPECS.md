@@ -1226,6 +1226,18 @@ behaviour), so the roster as a whole hooks somewhat more.
   lip slingshots 0.2 -> 0.88/try, far-wall pulls 1.5 -> 0.24/try, 77% clean, median 1.4 s. 28 maps x 4
   fighting: level, no map significant; taken 0.02/bot-min in fights (bots seldom meet one fast) -- the next
   step is speed-aware routing (measured link times). No grapple (28 maps): no change.
+- **Lip slingshot along the route (2026-11-28):** Billy (ztn2dm3): the lip grapple "should be aimed to center the bot
+  in the doorway ... the doorway is at the end of the intended line ... the lip grapple boosts you over the gap and
+  into the next room via a doorway", and in general "how can the lip grapple slingshot get the bot faster along the
+  route". Before a momentum jump the planner now proposes lip slingshots (his steep floor hooks 20-32 down, low ceiling
+  hooks 10-18 up, short of the edge) along two lines: to the doorway at the end of the jump's line (IGX_Doorway: the
+  narrowest opening, walls either side within 192, from the landing to `ig_fastjumpdoor` 320 past it) and to the
+  route's farthest straight point past the landing; the sim picks the faster, the yaw fan stays as the fallback. (Aimed
+  at the lip's very edge the hook grazed past: 134 of 189 fired at nothing.) ztn2dm3 spawn drill (goal: the landing):
+  lip floor slingshots 92 -> 241 of the bot's hooks, far-wall pulls 22 -> 3, spawn to landing 1.30 -> 1.20 s; from the
+  spawn the line to the far doorway crosses the ledge's edge at x -519 (Billy, who first moves west along the ledge,
+  -585..-618). Note: with the goal in the doorway room the route takes the stairs (no faster at a run) -- speed-aware
+  routing again. 28 maps x 4 with IG-47 and IG-48 on: all level, slingshots/bot/min +0.7.
 
 ## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
 
