@@ -599,6 +599,14 @@ behaviour), so the roster as a whole hooks somewhat more.
   and everything else unchanged. Bit 1: standstill fires 74 -> 6%, landings unchanged at 3 degrees (66%
   at an 8-degree tolerance: the hook landed ~40 units off the anchor), but a third fewer climbs and
   -7.6 u/s (a bot that runs past the start before its aim lines up loses the route). On 27913: 2.
+- **Run-in retry (2026-11-27, bit 1 still off):** Billy: bots "completely stop moving and grapple and pull to move
+  when a seasoned player would be moving in the direction that they want to grapple", and with a slow hook (LMCTF)
+  he prefires. Bit 1 now: a run-in window from up to 200 units before the start (the run during the hook's flight:
+  speed x anchor distance / `ig_hookfly`) to 160 past it along the line to the anchor, the route kept inside it,
+  full speed only once the aim is within 15 degrees, and running on toward the anchor while the hook flies. 4 maps x
+  4 seeds fighting: OSP standstill fires 71 -> 30%, speed at the fire 0 -> 222, but climbs landing up top ~280 ->
+  ~170, -12 u/s, upper -3 pts; LMCTF alike. The stock grapple travel aborts and avoids a climb whenever the run-in
+  strays from its start: the fix is a climb option in the planner (BOT-TRICKS T9).
 
 ## IG-33: `ig_lavarescue` -- lava, slime and pits put you back at a spawn point (off)
 
