@@ -89,6 +89,7 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | folded: ig_botplan | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | retired, removed in ig-0.5 | neutral; replaced by the planner (IG-40) |
+| 49 | `ig_links` (libvar, experiment) | measured link times: bots' own area-to-area times priced into the routing | -- | WIP (off) | 28 maps: per-route pricing frags -0.35/min, -8 u/s; per-area speed factors level, no gain; momentum jumps not more often |
 | 48 | `ig_botplanclimb` | climbs as planner moves: fired on the run, let go by the sim | B | trial | 4 maps: standstill fires 71 -> 15%, speed at the fire 0 -> 285 u/s, climbs landing up top ~280 -> ~390; 28 maps level; LMCTF: hooks that climbed -2.7 pts, so OSP only |
 | 47 | `ig_botfastjumps` | momentum jumps: gaps cleared only with speed, offered when fast, planned from 250 u/s; Billy's lip slingshot before them | B | trial | q2rdm11 walkway end jumped 46 -> 86%; ztn2dm3 ledge: column hits 91 -> 0%, lip slingshots 0.2 -> 0.88/try; 28 maps level; taken 0.02/bot-min in fights |
 | 46 | `ig_botgapjumps` (+ `ig_botroutemomentum`, WIP) | routes jump gaps: bspc's gap jumps priced at their flight, missing ones added | B | folded: ig_botnav (momentum WIP) | q2rdm11 pad-to-walkway drill 4/144 -> 165/165 finished; route from the pad landing 9.5 -> 3.3 s; 28 maps x 4: everything level |
@@ -1177,6 +1178,24 @@ behaviour), so the roster as a whole hooks somewhat more.
   out), on 165/165, median 10.3 s from the drill start (Billy's line 5-6 s: the next gap). q2rdm11 5
   bots x 12 seeds fighting: all level (upper +1.2 pts, in the noise). 28 maps x 4 seeds: everything
   level, no map changed significantly. Added per map: 0-21; repriced: 1-60. On 27913 from 2026-11-26.
+
+## IG-49: `ig_links` -- measured link times (experiment, off)
+
+- **What:** `ig_linklog 1` logs every move a bot makes from one area into the next ("igl <from> <to> <ms>");
+  `server/tools/linktable.py` turns igbench logs into `maps/<map>.links` (header "areas <n>", then "<from> <to>
+  <median ms> <samples>"); `ig_links 1` loads it at map load (botlib/be_ig_links.c). igbench takes tables from
+  `$IGLINKS`.
+- **Why:** Billy (2026-11-28): "I dont need to train every single jump the logic should see the opportunity and
+  take it if it makes sense". In fights bots took momentum jumps 0.02 times per bot-minute; the routing prices
+  every step at walking speed.
+- **Measured** (tables from 28 maps x 6 roaming matches, ~30 000 moves each; fights 28 maps x 4 with IG-47/48):
+  pricing each measured route at its time: frags -0.35/min, -8 u/s, time to contact +0.37 s (the area a bot
+  stands in keeps the walking price while its neighbours got cheaper -- the planner's inconsistency IG-46 hit);
+  only cheaper: the same. One speed factor per area (measured / estimated, 0.3..1.5, its crossings and the walk
+  in it alike): all level (frags 4.60/4.60, +1 u/s), momentum jumps 62 -> 36. Route momentum (IG-46) on top of
+  everything: hooks -0.95/min, slingshots -0.8/bot/min. Offering momentum jumps from 380 u/s instead of 500:
+  level, jumps unchanged (62). So the routing's prices are not what keeps bots off these lines: their goals and
+  routes seldom pass them. Kept, off; the next idea is local -- see the opportunity near the bot, not in the route.
 
 ## IG-48: `ig_botplanclimb` -- climbs as planner moves (trial)
 

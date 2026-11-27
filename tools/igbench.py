@@ -95,8 +95,11 @@ def make_tree(paths, d, m, aasdir=None):
     shutil.copy(aas, os.path.join(g, 'q3bot', 'maps', m + '.aas'))
     # the files the fork keeps beside a map's .aas: its climb table (IG-36) and
     # recorded routes (IG-26), from the same folder as the .aas
-    for ext in ('.climbs', '.route'):
+    for ext in ('.climbs', '.route', '.links'):
         extra = os.path.join(os.path.dirname(aas), m + ext)
+        # IG-49: a link table may come from $IGLINKS (a folder of <map>.links) for tests
+        if ext == '.links' and os.environ.get('IGLINKS') and os.path.exists(os.path.join(os.environ['IGLINKS'], m + ext)):
+            extra = os.path.join(os.environ['IGLINKS'], m + ext)
         if os.path.exists(extra):
             shutil.copy(extra, os.path.join(g, 'q3bot', 'maps', m + ext))
     open(os.path.join(g, 'secrets.cfg'), 'w').close()
