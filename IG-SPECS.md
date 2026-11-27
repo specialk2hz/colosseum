@@ -1120,6 +1120,15 @@ behaviour), so the roster as a whole hooks somewhat more.
   previously didnt"; with the view only (`ig_planpadair 0`): "jump pads look a lot better". The bench had shown no
   loss (hook-free flights landing within 160 units: old 84%, both 88%, view only 86%, 12 seeds), so the miss is
   one the bench does not count. IG_PlanPadAir stays in the code, default 0; the stock steering is back.
+- **Pad flights everywhere (2026-11-27, libvar `ig_planpadfight` 1):** Billy: "bots are hitting the jump pads
+  but steering away from the intended landing spot causing them to miss them more than make them". The drill (a
+  clean run-up, no fight) landed q2rdm11's twin pads 100%; in fights only 56% of hook-free flights made the
+  ledge, the air steering 114 deg off the landing on the misses. Two causes: the fight node runs no travel, so the
+  stock attack dodge steered the flight; and a bot that runs over a pad on its way elsewhere steered by its own
+  route's air control toward its goal. Now every pad flight not on a pad route, in a fight or not, is steered by
+  the pad's own air control (BotAirControl) to the landing of the pad under it (IG_PadLaunchEnd: its jump-pad
+  route), the aim and shots go on, and no fight hook starts mid-flight. 16 fight matches: hook-free flights making
+  the ledge 56 -> 78%, steering off the landing on the made ones 70 -> 32 deg; 28 maps x 4: all level.
 - **Look-ahead fix (2026-11-26):** IGX_LookAhead filled its route points with `VectorCopy(r.start, pts[n++])`;
   VectorCopy is a macro that evaluates its target three times, so n moved 3 per copy, x/y/z landed in different
   points and the writes ran past pts[16]. FreeBSD's stack protector aborted the server the first time a bot planned
