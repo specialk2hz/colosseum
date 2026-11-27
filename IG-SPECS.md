@@ -1238,6 +1238,11 @@ behaviour), so the roster as a whole hooks somewhat more.
   spawn the line to the far doorway crosses the ledge's edge at x -519 (Billy, who first moves west along the ledge,
   -585..-618). Note: with the goal in the doorway room the route takes the stairs (no faster at a run) -- speed-aware
   routing again. 28 maps x 4 with IG-47 and IG-48 on: all level, slingshots/bot/min +0.7.
+  Then Billy: "it needs to land more to the right so its centered with the doorway". The landings (median x -805,
+  the doorway's centre -976) came from the drill's goal -- the jump's own landing, east of the doorway's line. With the
+  goal in front of the doorway (-976 330) the route-line lip slingshot lands centred on its own: median x -1007, 52% in
+  line with the opening, 2.70 s from the spawn. A doorway search with steering to a landing on the doorway's axis
+  (`ig_fastjumpdoor`, `ig_fastjumpdoorsteer`) added nothing there (57%, 2.75 s, more missed hooks): kept, off.
 
 ## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
 
