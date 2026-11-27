@@ -73,8 +73,8 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 20 | `ig_botstairhook` | stairwell wall hook | A | retired (ig-0.5): the planner's | |
 | 21 | `ig_botaffinity` | hook affinity per character | A | live | |
 | 22, 23 | `ig_endvote`, `ig_menufast` | end-of-match map vote, fast menus | M | live | |
-| 24 | `ig_nofallfx` | no landing dip or grunt | B | live | Billy: "feels great" |
-| 25 | `ig_railsplash` | rail jumping (shooter only) | B | approved (ig-0.5) | Billy: "seems good" |
+| 24 | `ig_nofallfx` | no landing dip or grunt | B | live | Billy: liked it |
+| 25 | `ig_railsplash` | rail jumping (shooter only) | B | approved (ig-0.5) | Billy: approved it |
 | 26 | `ig_botroutes` | replay recorded routes | -- | retired, removed in ig-0.5 | 0/12 finished; rework around hook events |
 | 27 | `ig_botpeace` | bots only move | -- | tool | |
 | 28 | `ig_botaffinitychance` | affinity = slingshot chance | B | folded: ig_botplan | spread sd 1.43 -> 1.67 |
@@ -85,7 +85,7 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 33 | `ig_lavarescue` | lava/pits respot, no frag lost | B | approved (ig-0.5) | q2rdm11 suicides 0.33 -> 0 |
 | 34 | `hook_type`, `ig_hookvote` | LMCTF hook style, vote row | server.cfg | approved (ig-0.5; vote in group A) | LMCTF bots 238 -> 287 u/s |
 | 35 | `ig_botfuncwall` | stand on func_wall pads, no circling | B | folded: ig_botplan | circling 437 -> 311 |
-| 36 | `ig_botclimbaim`, `ig_botclimbland` | climbs land in the middle; climb tables | B | folded: ig_botplan | landed 88.5 -> 91.3%, centred 44 -> 59%; Billy: "looks great" |
+| 36 | `ig_botclimbaim`, `ig_botclimbland` | climbs land in the middle; climb tables | B | folded: ig_botplan | landed 88.5 -> 91.3%, centred 44 -> 59%; Billy: approved it |
 | 37 | `ig_drill` | climb drill | -- | tool | |
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | folded: ig_botplan | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | B | retired, removed in ig-0.5 | neutral; replaced by the planner (IG-40) |
@@ -250,8 +250,7 @@ Config-only change, not an IG switch: `allow_railgun 0` in instagib.cfg (no rail
 - **Requirement:** after a kill (40% of the time) or after two misses in a row (a shot with no kill
   within 0.4 s -- exact in instagib), the bot hooks away at once, ignoring the combat hook's cooldown,
   up to 90 degrees off its view; also from the route nodes, since a kill ends the fight node.
-- **Why:** Billy: "after a kill I will sometimes grapple away to reposition ... after 2 misses,
-  reposition with grapple quickly and try again".
+- **Why:** Billy: after a kill he sometimes hooks away to reposition; after two misses he repositions quickly with the hook and tries again.
 - **Tested:** igbench vs the combat hook alone: 3.4 repositions per bot per minute; rail accuracy
   37.9% -> 47.1% (fewer shots from a spot that just missed twice), hooks 6.9 -> 10.4/min, speed +5.7;
   frags/deaths unchanged.
@@ -312,8 +311,7 @@ slingshots 54% -> 46%; hooks 15.5 -> 17.1/min (Billy 18); slingshots 9.1 -> 10.6
   pad reachability's landing spot each frame, `IG_NotePadFlight` in BotFinishTravel_JumpPad), the
   bot hooks through a point above the landing (the whole body's path must clear the ledge lip) and
   lets go within 110 units of it.
-- **Why:** Billy: "when a jump pad is taken, the bot uses the grappling hook to get to the intended
-  landing spot faster".
+- **Why:** Billy: on a jump pad the bot hooks to reach the landing faster.
 - **Tested:** `igstats padflight` lines (game-side, pad touch to landing, hooked or not). On
   q2rdm11/campgrounds/tltf2 (8 seeds each) it is not faster: flights of 500-800 units 1.44 s off,
   1.58 s on (73% hooked). These pads launch at 650-950 u/s; OSP's 975 u/s pull replaces that
@@ -326,8 +324,7 @@ slingshots 54% -> 46%; hooks 15.5 -> 17.1/min (Billy 18); slingshots 9.1 -> 10.6
   by it. Averages unchanged (pads/min, speed): pad use follows goals, and the saved run-up (~0.5 s
   per pad, 975 u/s pull against 300 u/s running) is too small a slice of a match to show. Still
   off by default; on for Billy to judge on the 27913 test server.
-- **End of the arc** (Billy: "just before the landing, a slight advantage in speed, towards the end
-  of the arc"): the mid-air hook waits until the bot is near the top or coming down (vertical speed
+- **End of the arc** (Billy: the hook just before the landing, near the end of the arc, for a small speed gain): the mid-air hook waits until the bot is near the top or coming down (vertical speed
   under 100) within 450 units of the landing, and then, from above, hooks the floor just past the
   landing (a pull down and forward), 0.35 s. Matched pads (same distance and rise), off vs on: the
   big room's flights 1.40 vs 1.41 s (145/168 flights); other groups within noise. No cost in
@@ -335,14 +332,14 @@ slingshots 54% -> 46%; hooks 15.5 -> 17.1/min (Billy 18); slingshots 9.1 -> 10.6
 
 ### IG-9 addendum 3 (2026-11-21): real slingshot distances
 
-Billy, watching: "grapple far too close to themselves, not a proper slingshot". 38% of anchors were
+Billy, watching: the hooks landed too close to the bot to work as a slingshot. 38% of anchors were
 under 200 units (the 24-30 degree pitches added with the wider search). Now 6-18 degrees down, 12
 first, and at least 250 units: anchors mean 329 (Billy 275), average speed +5.7 u/s, hooks
 17.1 -> 15.2/min, slingshots 10.6 -> 9.2/bot/min (30 matches).
 
 ### IG-13 addendum (2026-11-21): a pad flight is the pad hook's alone
 
-Billy (q2rdm11 big room): bots hooked "below or before the landing point" in mid-air. Those were
+Billy (q2rdm11 big room): bots hooked never hook below or short of the landing in mid-air. Those were
 slingshot chains and combat hooks carrying on in the pad's arc (floor anchors along the current
 motion). While a pad flies the bot (`IG_InPadFlight`), a chain ends, strafing stops, and combat /
 reposition hooks wait for the landing; only the pad hook may fire. Also measured: on the twin pads
@@ -403,7 +400,7 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
   hook: 12-36 degrees up, straight on or up to 35 degrees to a side (the stairwell's walls), 200-650
   units out, hitting above the top of the climb, the body's path along the pull clear of the steps.
   It lets go at the top's height (or after 0.5 s, or stalled).
-- **Why:** Billy: "grapple the side of a wall when going up stairs to slingshot up the stairwell".
+- **Why:** Billy: hook a side wall going up stairs to slingshot up the stairwell.
 - **Tested** (24 matches, q2dm1/q2rdm11/ztn2dm3, with IG-17 on): 940 stair hooks (q2dm1 547),
   72% let go at the top, 12% never latched. Averages unchanged (speed +1.4 u/s, upper +1.5 points,
   both within noise; falls/lava unchanged): stairs are a small slice of a match.
@@ -419,7 +416,7 @@ of q2rdm11 the real landing is on average 60-90 units short and 64-80 lower than
   scale = affinity / 0.55 (0.55 = the former behaviour) multiplies: slingshot start chance (and its
   cooldown), chain chance, stair chance, reposition and combat-hook chances, both pad tricks. Climb
   routes and the lava escape are never scaled.
-- **Why:** Billy: "a grapple master value so some bots are heavy on grapple and some aren't".
+- **Why:** Billy: a per-bot hook preference, some bots hooking a lot and some little.
 - **Tested** (24 matches, with IG-17/IG-20): averages unchanged; per bot, hooks/min spread 12.0-17.0
   (off, random) -> 8.7-17.5 (on), the runners at the bottom (Phobos 8.7, Slash 10.4, Crash 11.1);
   the masters gain less (Klesk 13.9 -> 15.7): at 0.55 nearly every slingshot chance is already taken.
@@ -435,7 +432,7 @@ behaviour), so the roster as a whole hooks somewhat more.
 ### Hang fixes (2026-11-22, Billy saw Razor stuck on q2rdm11)
 
 - A combat/reposition hook still out when the fight ended was left to travelling, which only waited
-  for it ("a combat hook still finishing"); only the fight step lets go, so the bot hung until OSP's
+  for it (a fight hook still under way); only the fight step lets go, so the bot hung until OSP's
   hook_holdtime (7.5 s). Travelling now runs that step.
 - A route (climb) hook past its 1.5 s hold that gets no closer (8 units) to the landing for 0.6 s
   lets go (`IG_GrappleDist`): Q3's own give-up waits for the hook to go out of sight.
@@ -464,7 +461,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   marking it dirty for ClientEndServerFrame's flush 0.2 s after the last press.
 - **Why:** Billy: the menus feel laggy. The donor (OSP) sent every press at once; the delay is
   upstream Colosseum's bandwidth saving (~1.3 KB a redraw), not a 1998 limit.
-- **Tested:** in game on 27913 ("works great").
+- **Tested:** in game on 27913 (approved it).
 
 ## IG-24: `ig_nofallfx` -- no landing dip or grunt without fall damage (off)
 
@@ -482,7 +479,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   clear line from the impact is pushed away from it by `ig_railsplash_kick` x (1 - dist/radius) u/s
   (900 next to it), no damage. Hook: the end of fire_rail (src/ig/ig_rail.c).
 - **Why:** Billy: rail jumping in instagib; a setting, shooter only by default.
-- **Tested:** on 27913 by Billy: 450 too weak, 700 better, 900 "seems good".
+- **Tested:** on 27913 by Billy: 450 too weak, 700 better, 900 approved it.
 - **Next:** bot rail jumps (bspc rail-jump routes with this push, the railgun on the weapon-jump travel,
   scaled by hook affinity).
 
@@ -525,7 +522,7 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Requirement:** with `ig_botaffinity 1` and `ig_botaffinitychance 1` (libvar `ig_affinitychance`):
   a slingshot chance is taken with probability = the bot's hook affinity, instead of
   clamp(1 + (affinity/0.55 - 1) x 0.77, 0.4, 1).
-- **Why:** Billy (no-fighting test): "are all the bots grapple masters?" Every derived affinity is
+- **Why:** Billy (no-fighting test): asked whether every bot was a heavy hooker Every derived affinity is
   >= 0.5 since the IG-21 floor, so the old formula took ~every chance for every bot (5 bots: 368-394
   slingshots in the same time).
 - **Tested** (igbench, 60 matches: q2dm1/q2rdm11/ztn2dm3 x 20 seeds, 5 min): slingshots/bot/min
@@ -554,7 +551,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   while asking to walk and not on the hook, is moved to a spawn point the ruleset picks, like a
   teleporter (flash, hook let go, no frag change). Never onto another player: it waits a think if
   the spot is taken. Logs `ig: unstuck <slot> solid|still at x y z`. Bots only; any mode.
-- **Why:** Billy saw four bots ride q2dm1pro's lift up and down for minutes, "staring at the sky".
+- **Why:** Billy saw four bots ride q2dm1pro's lift up and down for minutes, bots looking straight up.
   The lift (func_plat, x 1664-1792, y 960-1088) rises into a player-clip lid that starts at its top
   height (z 1024) and covers all of it but a strip at the south edge. Bots stand in the middle, are
   carried into the clip, and pmove can no longer move them; they ride with the lift for the rest of
@@ -592,8 +589,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   the lip. 1 (experimental): within 40 units of the route's start it fires on the move once its view
   is within atan(16 / distance) degrees (2-6) of the aim and a body-sized trace clears 80% of the line
   to the anchor, instead of stopping until the aim is inside 2 degrees.
-- **Why:** Billy: climbs are "awkwardly slow and weirdly positioned ... with a slight hold at the
-  end". Route climbs: 74% fired from a standstill (Billy fires at ~250 u/s); after the pull the bot
+- **Why:** Billy: climbs are climbs were slow, badly placed and hung at the end. Route climbs: 74% fired from a standstill (Billy fires at ~250 u/s); after the pull the bot
   hung 0.19 s on average (29% over 0.3 s) because Q3 let go only when the pull stopped bringing it
   closer.
 - **Tested** (igbench, 4 maps x 6 seeds, route climbs only, marked by `ig: climb fire`): bit 2 alone:
@@ -601,8 +597,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   and everything else unchanged. Bit 1: standstill fires 74 -> 6%, landings unchanged at 3 degrees (66%
   at an 8-degree tolerance: the hook landed ~40 units off the anchor), but a third fewer climbs and
   -7.6 u/s (a bot that runs past the start before its aim lines up loses the route). On 27913: 2.
-- **Run-in retry (2026-11-27, bit 1 still off):** Billy: bots "completely stop moving and grapple and pull to move
-  when a seasoned player would be moving in the direction that they want to grapple", and with a slow hook (LMCTF)
+- **Run-in retry (2026-11-27, bit 1 still off):** Billy: bots stop dead, then hook and get pulled, where a seasoned player keeps moving toward the anchor, and with a slow hook (LMCTF)
   he prefires. Bit 1 now: a run-in window from up to 200 units before the start (the run during the hook's flight:
   speed x anchor distance / `ig_hookfly`) to 160 past it along the line to the anchor, the route kept inside it,
   full speed only once the aim is within 15 degrees, and running on toward the anchor while the hook flies. 4 maps x
@@ -623,7 +618,7 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Fix found on the way (IG-30 too):** a body goes 10 units over the spawn spot, as PutClientInServer
   places it; at 9 the box touched the floor on q2rdm11's spots, every try read as blocked, and no one
   was moved.
-- **Sound** (Billy: "it makes the lava sound and no teleport sound"): lava and slime are caught in
+- **Sound** (Billy: the rescue played the lava sound and no teleport sound): lava and slime are caught in
   P_WorldEffects as the player first touches them, before the splash sound (`IG_HazardRescueEnter`),
   so only the teleport is heard. Respot also clears the stored fall speed: the landing check in the
   same frame had turned the teleport event into a footstep. Retested: 58 rescues in 3 q2rdm11 matches,
@@ -732,7 +727,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   human, and a map takes hours of game time; igbench runs the parts side by side in seconds). While
   drilling nothing else hooks for that bot and no route is taken out. Code: be_ai_move.c (IG_Drill),
   src/ig/ig_bot.c (IG_DrillCommand). igbench now copies a map's `.climbs` and `.route` with its .aas.
-- **Why:** Billy: "are you able to reproduce a bot in that location and grappling?" -- matches only
+- **Why:** Billy: asked for a bot to be reproduced hooking at that spot -- matches only
   climb each route now and then; the drill gives every route clean tries, side by side.
 
 ## IG-38: `ig_botstrafeplan` -- strafe chains plan ahead (off)
@@ -881,15 +876,12 @@ behaviour), so the roster as a whole hooks somewhat more.
   (+9%), rail acc 28.1 vs 25.0%, suicides 0.15 vs 0.35/bot (-57%), contacts +11%, 353 vs 334 u/s,
   upper level 25.6 vs 28.5%. A faster, closer fight at the same K/D; still off (Billy to watch).
   Bench data work/fight, script work/plan/fightvs.py.
-  **Stances** (`ig_pfstance 1`; Billy: "I dont necessarily want them always closing in though, railgun
-  is about angles and keeping distance sometimes"): each fight (new enemy, or every 3-6 s) picks a
+  **Stances** (`ig_pfstance 1`; Billy: bots should not always close in: with the railgun, angles and keeping distance matter): each fight (new enemy, or every 3-6 s) picks a
   range to hold -- close 250, mid 550, long 900 (+-150 free), odds from aggression: close 0.15 + 0.5a,
   long 0.45 - 0.4a; `ig_pfnear` then prices distance either side of it. Same 5 seeds: K/D 0.951 (null
   0.954, always-close 0.946), kills/bot 21.4 (23.4 / 25.5), rail acc 22.2% (25.0 / 28.1), suicides 0.17
   (0.35 / 0.14), upper 26.5% (28.5 / 25.6). Range sets the pace, not the K/D. On 27913 for Billy.
-- **No jumping in place** (`ig_planhopmin`, libvar, default 250 u/s; 0 = off). Billy (27913): "the bots
-  sometimes just jump in place when they dont have any movement, that shouldnt be happening, the jumping
-  should be in use for movement purposes". Measured (8 maps x 2, `ig_moverec 2`, a jump = leaving the
+- **No jumping in place** (`ig_planhopmin`, libvar, default 250 u/s; 0 = off). Billy (27913): bots hopped in place with nowhere to go; jumps should serve movement. Measured (8 maps x 2, `ig_moverec 2`, a jump = leaving the
   ground at 200-300 u/s up from under 100 u/s across): 1530 such jumps (3.2/bot-min), mostly landing
   hops after a slow landing, the stock fight move's jumps (jumper trait), fight-planner hops and the
   planner's hop option (after a respawn). Now: on the ground the hop and landing-hop options need 250
@@ -899,8 +891,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   hook fired, 141 (0.3/bot-min) starts that changed their mind. Frags 4.43 -> 4.47, 337 -> 340 u/s,
   hooks, upper, suicides level.
 - **Pad top (WIP, off: libvar `ig_planpadsling`).** Billy recorded his pad trick (2026-11-25, q2rdm11,
-  work/hook-live/billy-route-2026-11-25.log; "a jump pad into a grapple and strafe jumping to get
-  across the map fast"): the vertical pad at (1551, 763) throws him straight up (718 up, 91 across);
+  work/hook-live/billy-route-2026-11-25.log; a jump pad, then a hook, then strafe jumps to cross the map fast): the vertical pad at (1551, 763) throws him straight up (718 up, 91 across);
   rising he turns ~150 degrees; just past the top (falling at 214) he hooks LEVEL and far along the
   upper walkway (4 up, a wall ~480 out; 0.30 s hook flight), a 0.27 s pull to 938 u/s, lets go still
   rising, clips the walkway wall (706 kept) and hops it 4 times with no frame on the ground (jump
@@ -916,8 +907,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   pad reachabilities for vertical pads (apex -> floors reachable by air control or a hook).
 - **Billy's line, drilled** (IG-43 pad drill route mode: `ig_paddrillstart 1418_738_96_0
   ig_paddrillgoal -963_1087_280 ig_paddrillreach 4060 ig_paddrillvia 300_1110_344`, one bot, peace).
-  Billy, watching: "I was hoping to have just the one grapple and strafe jumping used to keep
-  momentum ... the grapple as the start to the speed". Found and fixed (libvars, default on):
+  Billy, watching: one hook to start the speed, then strafe jumps to keep it. Found and fixed (libvars, default on):
   `ig_planplainlandhop` -- the landing-hop option pressed jump only after a hook's let-go, so on a
   plain flight it was "run" and the bot landed flat; `ig_planpadover` -- a pad's flight ends at its
   first landing (a landing hopped at once kept the stock pad travel "finishing", the next hop was
@@ -930,7 +920,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   Billy's hops land on top of it. Steeper hook prices changed nothing. 28 maps x 2 (all four vs
   none): everything level (334.6 vs 333.5 u/s, frags 4.84 vs 4.81, hooks 14.5 vs 14.2/min).
 - **The view in a strafing flight** (`ig_planflightview`, libvar, default 2). Billy on the drill:
-  "the model converts into strafe jumping backwards". With no enemy the view was the stock
+  the model ended up strafe-jumping backwards. With no enemy the view was the stock
   look-ahead (or a random roam spot), clamped near the push direction -- 70-90 degrees off the
   travel at speed -- and chased a target that jumped around at its 360 deg/s limit: the model spun,
   facing backwards in 43% of fast frames, 79 degrees off the travel (median). Now, on a flight the
@@ -952,8 +942,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   -> 72%, average chain 2.0 -> 3.4 hops, chains of 3+ 23 -> 50%. 28 maps x 2 with fights, on vs off:
   level (334.3 vs 333.1 u/s, frags 4.77 vs 4.76, suicides 0.08 vs 0.07) except brutalo, suicides
   1.08 -> 1.27/min (interval excludes 0): its edges.
-- **Corners** (Billy, watching roaming bots on 27913: "hitting the end of the walls before changing
-  directions instead of curving"; the hops before q2rdm11's railgun overlook hit the wall before
+- **Corners** (Billy, watching roaming bots on 27913: bots ran into the walls at corners instead of curving round them; the hops before q2rdm11's railgun overlook hit the wall before
   turning). The route's way was the next step's start -- a corner -- until within 40 units of it.
   Added a look-ahead (`ig_planlook`, `ig_planlookdist` 500): once a think, the route walked on
   through plain walking steps, the farthest point in a straight line (body trace raised a step,
@@ -985,13 +974,12 @@ behaviour), so the roster as a whole hooks somewhat more.
   (Billy 3-6), slingshots 16.8 -> 12.8/bot-min, 330 -> 319 u/s, hops 56 -> 49%. 28 maps x 2 with
   fights: slingshots 5.27 -> 3.82/bot/min and hooks 14.5 -> 12.8/min (both intervals exclude 0),
   330 vs 335 u/s, frags 4.71 vs 4.79 (noise). For Billy to judge on 27913.
-- **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots "grapple random walls instead of
-  taking the paths, it definitely seems pushed". in2obl, 8 matches: slingshots 2.9 (no planner) ->
+- **v1.3: hook price 0.3 -> 0.5 s.** Billy on 27913 (in2obl): bots bots hooked random walls instead of following the paths. in2obl, 8 matches: slingshots 2.9 (no planner) ->
   8.0 (0.3) / 5.6 (0.5) / 3.6 (0.8) a bot a minute; neutral tie-breaking among near-equal options
   (`ig_planhookpick 0`) changed nothing. 28 maps at 0.5: hooks 14.8/min, slingshots 5.8/bot/min (old
   code 5.1), 326 u/s (no planner 309), frags 4.58, suicides 0.05. At 0.8: 12.5 hooks/min, 318 u/s.
   Per map and per style later, from Billy's recordings.
-- **v1.4: anchor classes.** Billy: "more slingshots and fewer random wall grapples for no reason".
+- **v1.4: anchor classes.** Billy: more slingshots, fewer random wall hooks.
   A flat price cut both. Anchors now come in three classes, priced apart: SLING (along the route,
   +-12 degrees, 6/12/18 down, 250+ units: his slingshot, price x `ig_planslingmul` 0.3), UP (25 up,
   only where the route climbs 48+ within 500 units: stairwell/ledge, x `ig_planupmul` 1), SIDE (40 off
@@ -999,14 +987,13 @@ behaviour), so the roster as a whole hooks somewhat more.
   28 maps vs no planner: slingshots 5.1 -> 7.2/bot/min, hooks 12.4 -> 16.3/min, of the planner's hooks
   77% sling, 13% up, 11% side; 322 u/s, frags 4.62, suicides 0.05. in2obl: sling 71%, slingshots 2.9 ->
   5.2/bot/min (at slingmul 0.5).
-- **v1.5: slingshots hook the floor.** Billy on 27913 (q2rdm4): still "random wall grapples instead of
-  ground movement". Of q2rdm4's slingshot-class hooks, 575 of 898 were walls ~400 units out (a
+- **v1.5: slingshots hook the floor.** Billy on 27913 (q2rdm4): still random wall hooks instead of running. Of q2rdm4's slingshot-class hooks, 575 of 898 were walls ~400 units out (a
   corridor's end or turn): from the eye on the ground, 12 and 18 down meet the floor inside the 250
   minimum, so only 6 down survived and it often met a wall first. Now SLING anchors are 4/8/12 down,
   180+ units at the flick (the bot jumps before it fires, so the hook bites further), and must be
   floor or a wall 600+ units out. q2rdm4 (6 matches): 741 floor, 72 far wall; 287 -> 306 u/s vs no
   planner, slingshots 3.9 -> 6.8/bot/min. The slingshot line says floor/wall/ceiling.
-- **Open: "pull hop".** Billy: "pull hops are the start to the fastest movement". The let-go speed
+- **Open: "pull hop".** Billy: pull hops start the fastest movement. The let-go speed
   depends on how the pull ends (q2rdm11): a jump in the let-go step keeps ~930 u/s, a let-go in the
   air 720-850, on the floor 180-560 (friction takes the first step: OSP's pull SETS the velocity each
   step, so a hop during the pull is wiped at once). Hopping through the pull (delayed jump every think)
@@ -1017,7 +1004,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   jumps 130-200 ms before firing, fires in the air 10-19 down, the hook bites 160-290 ms later, he lets
   go 80-180 ms after the bite STILL IN THE AIR (860-940 u/s), has jump down before he lands (off the
   floor again within 8 ms), and hops on, holding 860-930 u/s for a second or more. The "fast start" is
-  the start of this slingshot (Billy: "slingshots and fast starts are the same"); "pull hop" (hopping
+  the start of this slingshot (Billy: counts slingshots and fast starts as one move); "pull hop" (hopping
   during the pull) was a wrong reading of his older data and is shelved. Built so far: a landing-hop
   option (`landhop`: jump down coming down), made sticky once chosen and part of every planner let-go
   unless unsafe; a flow value (`ig_planflow`, s per 300 u/s of average speed kept over the flight);
@@ -1054,8 +1041,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   degrees off the velocity +14 u/s, 30-60 +11. q2rdm11 chains 300 -> 386 u/s (still ~3 hops: they end
   sooner than Billy's). 28 maps vs v1.4: 322 -> 334 u/s, over 400 17.4 -> 20.1%, frags 4.62 -> 4.44 and
   suicides 0.05 -> 0.08 (both within noise, both the wrong way). Next: longer chains.
-- **Strafe skill per bot (2026-11-25).** Billy: "some great bots and some not so great in the game at
-  once". The theoretical limit (perfect angle, a jump every landing frame, from 300 u/s): 540 u/s after
+- **Strafe skill per bot (2026-11-25).** Billy: a mix of strong and weak bots in one game. The theoretical limit (perfect angle, a jump every landing frame, from 300 u/s): 540 u/s after
   500 units, 664 after 1000, 823 after 2000, 933 after 3000; 50 ms and 8 ms steps give the same limit.
   A bot's wish holds for two 50 ms pmoves, and the one-step best angle acos(285/v) adds +12.3 a think at
   350 u/s where the two-step best (39.6 degrees) adds +23.6: `IGX_StrafeAngle` uses the two-step best
@@ -1075,8 +1061,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   on the chase layout (UpdateChaseCam, g_chase.c), which is then sent every frame instead of every 32
   frames -- about 60 bytes a frame per spectator, and not while a scoreboard or menu holds the layout.
   A statusbar stat would have been the big HUD digits. Code: src/ig/ig_hud.c.
-- **Why:** Billy (2026-11-25): "an on screen speedometer for chase modes ... out of the way, maybe near
-  the chasing text" -- to watch bots' (and players') speed.
+- **Why:** Billy (2026-11-25): a speedometer for chase modes, out of the way, near the chasing text -- to watch bots' (and players') speed.
 - **Tested:** on 27913 by Billy.
 
 ## IG-42: `ig_botpadbounce` -- off a pad that bounces a bot straight up (off)
@@ -1086,7 +1071,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   under 50 u/s across steers along its route from the area it is in (or straight at its goal when that
   area has no route). Logs `ig: padbounce c area a reach r at x y z` once per bounce run.
   Code: botlib/be_ai_move.c IG_AirNoRoute.
-- **Why:** Billy (2026-11-25, 27913, peace mode): "bunch of bots stuck on a jump pad". The q2rdm11 pad at
+- **Why:** Billy (2026-11-25, 27913, peace mode): several bots stuck on a jump pad. The q2rdm11 pad at
   (-880, 973, -32) throws a bot straight up; one that drops onto it from the upper level has no pad
   reachability (its area 1250 has no route), lands back on the pad every launch and never touches the
   ground, so it never picks a route: frozen for good. Others then stood on it (three stacked at zero
@@ -1096,8 +1081,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   unchanged (all inside the noise).
 - **Tested:** on 27913.
 
-- **Fight hooks halved (2026-11-26, IG-40 tuning).** Billy on 27913: bots grapple the walls too much, "its being
-  overused". His hooks (919 recorded): short taps, anchor 327 units away and 28 below; 34% anchored 64+ above him.
+- **Fight hooks halved (2026-11-26, IG-40 tuning).** Billy on 27913: bots grapple the walls too much, overused. His hooks (919 recorded): short taps, anchor 327 units away and 28 below; 34% anchored 64+ above him.
   Bots' (860): anchor 557 away, 81 above; fight hooks (incl. repositions) were 35% of them, 80% high on walls.
   New libvars (defaults = old constants): `ig_fighthookchance` 0.5, `ig_fighthookidle` 0.03, `ig_fighthookcooldown`
   2.5, `ig_repokill` 0.4, `ig_repomisses` 2, `ig_repomisschance` 1. 6 maps x 3 seeds, fights: 0.25 / 4 s / 0.2 /
@@ -1114,9 +1098,8 @@ behaviour), so the roster as a whole hooks somewhat more.
   gaps: airborne when shooting (35 vs 53%), view on the travel direction (58 vs 49% of moving frames).
 
 - **Pad flights: view and air control (2026-11-26, libvars `ig_planpadview` default 1 and `ig_planpadair` default 0,
-  with the planner).** Billy on 27913, q2rdm11's twin pads in the big room: "they look like they're spinning ...
-  they should be facing the direction they want to land unless they are trying to do a trick or shoot someone",
-  and "not bouncing to the optimal spot". In a pad flight the planner did not steer, so the view fell to the roam
+  with the planner).** Billy on 27913, q2rdm11's twin pads in the big room: bots spun in pad flights; they should face where they land unless doing a trick or shooting,
+  and not landing on the best spot. In a pad flight the planner did not steer, so the view fell to the roam
   clamp, which follows the stock pad steering's push as it swings; and that steering (BotAirControl) pushes at
   full strength at a landing predicted without the push, so it overcorrects (one bot drifted 240 units east into
   the side wall and fell to the floor). Now: the last 128 units onto the pad (`ig_planpadviewnear`) and the
@@ -1126,12 +1109,10 @@ behaviour), so the roster as a whole hooks somewhat more.
   bots, 16 seeds, off vs on: twin-pad flights landing up on the ledge 56 -> 76% (24/43 vs 19/25); view vs
   travel 49 -> 26 deg (flights with no hook: 49 -> 10 deg). Still: the view turns ~150 deg/s on hook-free
   flights (the turn at the launch). On 27913.
-  **Air control dropped (2026-11-26):** Billy, with both on: "still seeing bots miss the landing spot when they
-  previously didnt"; with the view only (`ig_planpadair 0`): "jump pads look a lot better". The bench had shown no
+  **Air control dropped (2026-11-26):** Billy, with both on: bots missed the landing more often than before; with the view only (`ig_planpadair 0`): "jump pads look a lot better". The bench had shown no
   loss (hook-free flights landing within 160 units: old 84%, both 88%, view only 86%, 12 seeds), so the miss is
   one the bench does not count. IG_PlanPadAir stays in the code, default 0; the stock steering is back.
-- **Pad flights everywhere (2026-11-27, libvar `ig_planpadfight` 1):** Billy: "bots are hitting the jump pads
-  but steering away from the intended landing spot causing them to miss them more than make them". The drill (a
+- **Pad flights everywhere (2026-11-27, libvar `ig_planpadfight` 1):** Billy: bots hit the pads but steered away from the landing and missed more often than not. The drill (a
   clean run-up, no fight) landed q2rdm11's twin pads 100%; in fights only 56% of hook-free flights made the
   ledge, the air steering 114 deg off the landing on the misses. Two causes: the fight node runs no travel, so the
   stock attack dodge steered the flight; and a bot that runs over a pad on its way elsewhere steered by its own
@@ -1168,7 +1149,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   every rejected edge and area near a point. `ig_botroutemomentum` (be_ig_route.c, x0.6 the walking
   time of a straight crossing up to 20 degrees of turn, unchanged from 70) is built but not measured.
 - **Why:** Billy (2026-11-25): bots should find fast lines like his q2rdm11 pad-and-walkway route
-  themselves ("that sort of optimization is what I would love to see done automatically"). The route
+  themselves (wants such lines found automatically). The route
   from the pad's landing went down into the pit and up the teleporter because bspc priced the
   walkway's two gaps (x 1072-1232, y 1091 and y 408-432) at 7.28 s and 37.28 s; the only crossings
   bots made were improvised hooks and fast strafe hops (Billy 2026-11-26).
@@ -1185,8 +1166,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   `server/tools/linktable.py` turns igbench logs into `maps/<map>.links` (header "areas <n>", then "<from> <to>
   <median ms> <samples>"); `ig_links 1` loads it at map load (botlib/be_ig_links.c). igbench takes tables from
   `$IGLINKS`.
-- **Why:** Billy (2026-11-28): "I dont need to train every single jump the logic should see the opportunity and
-  take it if it makes sense". In fights bots took momentum jumps 0.02 times per bot-minute; the routing prices
+- **Why:** Billy (2026-11-28): no per-jump training: bots should spot an opening and take it when it pays. In fights bots took momentum jumps 0.02 times per bot-minute; the routing prices
   every step at walking speed.
 - **Measured** (tables from 28 maps x 6 roaming matches, ~30 000 moves each; fights 28 maps x 4 with IG-47/48):
   pricing each measured route at its time: frags -0.35/min, -8 u/s, time to contact +0.37 s (the area a bot
@@ -1196,7 +1176,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   everything: hooks -0.95/min, slingshots -0.8/bot/min. Offering momentum jumps from 380 u/s instead of 500:
   level, jumps unchanged (62). So the routing's prices are not what keeps bots off these lines: their goals and
   routes seldom pass them. Kept, off; the next idea is local -- see the opportunity near the bot, not in the route.
-- **Removed (2026-11-28, Billy: "I dont want this to become too messy"):** be_ig_links.c, its hooks, the `.links`
+- **Removed (2026-11-28, Billy: asked to keep it tidy):** be_ig_links.c, its hooks, the `.links`
   files (never installed), `server/tools/linktable.py`, igbench's `$IGLINKS`; with it IG-46's route momentum
   (`ig_botroutemomentum`, be_ig_route.c's pricing and the start-leg hook): tried twice, no gain. be_ig_route.c keeps
   only the pad drill's route debug print. Rule since: a per-map file type only where the data cannot be computed at
@@ -1212,8 +1192,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   not a stop for the sim; while hooked, replanning decides the let-go. The stock grapple travel stands down while the
   planner notes the climb (IG_PlanClimbOwns); after `ig_planclimbgive` 3 s on one climb without firing, it is the
   stock's again.
-- **Why:** Billy (2026-11-27): bots "completely stop moving and grapple and pull to move when a seasoned player
-  would be moving in the direction that they want to grapple"; with a slow hook he prefires. The stock travel walks
+- **Why:** Billy (2026-11-27): bots stop dead, then hook and get pulled, where a seasoned player keeps moving toward the anchor; with a slow hook he prefires. The stock travel walks
   to the route's start, stops and aims (71% of climbs from a standstill); loosening it lost climbs (IG-32 note).
 - **Measured:** q2rdm11, q2dm1, q2rdm4, q2dm1pro x 4 fighting, OSP: climbs 516 -> 730 (649 the planner's), fired
   from a standstill 71 -> 15%, speed at the fire 0 -> 285 u/s, landing up top 54 -> 53% (~280 -> ~390 climbs).
@@ -1240,7 +1219,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   (BOT-TRICKS T27, `ig_fastjumplip`): steep floor anchors (20-32 down) and low ceiling anchors (10-18 up)
   short of the edge, and a hook held past the edge costs `ig_fastjumphookacross` 1 s per 50 ms.
   Debug: `ig_fastjumplog`, `ig_gapjumpdebug`, `ig_plandebug 2` (igfj, iglook), `ig_routedebugfast`.
-- **Why:** Billy (2026-11-26): bots should "use its momentum to jump over the gap" (q2rdm11's walkway end)
+- **Why:** Billy (2026-11-26): bots should bots should use their momentum to jump the gap (q2rdm11's walkway end)
   and find such spots on every map; then (2026-11-27) a slingshot should make the momentum, not a pull
   straight across to the far wall ("predictable"); his recording
   `work/hook-live/billy-ztn2dm3-lip-slings-2026-11-27.log`.
@@ -1248,25 +1227,22 @@ behaviour), so the roster as a whole hooks somewhat more.
   of tries. ztn2dm3 spawn drill (the ledge by the mega health): planning only from 500 u/s the slingshot set
   a heading into the column (91% hit it); planning from 250: 0% hits, 89% clean; with the lip slingshot:
   lip slingshots 0.2 -> 0.88/try, far-wall pulls 1.5 -> 0.24/try, 77% clean, median 1.4 s. 28 maps x 4
-  fighting: level, no map significant; taken 0.02/bot-min in fights (bots seldom meet one fast) -- the next
-  step is speed-aware routing (measured link times). No grapple (28 maps): no change.
-- **Lip slingshot along the route (2026-11-28):** Billy (ztn2dm3): the lip grapple "should be aimed to center the bot
-  in the doorway ... the doorway is at the end of the intended line ... the lip grapple boosts you over the gap and
-  into the next room via a doorway", and in general "how can the lip grapple slingshot get the bot faster along the
-  route". Before a momentum jump the planner now proposes lip slingshots (his steep floor hooks 20-32 down, low ceiling
-  hooks 10-18 up, short of the edge) along two lines: to the doorway at the end of the jump's line (IGX_Doorway: the
-  narrowest opening, walls either side within 192, from the landing to `ig_fastjumpdoor` 320 past it) and to the
-  route's farthest straight point past the landing; the sim picks the faster, the yaw fan stays as the fallback. (Aimed
+  fighting: level, no map significant; taken 0.02/bot-min in fights (bots seldom meet one fast) -- speed-aware
+  routing (IG-46 route momentum, IG-49 measured link times) tried for it: no gain, both removed. No grapple (28 maps): no change.
+- **Lip slingshot along the route (2026-11-28):** on ztn2dm3 the lip hook should line the bot up with the doorway at the end of the line, carrying it over the gap
+  into the next room; in general it should get the bot along its route faster (Billy's direction). Before a momentum
+  jump the planner proposes lip slingshots (his steep floor hooks 20-32 down, low ceiling hooks 10-18 up, short of the
+  edge) along the route's farthest straight point past the landing (IGX_RouteOn); the yaw fan stays as the fallback. (Aimed
   at the lip's very edge the hook grazed past: 134 of 189 fired at nothing.) ztn2dm3 spawn drill (goal: the landing):
   lip floor slingshots 92 -> 241 of the bot's hooks, far-wall pulls 22 -> 3, spawn to landing 1.30 -> 1.20 s; from the
   spawn the line to the far doorway crosses the ledge's edge at x -519 (Billy, who first moves west along the ledge,
   -585..-618). Note: with the goal in the doorway room the route takes the stairs (no faster at a run) -- speed-aware
   routing again. 28 maps x 4 with IG-47 and IG-48 on: all level, slingshots/bot/min +0.7.
-  Then Billy: "it needs to land more to the right so its centered with the doorway". The landings (median x -805,
+  Then Billy: landings should be further right, centred on the doorway. The landings (median x -805,
   the doorway's centre -976) came from the drill's goal -- the jump's own landing, east of the doorway's line. With the
   goal in front of the doorway (-976 330) the route-line lip slingshot lands centred on its own: median x -1007, 52% in
   line with the opening, 2.70 s from the spawn. A doorway search with steering to a landing on the doorway's axis
-  (`ig_fastjumpdoor`, `ig_fastjumpdoorsteer`) added nothing there (57%, 2.75 s, more missed hooks): kept, off.
+  (`ig_fastjumpdoor`, `ig_fastjumpdoorsteer`) added nothing there (57%, 2.75 s, more missed hooks): removed 2026-11-28.
 - **Billy's lip slingshot, measured (2026-11-28, `work/hook-live/billy-ztn2dm3-gap-and-stairs-2026-11-28.log`):** his
   fastest runs (start to doorway 1.34-1.58 s, against 1.92-2.05 down the stairs): running west along the ledge he
   fires in the air at ~350 u/s, 17.6 deg down at the lip ~220 units ahead, holds 1 frame, lets go 130 short of the
@@ -1275,8 +1251,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   option for lip anchors, and a fired hook of ours is held until it bites (`ig_planhookcommit` 0.4 s; every hook,
   not only the lip's, unless every hold is bad). ztn2dm3 drill: hooks that hit nothing 66 -> 26, lip floor
   slingshots 91 -> 151, best from x -330 to the doorway 2.45 -> 1.15 s (Billy 1.03); let-go ~800 u/s (Billy 943).
-  28 maps x 4: +5.2 u/s (significant, the commit), the rest level. Variety (Billy: "50/50 lip grapple and strafe
-  jumping stairs"): every `ig_fastjumproll` 8 s a bot rolls whether it takes momentum jumps, at
+  28 maps x 4: +5.2 u/s (significant, the commit), the rest level. Variety (Billy: about half lip slingshots, half strafe jumps down the stairs): every `ig_fastjumproll` 8 s a bot rolls whether it takes momentum jumps, at
   `ig_fastjumpchance` 0.5 -- the drill 59% jump / 40% stairs (stairs 2.05 s, Billy 1.95).
 
 ## IG-44: `ig_botroamgoal` -- a fair random roam goal (off)
@@ -1289,8 +1264,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   goal is a uniform spot on the map's floor. Each call picks among those reachable from the bot,
   at least 256 units away, with a travel time (8 tries). AAS_MarkReachableAreas lost its `static`
   for it. Debug: libvar `ig_roamgoaldebug` prints the list size at build.
-- **Why:** Billy, 2026-11-26, q2dm1/q2dm1pro: "we end up with everyone in that room or in the water
-  too often". Stock picks a random area index and takes the first acceptable area from there,
+- **Why:** Billy, 2026-11-26, q2dm1/q2dm1pro: too often everyone ended up in that room or in the water. Stock picks a random area index and takes the first acceptable area from there,
   accepting any swimming area outright while a floor area must pass the ground check -- so the pool
   is a goal far more often than its size, and an area just after a long run of rejected ones is
   favoured. The same water time with stock bots (planner off, or no IG switches at all) showed it was
