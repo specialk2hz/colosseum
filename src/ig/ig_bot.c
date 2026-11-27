@@ -20,9 +20,10 @@ of the License, or (at your option) any later version.
 //   ig_botrevenge    0   1: a bot killed twice by one player within
 //                        ig_botrevenge_window (60 s) goes after them for
 //                        ig_botrevenge_time (20 s) or until it kills them (IG-8)
-//   ig_botstrafe     0   brain ig_strafe: 2 strafe-jump chains (IG-31)
-//   ig_botclimbrun   0   brain ig_climbrun, bits: 2 let go over the ledge,
-//                        1 fire on the run (IG-32); needs ig_bothook
+//   ig_botplan       0   1: the movement layer (IG-40 and the behaviours
+//                        folded into it in ig-0.5: IG-28, 31, 32, 35, 36, 38, 42)
+//   ig_botnav        0   1: the map-knowledge layer (IG-43, 44, 46)
+//   ig_botfastjumps  0   1: momentum jumps, with ig_botnav (IG-47, trial)
 //   ig_botlibvars    ""  "name value name value ...": any further libvars for
 //                        the Q3 brain, pushed after the above.  For tuning and
 //                        A/B tests (igbench --set ig_botlibvars ...), not play
@@ -39,13 +40,21 @@ void IG_BotLibVars(struct bot_library_s *lib)
 {
     cvar_t *on = gi.cvar("ig_bothook", "0", 0);
     cvar_t *cost = gi.cvar("ig_bothook_cost", "150", 0);
-    bool use;
+    bool use, plan, nav;
 
     if (!lib || !lib->botlib || Q_stricmp(lib->botlib->id, "q3"))
         return;
     // The OSP hook is the one wired: its commands are `hook`/`unhook`.
     // Threewave's (ctf) and arena's are later work.
     use = on->value != 0 && BotTourneyHook();
+    // ig-0.5: two layers.  ig_botplan, the movement: the planner and its hook
+    // moves when the bots have the hook, and the parts that need none (strafe
+    // chains, landing hops, pad bounce, item pads) either way.  ig_botnav, the
+    // map knowledge: gap jumps, fair roam goals, and pad routes with the hook.
+    // Each folded behaviour keeps its brain libvar as a kill switch: they are
+    // pushed here, and ig_botlibvars, pushed last, wins ("ig_strafeplan 0").
+    plan = gi.cvar("ig_botplan", "0", 0)->value != 0;
+    nav = gi.cvar("ig_botnav", "0", 0)->value != 0;
 
     lib->funcs.BotLibVarSet("bot_grapple", use ? "1" : "0");
     lib->funcs.BotLibVarSet("offhandgrapple", use ? "1" : "0");
@@ -60,15 +69,16 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_stairhook", use && gi.cvar("ig_botstairhook", "0", 0)->value ? "1" : "0");   // IG-20
     lib->funcs.BotLibVarSet("ig_affinity", gi.cvar("ig_botaffinity", "0", 0)->value ? "1" : "0");   // IG-21
     lib->funcs.BotLibVarSet("ig_peace", gi.cvar("ig_botpeace", "0", 0)->value ? "1" : "0");   // IG-27
-    lib->funcs.BotLibVarSet("ig_affinitychance", gi.cvar("ig_botaffinitychance", "0", 0)->value ? "1" : "0");   // IG-28
+    lib->funcs.BotLibVarSet("ig_affinitychance", plan ? "1" : "0");   // IG-28, folded into ig_botplan
     lib->funcs.BotLibVarSet("ig_walkway", gi.cvar("ig_botwalkway", "0", 0)->value ? "1" : "0");   // IG-29
     lib->funcs.BotLibVarSet("ig_movedebug", gi.cvar("ig_movedebug", "0", 0)->string);   // diagnostic: log seek moves
-    lib->funcs.BotLibVarSet("ig_funcwall", gi.cvar("ig_botfuncwall", "0", 0)->value ? "1" : "0");   // IG-35
-    lib->funcs.BotLibVarSet("ig_padbounce", gi.cvar("ig_botpadbounce", "0", 0)->value ? "1" : "0");   // IG-42
-    lib->funcs.BotLibVarSet("ig_roamgoal", gi.cvar("ig_botroamgoal", "0", 0)->value ? "1" : "0");   // IG-44
+    lib->funcs.BotLibVarSet("ig_funcwall", plan ? "1" : "0");   // IG-35, folded into ig_botplan
+    lib->funcs.BotLibVarSet("ig_padbounce", plan ? "1" : "0");   // IG-42, folded into ig_botplan
+    lib->funcs.BotLibVarSet("ig_roamgoal", nav ? "1" : "0");   // IG-44, folded into ig_botnav
     lib->funcs.BotLibVarSet("ig_routemomentum", gi.cvar("ig_botroutemomentum", "0", 0)->value ? "1" : "0");   // IG-46, read at map load
-    lib->funcs.BotLibVarSet("ig_gapjumps", gi.cvar("ig_botgapjumps", "0", 0)->value ? "1" : "0");   // IG-46, read at map load
-    lib->funcs.BotLibVarSet("ig_padreach", use && gi.cvar("ig_botpadreach", "0", 0)->value ? "1" : "0");   // IG-43, read at map load
+    lib->funcs.BotLibVarSet("ig_gapjumps", nav ? "1" : "0");   // IG-46, folded into ig_botnav; read at map load
+    lib->funcs.BotLibVarSet("ig_fastjumps", nav && gi.cvar("ig_botfastjumps", "0", 0)->value ? "1" : "0");   // IG-47 (trial), read at map load
+    lib->funcs.BotLibVarSet("ig_padreach", use && nav ? "1" : "0");   // IG-43, folded into ig_botnav; read at map load
     lib->funcs.BotLibVarSet("ig_paddrill", gi.cvar("ig_paddrill", "0", 0)->string);   // IG-43: the pad drill (a testing aid)
     // IG-37: the climb drill (a testing aid): mode, tries per route, aim, pause, and the point for mode 2
     {
@@ -94,25 +104,24 @@ void IG_BotLibVars(struct bot_library_s *lib)
             lib->funcs.BotLibVarSet("ig_drillparts", va("%d", parts));
         }
     }
-    // IG-31: 2 = strafe-jump chains (1 = IG-11's single hops); the game half is ig_botjumpland
-    lib->funcs.BotLibVarSet("ig_strafe", gi.cvar("ig_botstrafe", "0", 0)->string);
-    // IG-38: strafe chains plan ahead (a runway to start, room to keep going)
-    lib->funcs.BotLibVarSet("ig_strafeplan", gi.cvar("ig_botstrafeplan", "0", 0)->value ? "1" : "0");
+    // IG-31: strafe-jump chains (brain ig_strafe 2), folded into ig_botplan
+    lib->funcs.BotLibVarSet("ig_strafe", plan ? "2" : "0");
+    // IG-38: strafe chains plan ahead (a runway to start, room to keep going), folded into ig_botplan
+    lib->funcs.BotLibVarSet("ig_strafeplan", plan ? "1" : "0");
     // IG-39: no let-go or hop whose flight ends in lava, a pit or a wall at speed
     lib->funcs.BotLibVarSet("ig_arcsafe", gi.cvar("ig_botarcsafe", "0", 0)->value ? "1" : "0");
-    // IG-32: climb grapples, bits: 2 let go over the ledge, 1 fire on the run (experimental)
-    lib->funcs.BotLibVarSet("ig_climbrun", use ? gi.cvar("ig_botclimbrun", "0", 0)->string : "0");
-    // IG-36: climbs hook the frame of the opening or the landing floor, then steer to its middle
-    lib->funcs.BotLibVarSet("ig_climbaim", use ? gi.cvar("ig_botclimbaim", "0", 0)->string : "0");
-    // IG-36: after the let-go, bits: 1 air strafe to the landing's middle, 2 grapple down onto it
-    lib->funcs.BotLibVarSet("ig_climbland", use ? gi.cvar("ig_botclimbland", "0", 0)->string : "0");
+    // IG-32: climb grapples let go over the ledge (brain bits: 2; 1 fire on the run, experimental), folded into ig_botplan
+    lib->funcs.BotLibVarSet("ig_climbrun", use && plan ? "2" : "0");
+    // IG-36: climbs hook the frame of the opening and air-strafe to the landing's middle, folded into ig_botplan
+    lib->funcs.BotLibVarSet("ig_climbaim", use && plan ? "1" : "0");
+    lib->funcs.BotLibVarSet("ig_climbland", use && plan ? "1" : "0");
     // IG-34: the live hook's speeds, so the brain times its hooks for the style in use
     lib->funcs.BotLibVarSet("ig_hookfly", va("%d", IG_HookFlySpeed((int)gi.cvar("hook_speed", "1600", 0)->value)));
     lib->funcs.BotLibVarSet("ig_hookpull", va("%d", IG_HookPullSpeed((int)gi.cvar("hook_pullspeed", "1000", 0)->value)));
     // IG-40: the movement planner in place of the trick-by-trick movement
-    lib->funcs.BotLibVarSet("ig_plan", use && gi.cvar("ig_botplan", "0", 0)->value ? "1" : "0");
-    // ...which simulates the game's half of strafe chains (IG-31) when it is on
-    lib->funcs.BotLibVarSet("ig_jumpland", gi.cvar("ig_botjumpland", "0", 0)->value ? "1" : "0");
+    lib->funcs.BotLibVarSet("ig_plan", use && plan ? "1" : "0");
+    // ...which simulates the game's half of strafe chains (IG-31): the landing hop, folded into ig_botplan
+    lib->funcs.BotLibVarSet("ig_jumpland", plan ? "1" : "0");
     lib->funcs.BotLibVarSet("ig_hookstyle", IG_HookType() == IG_HOOK_LMCTF ? "1" : "0");  // IG-40: the pull the planner simulates
     lib->funcs.BotLibVarSet("ig_slingup", IG_HookType() == IG_HOOK_LMCTF ? "100" : "0");   // IG-34: LMCTF slings hook up
     // the server's hook_sky, for the lava escape (IG-9)
@@ -156,7 +165,7 @@ the landing; a bot lost it (975 u/s let go, 330 at the next hop). This
 clears the flag before a bot's pmove, which is what strafehack amounts to.
 */
 /*
-IG-31: `ig_botjumpland 1`. Billy presses jump just before he lands while strafe
+IG-31: the landing hop (folded into `ig_botplan` in ig-0.5). Billy presses jump just before he lands while strafe
 jumping, so he takes off again on the first ground frame and friction never
 touches him. A bot cannot hold jump: the botlib drops it every other frame
 (be_ea.c ACTION_JUMPEDLASTFRAME), so a jump asked for in the air may be off on
@@ -174,7 +183,7 @@ void IG_BotPmove(edict_t *ent, pmove_state_t *s, usercmd_t *cmd)
 
     if (!hack) {
         hack = gi.cvar("ig_botstrafehack", "0", 0);
-        jumpland = gi.cvar("ig_botjumpland", "0", 0);
+        jumpland = gi.cvar("ig_botplan", "0", 0);
     }
     if (jumpland->integer && (ent->flags & FL_BOT) && n >= 0 && n < MAX_CLIENTS) {
         if (ent->groundentity || ent->client->ctf_grapple)
