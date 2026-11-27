@@ -1138,6 +1138,14 @@ behaviour), so the roster as a whole hooks somewhat more.
   the pad's own air control (BotAirControl) to the landing of the pad under it (IG_PadLaunchEnd: its jump-pad
   route), the aim and shots go on, and no fight hook starts mid-flight. 16 fight matches: hook-free flights making
   the ledge 56 -> 78%, steering off the landing on the made ones 70 -> 32 deg; 28 maps x 4: all level.
+- **Pad flights, the rest (2026-11-28, libvar `ig_planpadkeep` 1):** the misses left were route pad flights with an
+  enemy about (11 of 11 hook-free misses in 16 fight matches): the pad-top slingshot runs the whole planner in pad
+  mode, and when it picked "run" or a hop instead of a hook it still took over the air steering -- along the route
+  beyond the landing, for speed -- and pushed the bot off the ledge (the input 67 deg off the landing; the stock pad
+  air control, replayed on the same flights, steers onto it). Now pad mode moves the bot only for its own hook (the
+  pad-top slingshot fired or under way); otherwise the stock pad air control keeps the flight. q2rdm11 twin pads,
+  16 fight matches: hook-free flights making the ledge 79 -> 94% (56% before IG-40's pad work), pad-top slingshots
+  42 -> 80% (5 flights); 28 maps x 4: all level.
 - **Look-ahead fix (2026-11-26):** IGX_LookAhead filled its route points with `VectorCopy(r.start, pts[n++])`;
   VectorCopy is a macro that evaluates its target three times, so n moved 3 per copy, x/y/z landed in different
   points and the writes ran past pts[16]. FreeBSD's stack protector aborted the server the first time a bot planned
