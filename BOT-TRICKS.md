@@ -37,6 +37,7 @@ not built. "Planner" says how the planner must express it; "Verify" is the check
 | T12 | **Double grapple:** hook, release, hook again to reach what one pull can't | Billy | partly (chains) | -- | planner looks two hooks deep where one fails | reaches a spot no single hook reaches |
 | T13 | **Hook to turn** (16% of Billy's hooks) and **hook to slow/stop** (8%) | Billy's hook labels | todo | -- | options scored for direction change / stopping on a spot | hook-purpose mix closer to Billy's |
 | T14 | **Lava escape:** in lava/slime, hook nearly straight up to get out | measured | built IG-9 | 85-65 deg up, sky allowed | option kept as is (emergency) | escapes still end over floor (66/67 today) |
+| T27 | **Lip slingshot:** a super quick, short hook to the floor at a ledge's lip (or the ceiling above it) for speed, then the momentum jump off it | Billy's recording 2026-11-27 (ztn2dm3, `work/hook-live/billy-ztn2dm3-lip-slings-2026-11-27.log`): in the air at 110-290 u/s, floor 120-200 out 20-35 deg down / ceiling 180-270 out 10-16 deg up, held 1-2 frames, let go short of the edge at 670-980 u/s; Billy: "super useful for quick speed and will come in handy" for CTF flag runners | WIP IG-47 (only with a momentum jump ahead) | lip anchors 20-32 deg down and 10-18 up, 100+ units, short of the edge; a hook held past the edge priced 1 s per 50 ms | option: lip anchors; let-go from the sim | ztn2dm3 drill: lip floor slingshots 0.2 -> 0.88/try, far-wall pulls 1.5 -> 0.24/try, clean jumps 77%; later: any quick-speed spot, CTF flag runs |
 
 ## Running and air control
 
