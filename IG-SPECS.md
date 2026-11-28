@@ -1054,6 +1054,18 @@ behaviour), so the roster as a whole hooks somewhat more.
 - **Next:** fight movement that values position; the pad tricks as options; richer options (turn and
   stop hooks, side-wall stair hooks); then tuning from Billy's recordings and the verification pass.
 
+- **T6 stairwell slingshot aimed along the wall (2026-11-28, `ig_planstairwall`, default 1):** Billy fires his stair
+  ceiling hook parallel to the stairwell's side wall so the pull is straight; the bots aimed along the route, 5 deg into
+  the wall on ztn2dm3, and came out 50 units off his line. A side wall within 160 units whose run is within 20 deg of
+  the route now sets the up-hooks' aim. ztn2dm3 drill from the stairs: aim yaw -174 -> 179, top of the stairs at
+  y 764 -> 792 (Billy 792-816), run 3.2 -> 3.0 s; Billy approved it. (A finer fan of up-hook aims, tried first, made
+  far-wall slams 65 -> 81%: removed.)
+- **T13 corner turn hook (2026-11-28, `ig_planturnhook`, default 0 = off, WIP):** Billy's corner hook on ztn2dm3 (6
+  tries): flying at 620-860 u/s, 100-170 units short of the wall where the route turns, a floor hook 20-29 deg down and
+  75-90 deg toward the turn, held ~0.5 s, out at 730-920 the new way. Offered in the air at 500+ with a wall ahead within
+  400, held 0.5/0.7 s: the planner rarely takes it (6 -> 7% of drill runs) -- it prices each 1.5-18 s worse than landing.
+  Off until that is understood.
+
 ## IG-41: `ig_chasespeed` -- a speedometer for chase cameras (off)
 
 - **Requirement:** `ig_chasespeed 1`: a spectator chasing a player sees that player's horizontal speed
@@ -1181,6 +1193,21 @@ behaviour), so the roster as a whole hooks somewhat more.
   (`ig_botroutemomentum`, be_ig_route.c's pricing and the start-leg hook): tried twice, no gain. be_ig_route.c keeps
   only the pad drill's route debug print. Rule since: a per-map file type only where the data cannot be computed at
   map load, one type per feature, its loader and tool named in its spec entry -- today only `<map>.climbs`.
+
+- **2026-11-28, ztn2dm5 drill and Billy's ztn2dm3 stair recording** (`work/hook-live/billy-ztn2dm3-stair-ceiling-2026-11-28.log`):
+  - *Roll fix:* a bot's first take-it-or-not roll (`ig_fastjumpchance`) came 8 s into a map, so no bot took a momentum
+    jump before then; now it rolls on the first ask.
+  - *Measuring:* most crossings are made by the planner's own landing hop and never reach the `ig: fastjump` log, so
+    that log undercounts. Counted as airborne crossings of the gap, the ztn2dm5 drill (start -700 940 344, goal
+    -1053 260 248) crosses in ~50% of runs at ~700 u/s; the rest: ~22% too fast and heading ~25 deg too far west
+    (the west-side line, often into the wall), 8% hooked across, 8% slow, 7% the ramp.
+  - *Tried, removed:* lip anchors along the jump's own line (250/400 past the take-off): 50 -> 53%, within noise;
+    a coast that hops its landings (the planner's look-ahead after a let-go): predicts 1.5 s far better on ztn2dm3
+    (136 -> 57 units off, speed bias -610 -> +3) but chose worse (28 maps: -4 u/s, time over 400 -1.3 points).
+  - *Outcome check* (libvar `ig_planoutcheck 1`): each fired hook logs `igpout` -- the planner's predicted position and
+    speed 0.5/1.0/1.5 s on against the real one. 28 maps roaming: median 28 units off at 0.5 s, 56 at 1.0 s, 98 at
+    1.5 s. `ig_plandebug 5`: every option and its cost while flying fast (`igopts`).
+  - 28 maps x 4 fighting with all of the above: level (frags 4.60/4.58, 336 u/s, no map significant).
 
 ## IG-48: `ig_botplanclimb` -- climbs as planner moves (trial)
 
