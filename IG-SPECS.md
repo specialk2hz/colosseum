@@ -1060,11 +1060,15 @@ behaviour), so the roster as a whole hooks somewhat more.
   the route now sets the up-hooks' aim. ztn2dm3 drill from the stairs: aim yaw -174 -> 179, top of the stairs at
   y 764 -> 792 (Billy 792-816), run 3.2 -> 3.0 s; Billy approved it. (A finer fan of up-hook aims, tried first, made
   far-wall slams 65 -> 81%: removed.)
-- **T13 corner turn hook (2026-11-28, `ig_planturnhook`, default 0 = off, WIP):** Billy's corner hook on ztn2dm3 (6
-  tries): flying at 620-860 u/s, 100-170 units short of the wall where the route turns, a floor hook 20-29 deg down and
-  75-90 deg toward the turn, held ~0.5 s, out at 730-920 the new way. Offered in the air at 500+ with a wall ahead within
-  400, held 0.5/0.7 s: the planner rarely takes it (6 -> 7% of drill runs) -- it prices each 1.5-18 s worse than landing.
-  Off until that is understood.
+- **T13 corner turn hook (2026-11-28, tried, removed):** Billy's corner hook on ztn2dm3 (6 tries): flying at
+  620-860 u/s, 100-170 units short of the wall where the route turns, a floor hook 20-29 deg down and 75-90 deg toward
+  the turn, held ~0.5 s, out at 730-920 the new way. Offered in the air at 500+ with a wall ahead within 400, held
+  0.5/0.7 s, the planner seldom took it (6 -> 7% of drill runs; it priced each 1.5-18 s worse than landing). Removed
+  at Billy's call in the clean-up; his recording stays.
+- **Fight planner (`ig_planfight`, removed 2026-11-28):** dodges scored for peeking and position (`ig_pf*`), off since
+  2026-11-25 (even with the stock attack move head to head). Removed at Billy's call; IG_PlanFight keeps only the
+  planner's own flights in a fight (IGX_FightFlight). 28 maps x 4 after the clean-up: frags 4.60, 336 u/s, hooks
+  12.3/min, slingshots 6.2/bot/min -- unchanged.
 
 ## IG-41: `ig_chasespeed` -- a speedometer for chase cameras (off)
 
