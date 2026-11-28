@@ -21,7 +21,7 @@ bool IG_ChaseSpeedOn(void)
     static cvar_t *on;
 
     if (!on)
-        on = gi.cvar("ig_chasespeed", "0", 0);
+        on = gi.cvar("ig_chasespeed", "1", 0);
     return on->integer != 0;
 }
 

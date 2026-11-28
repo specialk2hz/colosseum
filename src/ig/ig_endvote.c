@@ -46,7 +46,7 @@ static cvar_t *ig_endvote, *ig_endvotemaps, *ig_endvotetime;
 static void EV_Cvars(void)
 {
     if (!ig_endvote) {
-        ig_endvote = gi.cvar("ig_endvote", "0", 0);
+        ig_endvote = gi.cvar("ig_endvote", "1", 0);
         ig_endvotemaps = gi.cvar("ig_endvotemaps", "4", 0);
         ig_endvotetime = gi.cvar("ig_endvotetime", "15", 0);
     }
@@ -426,7 +426,7 @@ bool IG_MenuFast(edict_t *ent)
     static cvar_t *fast;
 
     if (!fast)
-        fast = gi.cvar("ig_menufast", "0", 0);
+        fast = gi.cvar("ig_menufast", "1", 0);
     if (!fast->integer)
         return false;
     if (G_IsOspRuleset()) {

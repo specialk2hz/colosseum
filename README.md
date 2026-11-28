@@ -436,8 +436,6 @@ The bot brain is the fork [specialk2hz/q3a_bot_backport_for_q2](https://github.c
 |---|---|---|
 | `ig_noblaster` | Instagib loadouts start without the blaster | 1 |
 | `ig_bothook` | Quake III bots use the offhand hook on climb routes; the master switch for every hook feature below (needs the OSP hook enabled) | 6 |
-| `ig_botroam` | Bots with nothing to pick up hunt where they last saw or heard an enemy, or take high ground, instead of wandering at random | 7 |
-| `ig_botrevenge` | A bot killed twice by the same player hunts them for a while | 8 |
 | `ig_botfighthook` | Hooks mid-fight, and a reposition after a kill or two misses | 10 |
 | `ig_botpadhook` | Hook into a jump pad and let go just before it; a short hook toward the landing at the end of the arc | 13 |
 | `ig_botstrafehack` | Bots land like Q2PRO clients (no post-landing jump lock) | 14 |

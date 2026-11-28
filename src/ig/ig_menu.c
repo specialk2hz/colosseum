@@ -33,7 +33,7 @@ int IG_ScoreMapLine(char *buf, size_t size, int outlen)
     int n;
 
     if (!show)
-        show = gi.cvar("ig_scoremap", "0", 0);
+        show = gi.cvar("ig_scoremap", "1", 0);
     if (!show->integer || !G_IsOspRuleset())
         return outlen;
     n = Q_snprintf(buf + outlen, size - outlen, "xv 0 yv -40 cstring \"%s\" ", level.mapname);
@@ -174,7 +174,7 @@ bool IG_VoteMapList(edict_t *ent)
     int c = ent - g_edicts - 1;
 
     if (!list)
-        list = gi.cvar("ig_votemaplist", "0", 0);
+        list = gi.cvar("ig_votemaplist", "1", 0);
     if (!list->integer || c < 0 || c >= MAX_CLIENTS)
         return false;
     if (G_IsOspRuleset()) {

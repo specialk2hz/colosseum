@@ -15,11 +15,6 @@ of the License, or (at your option) any later version.
 //                        when the hook is on (OSP rulesets, hook_enable)
 //   ig_bothook_cost  150 the fixed cost of a grapple route, in 1/100 s of
 //                        route time (bspc bakes in 500); read at map load
-//   ig_botroam       0   1: goals with a reason (hunt) instead of the random
-//                        fallback; item goals untouched (IG-7)
-//   ig_botrevenge    0   1: a bot killed twice by one player within
-//                        ig_botrevenge_window (60 s) goes after them for
-//                        ig_botrevenge_time (20 s) or until it kills them (IG-8)
 //   ig_botplan       0   1: the movement layer (IG-40 and the behaviours
 //                        folded into it in ig-0.5: IG-28, 31, 32, 35, 36, 38, 42)
 //   ig_botnav        0   1: the map-knowledge layer (IG-43, 44, 46)
@@ -73,6 +68,7 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_roamgoal", nav ? "1" : "0");   // IG-44, folded into ig_botnav
     lib->funcs.BotLibVarSet("ig_gapjumps", nav ? "1" : "0");   // IG-46, folded into ig_botnav; read at map load
     lib->funcs.BotLibVarSet("ig_fastjumps", nav && gi.cvar("ig_botfastjumps", "0", 0)->value ? "1" : "0");   // IG-47 (trial), read at map load
+    lib->funcs.BotLibVarSet("ig_highground", nav ? "1" : "0");   // idle bots take the high ground (from IG-7), ig_botnav
     lib->funcs.BotLibVarSet("ig_padreach", use && nav ? "1" : "0");   // IG-43, folded into ig_botnav; read at map load
     lib->funcs.BotLibVarSet("ig_paddrill", gi.cvar("ig_paddrill", "0", 0)->string);   // IG-43: the pad drill (a testing aid)
     // IG-37: the climb drill (a testing aid): mode, tries per route, aim, pause, and the point for mode 2
@@ -121,12 +117,6 @@ void IG_BotLibVars(struct bot_library_s *lib)
         lib->funcs.BotLibVarSet("cmd_grappleon", IG_HOOKON);
         lib->funcs.BotLibVarSet("cmd_grappleoff", IG_HOOKOFF);
     }
-    lib->funcs.BotLibVarSet("ig_roam", gi.cvar("ig_botroam", "0", 0)->value ? "1" : "0");
-    lib->funcs.BotLibVarSet("ig_revenge", gi.cvar("ig_botrevenge", "0", 0)->value ? "1" : "0");
-    lib->funcs.BotLibVarSet("ig_revenge_window", gi.cvar("ig_botrevenge_window", "60", 0)->string);
-    lib->funcs.BotLibVarSet("ig_revenge_time", gi.cvar("ig_botrevenge_time", "20", 0)->string);
-    // testing aid: bots say in chat which goal they chose and why
-    lib->funcs.BotLibVarSet("ig_debug", gi.cvar("ig_botdebug", "0", 0)->value ? "1" : "0");
     {
         cvar_t *extra = gi.cvar("ig_botlibvars", "", 0);
         char buf[MAX_STRING_CHARS], *name, *value;

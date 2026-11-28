@@ -48,8 +48,8 @@ Status: **live** = on 27912 (pushed, `ig-0.4-speed` + IG-22..24) · **folded** =
 committed locally, not pushed · **trial** = 0 in its group, on only on 27913 until Billy has played it ·
 **WIP** = being built · **parked** = in the code, off, with a reason · **tool** = testing aid, never on in play.
 
-Groups: A hook movement (modes with the hook) · B instagib (instagib modes only) · C map movement (every
-mode) · D roaming · M menus (every mode). Brain libvars are named without `bot` (`ig_botsling` -> `ig_sling`).
+Groups (the server repo's groups/*.cfg, since 2026-11-28): movement (bot movement, no hook needed) · hook
+(everything the hook does) · instagib (instagib's game modifiers) · mod (part of the mod, on in every mode). Brain libvars are named without `bot` (`ig_botsling` -> `ig_sling`).
 
 | IG | Switch | What | Group | Status | Measured / verdict |
 |---|---|---|---|---|---|
@@ -58,46 +58,46 @@ mode) · D roaming · M menus (every mode). Brain libvars are named without `bot
 | 3 | `nochat 1` | no bot chat | server.cfg | live | |
 | 4, 12 | `sv igstats` | movement and fight counters | -- | live (tool) | |
 | 5 | `tools/igbench.py` | seeded bot matches, compared | -- | tool | |
-| 6 | `ig_bothook` | bots take hook climb routes | A | live | hooks 0 -> 17/min |
-| 7 | `ig_botroam` | hunt goals instead of random roaming | D | live | no effect in DM |
-| 8 | `ig_botrevenge` | grudge against a repeat killer | B | parked | trigger rule undecided (Billy) |
-| 9 | `ig_botsling` | slingshots, chains | A | retired (ig-0.5): the planner's | 9.1 slingshots/bot/min |
-| 10 | `ig_botfighthook` | hook mid-fight, reposition | B | live | |
-| 11 | `ig_botstrafe 1` | straight strafe jumping | C | retired, removed in ig-0.5 | no gain; replaced by IG-31 (`2`) |
-| 13 | `ig_botpadhook` | Billy's jump-pad hook tricks | A | live | variety, not speed |
-| 14 | `ig_botstrafehack` | bots land like Q2PRO clients | C | live | no change, parity |
+| 6 | `ig_bothook` | bots take hook climb routes | hook | live | hooks 0 -> 17/min |
+| 7 | `ig_botroam` | hunt goals instead of random roaming | -- | retired, removed 2026-11-28 | no effect in DM |
+| 8 | `ig_botrevenge` | grudge against a repeat killer | -- | retired, removed 2026-11-28 | trigger rule undecided (Billy) |
+| 9 | `ig_botsling` | slingshots, chains | hook | retired (ig-0.5): the planner's | 9.1 slingshots/bot/min |
+| 10 | `ig_botfighthook` | hook mid-fight, reposition | hook | live | |
+| 11 | `ig_botstrafe 1` | straight strafe jumping | movement | retired, removed in ig-0.5 | no gain; replaced by IG-31 (`2`) |
+| 13 | `ig_botpadhook` | Billy's jump-pad hook tricks | hook | live | variety, not speed |
+| 14 | `ig_botstrafehack` | bots land like Q2PRO clients | movement | live | no change, parity |
 | 15 | `ig_moverec` | record a player's movement | -- | tool | |
 | 16 | -- | (number not used) | | | |
-| 17 | `ig_botpullhop` | hop off the floor while pulled | A | retired (ig-0.5): the planner's | 301 -> 313 u/s |
+| 17 | `ig_botpullhop` | hop off the floor while pulled | hook | retired (ig-0.5): the planner's | 301 -> 313 u/s |
 | 18, 19 | `ig_scoremap`, `ig_votemaplist` | map on scoreboard, vote map list | M | live | |
-| 20 | `ig_botstairhook` | stairwell wall hook | A | retired (ig-0.5): the planner's | |
-| 21 | `ig_botaffinity` | hook affinity per character | A | live | |
+| 20 | `ig_botstairhook` | stairwell wall hook | hook | retired (ig-0.5): the planner's | |
+| 21 | `ig_botaffinity` | hook affinity per character | hook | live | |
 | 22, 23 | `ig_endvote`, `ig_menufast` | end-of-match map vote, fast menus | M | live | |
-| 24 | `ig_nofallfx` | no landing dip or grunt | B | live | Billy: liked it |
-| 25 | `ig_railsplash` | rail jumping (shooter only) | B | approved (ig-0.5) | Billy: approved it |
+| 24 | `ig_nofallfx` | no landing dip or grunt | instagib | live | Billy: liked it |
+| 25 | `ig_railsplash` | rail jumping (shooter only) | instagib | approved (ig-0.5) | Billy: approved it |
 | 26 | `ig_botroutes` | replay recorded routes | -- | retired, removed in ig-0.5 | 0/12 finished; rework around hook events |
 | 27 | `ig_botpeace` | bots only move | -- | tool | |
-| 28 | `ig_botaffinitychance` | affinity = slingshot chance | B | folded: ig_botplan | spread sd 1.43 -> 1.67 |
-| 29 | `ig_botwalkway` | slingshots stay on walkways near lava | C | approved, every mode (ig-0.5) | q2rdm11 lava 0.39 -> 0.23/min |
-| 30 | `ig_botunstuck` | stuck bots back to a spawn point | C | approved, every mode (ig-0.5) | fixes q2dm1pro lift trap |
-| 31 | `ig_botstrafe 2`, `ig_botjumpland` | strafe-jump chains | B | folded: ig_botplan | chains 7 -> 20%, >400 u/s 16 -> 19% |
-| 32 | `ig_botclimbrun 2` | let go over the ledge | B | folded: ig_botplan | hang 0.19 -> 0.06 s |
-| 33 | `ig_lavarescue` | lava/pits respot, no frag lost | B | approved (ig-0.5) | q2rdm11 suicides 0.33 -> 0 |
-| 34 | `hook_type`, `ig_hookvote` | LMCTF hook style, vote row | server.cfg | approved (ig-0.5; vote in group A) | LMCTF bots 238 -> 287 u/s |
-| 35 | `ig_botfuncwall` | stand on func_wall pads, no circling | B | folded: ig_botplan | circling 437 -> 311 |
-| 36 | `ig_botclimbaim`, `ig_botclimbland` | climbs land in the middle; climb tables | B | folded: ig_botplan | landed 88.5 -> 91.3%, centred 44 -> 59%; Billy: approved it |
+| 28 | `ig_botaffinitychance` | affinity = slingshot chance | hook | folded: ig_botplan | spread sd 1.43 -> 1.67 |
+| 29 | `ig_botwalkway` | slingshots stay on walkways near lava | movement | approved, every mode (ig-0.5) | q2rdm11 lava 0.39 -> 0.23/min |
+| 30 | `ig_botunstuck` | stuck bots back to a spawn point | movement | approved, every mode (ig-0.5) | fixes q2dm1pro lift trap |
+| 31 | `ig_botstrafe 2`, `ig_botjumpland` | strafe-jump chains | movement | folded: ig_botplan | chains 7 -> 20%, >400 u/s 16 -> 19% |
+| 32 | `ig_botclimbrun 2` | let go over the ledge | hook | folded: ig_botplan | hang 0.19 -> 0.06 s |
+| 33 | `ig_lavarescue` | lava/pits respot, no frag lost | instagib | approved (ig-0.5) | q2rdm11 suicides 0.33 -> 0 |
+| 34 | `hook_type`, `ig_hookvote` | LMCTF hook style, vote row | server.cfg | approved (ig-0.5; vote in hook.cfg) | LMCTF bots 238 -> 287 u/s |
+| 35 | `ig_botfuncwall` | stand on func_wall pads, no circling | movement | folded: ig_botplan | circling 437 -> 311 |
+| 36 | `ig_botclimbaim`, `ig_botclimbland` | climbs land in the middle; climb tables | hook | folded: ig_botplan | landed 88.5 -> 91.3%, centred 44 -> 59%; Billy: approved it |
 | 37 | `ig_drill` | climb drill | -- | tool | |
-| 38 | `ig_botstrafeplan` | strafe chains plan ahead | B | folded: ig_botplan | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
-| 39 | `ig_botarcsafe` | flight check before let-go / hop | B | retired, removed in ig-0.5 | neutral; replaced by the planner (IG-40) |
+| 38 | `ig_botstrafeplan` | strafe chains plan ahead | movement | folded: ig_botplan | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
+| 39 | `ig_botarcsafe` | flight check before let-go / hop | movement | retired, removed in ig-0.5 | neutral; replaced by the planner (IG-40) |
 | 49 | `ig_links` (libvar, experiment) | measured link times: bots' own area-to-area times priced into the routing | -- | retired, removed in ig-0.5 | 28 maps: per-route pricing frags -0.35/min, -8 u/s; per-area speed factors level, no gain; momentum jumps not more often |
-| 48 | `ig_botplanclimb` | climbs as planner moves: fired on the run, let go by the sim | B | trial | 4 maps: standstill fires 71 -> 15%, speed at the fire 0 -> 285 u/s, climbs landing up top ~280 -> ~390; 28 maps level; LMCTF: hooks that climbed -2.7 pts, so OSP only |
-| 47 | `ig_botfastjumps` | momentum jumps: gaps cleared only with speed, offered when fast, planned from 250 u/s; Billy's lip slingshot before them | B | trial | q2rdm11 walkway end jumped 46 -> 86%; ztn2dm3 ledge: column hits 91 -> 0%, lip slingshots 0.2 -> 0.88/try; 28 maps level; taken 0.02/bot-min in fights |
-| 46 | `ig_botgapjumps` | routes jump gaps: bspc's gap jumps priced at their flight, missing ones added | B | folded: ig_botnav | q2rdm11 pad-to-walkway drill 4/144 -> 165/165 finished; route from the pad landing 9.5 -> 3.3 s; 28 maps x 4: everything level |
-| 44 | `ig_botroamgoal` | fair random roam goal: floor spots weighted by size, no water | B | folded: ig_botnav | q2dm1/q2dm1pro 6 seeds: pool room time 7.4 -> 4.0% / 10.7 -> 7.9%, in water 5.1 -> 2.5% / 7.0 -> 4.5%; frags, speed, hooks unchanged |
-| 43 | `ig_botpadreach` | routes through straight-up jump pads, taken with a hook from the top | B | folded: ig_botnav | q2rdm11: 15 routes; drill: far floors 0/54 -> 54/66 with the pad top; 28 maps level, q2rdm11 +10 u/s, upper +4.8 pts |
-| 42 | `ig_botpadbounce` | steer off a pad that bounces a bot straight up (bot frozen forever) | B | folded: ig_botplan | q2rdm11 6 bots x 8 matches: bots frozen 2+ s 4 -> 0; other stats unchanged |
-| 41 | `ig_chasespeed` | chase-camera speedometer under the chase line | M | approved (ig-0.5) | -- |
-| 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | B | layer `ig_botplan` (ig-0.5) | v1 works: 28 maps 309 -> 330 u/s, upper 27.7 -> 31.1%, frags +5%; q2rdm11 lava trips halved |
+| 48 | `ig_botplanclimb` | climbs as planner moves: fired on the run, let go by the sim | hook | trial | 4 maps: standstill fires 71 -> 15%, speed at the fire 0 -> 285 u/s, climbs landing up top ~280 -> ~390; 28 maps level; LMCTF: hooks that climbed -2.7 pts, so OSP only |
+| 47 | `ig_botfastjumps` | momentum jumps: gaps cleared only with speed, offered when fast, planned from 250 u/s; Billy's lip slingshot before them | movement | trial | q2rdm11 walkway end jumped 46 -> 86%; ztn2dm3 ledge: column hits 91 -> 0%, lip slingshots 0.2 -> 0.88/try; 28 maps level; taken 0.02/bot-min in fights |
+| 46 | `ig_botgapjumps` | routes jump gaps: bspc's gap jumps priced at their flight, missing ones added | movement | folded: ig_botnav | q2rdm11 pad-to-walkway drill 4/144 -> 165/165 finished; route from the pad landing 9.5 -> 3.3 s; 28 maps x 4: everything level |
+| 44 | `ig_botroamgoal` | fair random roam goal: floor spots weighted by size, no water | movement | folded: ig_botnav | q2dm1/q2dm1pro 6 seeds: pool room time 7.4 -> 4.0% / 10.7 -> 7.9%, in water 5.1 -> 2.5% / 7.0 -> 4.5%; frags, speed, hooks unchanged |
+| 43 | `ig_botpadreach` | routes through straight-up jump pads, taken with a hook from the top | hook | folded: ig_botnav | q2rdm11: 15 routes; drill: far floors 0/54 -> 54/66 with the pad top; 28 maps level, q2rdm11 +10 u/s, upper +4.8 pts |
+| 42 | `ig_botpadbounce` | steer off a pad that bounces a bot straight up (bot frozen forever) | movement | folded: ig_botplan | q2rdm11 6 bots x 8 matches: bots frozen 2+ s 4 -> 0; other stats unchanged |
+| 41 | `ig_chasespeed` | chase-camera speedometer under the chase line | mod | approved (ig-0.5) | -- |
+| 40 | (planner, branch `planner`) | one movement planner: simulate options, pick among the best | movement | layer `ig_botplan` (ig-0.5) | v1 works: 28 maps 309 -> 330 u/s, upper 27.7 -> 31.1%, frags +5%; q2rdm11 lava trips halved |
 
 The tricks these features carry, and how the movement planner must keep each one: `BOT-TRICKS.md`.
 
@@ -192,7 +192,17 @@ Config-only change, not an IG switch: `allow_railgun 0` in instagib.cfg (no rail
 - **Tested:** igbench, feature off vs `ig-0.1-baseline` and feature on vs off, on q2dm1, q2rdm11,
   ztn2dm3 (report in the server repo, bench/ig-0.2-hook-climb).
 
-## IG-7: `ig_botroam` -- hunt goals instead of the random one
+## IG-7: `ig_botroam` -- hunt goals instead of the random one (removed 2026-11-28)
+
+- **Removed (2026-11-28):** Billy judged it not fully developed; removed with IG-8. The game switch, the brain's
+  ai_ig_roam.c (peace mode and the move debug line moved to ai_ig_plan.c) and the high-ground points in
+  botlib/be_ig_hook.c went with it at first. IG-44's fair roam goals (ig_botnav) are a separate thing and stay.
+- **High ground kept, in ig_botnav (2026-11-28, Billy's call):** without it, time on upper levels fell 29.0 ->
+  23.1% (28 maps x 4, significant). Now game_q3/ai_ig_highground.c (libvar `ig_highground`, pushed with
+  `ig_botnav`): an idle bot's random goal becomes one of the map's 16 high points, at `ig_highgroundchance`.
+  28 maps x 4 against the old roaming (hunting + high ground): chance 1.0 upper 33.9%, frags 4.34 (-0.26, sig.);
+  0.7: 29.8%, 4.38 (-0.22, sig.); 0.5 (default): 27.8%, 4.44 (-0.16, n.s.); none: 23.1%, 4.57. The hunting had
+  brought bots together; high ground spreads them out.
 
 - **Requirement:** a Quake III bot with nothing to pick up goes where it last saw (120-degree view,
   3000 units) or heard (firing, 1500 units) an enemy, the freshest trace up to 10 s old, instead of
@@ -206,7 +216,10 @@ Config-only change, not an IG switch: `allow_railgun 0` in instagib.cfg (no rail
 - **Tested:** igbench, roam on vs off (hook on): frags/min 4.54 -> 5.40 (significant), time to contact
   4.38 -> 3.96 s, accuracy unchanged.
 
-## IG-8: `ig_botrevenge` -- a grudge (trigger rule OPEN)
+## IG-8: `ig_botrevenge` -- a grudge (removed 2026-11-28)
+
+- **Removed (2026-11-28)** at Billy's call, with IG-7: ai_ig_revenge.c, its `// IG:` calls in ai_dmq3.c, the
+  game cvars `ig_botrevenge`, `ig_botrevenge_window`, `ig_botrevenge_time` and the chat debug `ig_botdebug`.
 
 - **Requirement:** a bot killed twice in a row by the same player within `ig_botrevenge_window` (60 s)
   hunts that player (IG-7's hunt, even with roam off) and prefers them as its enemy when in view, for
