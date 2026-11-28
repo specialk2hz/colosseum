@@ -27,7 +27,7 @@ as a **kill switch** for tests, set with `ig_botlibvars` (pushed last, it wins):
 | `ig_padreach`, `ig_roamgoal`, `ig_gapjumps` (`ig_gapjumpreprice`) | pad routes, fair roam goals, gap jumps | 43, 44, 46 |
 | `ig_fastjumps` (`ig_fastjumplip` the lip slingshot, `ig_fastjumpchance` 0.5 the per-bot roll) | momentum jumps (map knowledge) | 47 |
 | `ig_highground` (`ig_highgroundchance` 0.5) | idle bots take the high ground (map knowledge) | 7 |
-| `ig_planclimb` (`ig_planclimblmctf` 0) | climbs as planner moves, fired on the run, OSP hook (planner) | 48 |
+| `ig_planclimb` (`ig_planclimblmctf` 1) | climbs as planner moves, fired on the run, both hooks (planner) | 48 |
 
 Tuning values are not switches: their code defaults are the tuned values (27913's, folded in ig-0.5:
 `ig_planpadsling 1`, `ig_planreleasewallmul 1.5`, `ig_planwallsoon 2`, `ig_repokill 0.2`,
@@ -1247,6 +1247,16 @@ behaviour), so the roster as a whole hooks somewhat more.
   from a standstill 71 -> 15%, speed at the fire 0 -> 285 u/s, landing up top 54 -> 53% (~280 -> ~390 climbs).
   28 maps x 4: all level, slingshots/bot/min +0.9 (the climbs). LMCTF's hook, 28 maps: hooks that climbed 38.9 ->
   36.2% (significant), so off with it for now.
+- **LMCTF (2026-11-28, on):** the outcome check showed LMCTF predictions as good as OSP's (climbs 12 units off at
+  0.5 s, OSP 9), so the loss was elsewhere: 16% of the planner's LMCTF climbs never bit (OSP 5%) -- its hook flies at
+  800 u/s and the 0.4 s hook commit let go of it mid-flight. The commit now lasts until the hook should have reached
+  its anchor (distance / `ig_hookfly` + `ig_planhookcommitpad` 0.15 s, at least `ig_planhookcommit`, at most 2 s).
+  4 maps x 4: never bit 16 -> 11% (OSP 5 -> 3%); the planner's LMCTF climbs fired standing 6% (stock 75%). 28 maps
+  x 4, LMCTF with planner climbs vs ig-0.5: level (frags 4.44/4.39, 305/308 u/s, upper 26.5/25.9%), slingshots
+  1.94 -> 2.50/bot/min (sig.); "hooks that climbed %" 38.7/37.6 is a share of more hooks (climbs per minute the
+  same). OSP with the commit: level. Left: 12% of the planner's LMCTF climbs let go rising and fall back (OSP 9%);
+  at 1 s the planner expects them 34 units higher than they get. Climbs landing are slower with LMCTF: median
+  4.8 s stock, 3.2 s the planner's, against OSP's 4.1/3.2.
 - **Stall fix (2026-11-27):** Billy saw a bot (Grunt) sit in the twin-pad room before falling back to a stop-and-hook
   climb: the stock travel stood down whenever the planner had seen the climb, also on thinks the planner did not move
   the bot, and the give-up clock restarted when the route flipped between two climbs. Now the planner owns a climb
