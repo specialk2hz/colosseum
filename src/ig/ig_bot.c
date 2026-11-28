@@ -18,7 +18,6 @@ of the License, or (at your option) any later version.
 //   ig_botplan       0   1: the movement layer (IG-40 and the behaviours
 //                        folded into it in ig-0.5: IG-28, 31, 32, 35, 36, 38, 42)
 //   ig_botnav        0   1: the map-knowledge layer (IG-43, 44, 46)
-//   ig_botfastjumps  0   1: momentum jumps, with ig_botnav (IG-47, trial)
 //   ig_botlibvars    ""  "name value name value ...": any further libvars for
 //                        the Q3 brain, pushed after the above.  For tuning and
 //                        A/B tests (igbench --set ig_botlibvars ...), not play
@@ -67,7 +66,7 @@ void IG_BotLibVars(struct bot_library_s *lib)
     lib->funcs.BotLibVarSet("ig_padbounce", plan ? "1" : "0");   // IG-42, folded into ig_botplan
     lib->funcs.BotLibVarSet("ig_roamgoal", nav ? "1" : "0");   // IG-44, folded into ig_botnav
     lib->funcs.BotLibVarSet("ig_gapjumps", nav ? "1" : "0");   // IG-46, folded into ig_botnav; read at map load
-    lib->funcs.BotLibVarSet("ig_fastjumps", nav && gi.cvar("ig_botfastjumps", "0", 0)->value ? "1" : "0");   // IG-47 (trial), read at map load
+    lib->funcs.BotLibVarSet("ig_fastjumps", nav ? "1" : "0");   // IG-47, folded into ig_botnav (ig-0.5); read at map load
     lib->funcs.BotLibVarSet("ig_highground", nav ? "1" : "0");   // idle bots take the high ground (from IG-7), ig_botnav
     lib->funcs.BotLibVarSet("ig_padreach", use && nav ? "1" : "0");   // IG-43, folded into ig_botnav; read at map load
     lib->funcs.BotLibVarSet("ig_paddrill", gi.cvar("ig_paddrill", "0", 0)->string);   // IG-43: the pad drill (a testing aid)
@@ -108,7 +107,7 @@ void IG_BotLibVars(struct bot_library_s *lib)
     // ...which simulates the game's half of strafe chains (IG-31): the landing hop, folded into ig_botplan
     lib->funcs.BotLibVarSet("ig_jumpland", plan ? "1" : "0");
     // IG-48 (trial): climbs as planner moves, with the hook
-    lib->funcs.BotLibVarSet("ig_planclimb", use && plan && gi.cvar("ig_botplanclimb", "0", 0)->value ? "1" : "0");
+    lib->funcs.BotLibVarSet("ig_planclimb", use && plan ? "1" : "0");   // IG-48, folded into ig_botplan (ig-0.5)
     lib->funcs.BotLibVarSet("ig_hookstyle", IG_HookType() == IG_HOOK_LMCTF ? "1" : "0");  // IG-40: the pull the planner simulates
     lib->funcs.BotLibVarSet("ig_slingup", IG_HookType() == IG_HOOK_LMCTF ? "100" : "0");   // IG-34: LMCTF slings hook up
     // the server's hook_sky, for the lava escape (IG-9)

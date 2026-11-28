@@ -25,6 +25,9 @@ as a **kill switch** for tests, set with `ig_botlibvars` (pushed last, it wins):
 | `ig_climbaim`, `ig_climbland` | climbs hook the frame, land in the middle | 36 |
 | `ig_padbounce` | off a pad that bounces straight up | 42 |
 | `ig_padreach`, `ig_roamgoal`, `ig_gapjumps` (`ig_gapjumpreprice`) | pad routes, fair roam goals, gap jumps | 43, 44, 46 |
+| `ig_fastjumps` (`ig_fastjumplip` the lip slingshot, `ig_fastjumpchance` 0.5 the per-bot roll) | momentum jumps (map knowledge) | 47 |
+| `ig_highground` (`ig_highgroundchance` 0.5) | idle bots take the high ground (map knowledge) | 7 |
+| `ig_planclimb` (`ig_planclimblmctf` 0) | climbs as planner moves, fired on the run, OSP hook (planner) | 48 |
 
 Tuning values are not switches: their code defaults are the tuned values (27913's, folded in ig-0.5:
 `ig_planpadsling 1`, `ig_planreleasewallmul 1.5`, `ig_planwallsoon 2`, `ig_repokill 0.2`,
@@ -90,8 +93,8 @@ Groups (the server repo's groups/*.cfg, since 2026-11-28): movement (bot movemen
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | movement | folded: ig_botplan | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | movement | retired, removed in ig-0.5 | neutral; replaced by the planner (IG-40) |
 | 49 | `ig_links` (libvar, experiment) | measured link times: bots' own area-to-area times priced into the routing | -- | retired, removed in ig-0.5 | 28 maps: per-route pricing frags -0.35/min, -8 u/s; per-area speed factors level, no gain; momentum jumps not more often |
-| 48 | `ig_botplanclimb` | climbs as planner moves: fired on the run, let go by the sim | hook | trial | 4 maps: standstill fires 71 -> 15%, speed at the fire 0 -> 285 u/s, climbs landing up top ~280 -> ~390; 28 maps level; LMCTF: hooks that climbed -2.7 pts, so OSP only |
-| 47 | `ig_botfastjumps` | momentum jumps: gaps cleared only with speed, offered when fast, planned from 250 u/s; Billy's lip slingshot before them | movement | trial | q2rdm11 walkway end jumped 46 -> 86%; ztn2dm3 ledge: column hits 91 -> 0%, lip slingshots 0.2 -> 0.88/try; 28 maps level; taken 0.02/bot-min in fights |
+| 48 | `ig_botplanclimb` | climbs as planner moves: fired on the run, let go by the sim | hook | folded: ig_botplan (ig-0.5, Billy approved it 2026-11-28) | 4 maps: standstill fires 71 -> 15%, speed at the fire 0 -> 285 u/s, climbs landing up top ~280 -> ~390; 28 maps level; LMCTF: hooks that climbed -2.7 pts, so OSP only |
+| 47 | `ig_botfastjumps` | momentum jumps: gaps cleared only with speed, offered when fast, planned from 250 u/s; Billy's lip slingshot before them | movement | folded: ig_botnav (ig-0.5, Billy approved it 2026-11-28) | q2rdm11 walkway end jumped 46 -> 86%; ztn2dm3 ledge: column hits 91 -> 0%, lip slingshots 0.2 -> 0.88/try; 28 maps level; taken 0.02/bot-min in fights |
 | 46 | `ig_botgapjumps` | routes jump gaps: bspc's gap jumps priced at their flight, missing ones added | movement | folded: ig_botnav | q2rdm11 pad-to-walkway drill 4/144 -> 165/165 finished; route from the pad landing 9.5 -> 3.3 s; 28 maps x 4: everything level |
 | 44 | `ig_botroamgoal` | fair random roam goal: floor spots weighted by size, no water | movement | folded: ig_botnav | q2dm1/q2dm1pro 6 seeds: pool room time 7.4 -> 4.0% / 10.7 -> 7.9%, in water 5.1 -> 2.5% / 7.0 -> 4.5%; frags, speed, hooks unchanged |
 | 43 | `ig_botpadreach` | routes through straight-up jump pads, taken with a hook from the top | hook | folded: ig_botnav | q2rdm11: 15 routes; drill: far floors 0/54 -> 54/66 with the pad top; 28 maps level, q2rdm11 +10 u/s, upper +4.8 pts |
@@ -1228,7 +1231,7 @@ behaviour), so the roster as a whole hooks somewhat more.
     1.5 s. `ig_plandebug 5`: every option and its cost while flying fast (`igopts`).
   - 28 maps x 4 fighting with all of the above: level (frags 4.60/4.58, 336 u/s, no map significant).
 
-## IG-48: `ig_botplanclimb` -- climbs as planner moves (trial)
+## IG-48: `ig_botplanclimb` -- climbs as planner moves, fired on the run (folded into `ig_botplan`)
 
 - **Requirement:** `ig_botplanclimb 1` with `ig_botplan` and the bots' hook (libvar `ig_planclimb`; not with
   LMCTF's hook unless `ig_planclimblmctf`). IGX_FindClimb: a TRAVEL_GRAPPLEHOOK route within `ig_planclimbdist`
@@ -1250,7 +1253,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   only on a think it moves the bot, and one give-up stretch covers every climb inside it. 4 maps x 4: stalls (1.5 s+
   standing) 79 -> 34 (stock 43), fired from a standstill 26% (stock 71%), climbs landing up top unchanged at 53%.
 
-## IG-47: `ig_botfastjumps` -- momentum jumps and the lip slingshot (trial)
+## IG-47: `ig_botfastjumps` -- momentum jumps and the lip slingshot (folded into `ig_botnav`)
 
 - **Requirement:** `ig_botfastjumps 1` with `ig_botnav` (libvar `ig_fastjumps`, read at map load;
   botlib/be_ig_jump.c, the planner in game_q3/ai_ig_plan.c). At load the gap scan also takes gaps a run
