@@ -127,6 +127,7 @@ static void IG_StatsReset(void)
 
     memset(&igs, 0, sizeof(igs));
     igs.open = true;
+    IG_CtfStatsReset();   // CTF: flags, carriers, bases
     igs.since = level.framenum;
     igs.upperz = IG_SpawnMeanZ() + IG_UPPER;
     for (i = 0; i < game.maxclients && i < MAX_CLIENTS; i++) {
@@ -262,6 +263,8 @@ void IG_StatsFrame(void)
 {
     IG_EntityDump();
     int i;
+
+    IG_CtfStatsFrame();
 
     if (!igs.open || level.intermission_framenum)
         return;
@@ -425,6 +428,7 @@ static void IG_StatsReport(void)
 {
     int i;
 
+    IG_CtfStatsReport();
     gi.dprintf("igstats frame %d since %d frames %d upperz %.0f %s\n",
                level.framenum, igs.since, level.framenum - igs.since,
                igs.upperz, igs.open ? "open" : "closed");

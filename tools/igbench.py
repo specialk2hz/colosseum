@@ -103,11 +103,11 @@ def make_tree(paths, d, m, aasdir=None):
 
 
 def bench_cfg(args):
-    lines = ['exec "%s"' % args.cfg]
+    lines = ['exec "%s"' % os.path.basename(args.cfg) if os.path.isfile(args.cfg) else 'exec "%s"' % args.cfg]
     lines += ['set %s "%s"' % (k, v) for k, v in args.set]
     # The harness owns the bot count, the limits and the botlib.
-    lines += ['set botlibs q3', 'set botfill 0', 'set bots_autoload 0', 'set bots_minplayers 0',
-              'set timelimit 0', 'set fraglimit 0', 'set flood_msgs 0', 'set statsfile 0',
+    lines += ['set botlibs q3', 'set botfill 0', 'set bots_autoload 0', 'set bots_minplayers 0', 'set minimumplayers 0',
+              'set timelimit 0', 'set fraglimit 0', 'set capturelimit 0', 'set flood_msgs 0', 'set statsfile 0',
               'set public 0']
     return '\n'.join(lines) + '\n'
 
@@ -125,6 +125,11 @@ def match_id(spec):
 def play(paths, so, wdir, spec, args):
     m, seed = spec['map'], spec['seed']
     make_tree(paths, wdir, m, args.aasdir)
+    if os.path.isfile(args.cfg):	# a config from outside the install (the server repo's ctf.cfg)
+        dst = os.path.join(wdir, 'colosseum', os.path.basename(args.cfg))
+        if os.path.lexists(dst):
+            os.remove(dst)
+        shutil.copy(args.cfg, dst)
     with open(os.path.join(wdir, 'colosseum', 'igbench.cfg'), 'w') as f:
         f.write(bench_cfg(args))
     names = lineup(paths, spec)
@@ -198,6 +203,24 @@ def parse(text, spec, names):
     res['revengekill'] = sum(1 for l in lines[start:] if l.startswith('ig: revenge kill '))
     res['sling'] = sum(1 for l in lines[start:] if re.match(r'^ig: slingshot \d+ length', l))
     res['fighthook'] = sum(1 for l in lines[start:] if re.match(r'^ig: fighthook \d+$', l))
+    # CTF (src/ig/ig_ctfstats.c): the flag events and the window's tallies
+    ev = {}
+    capcarry = []
+    for l in lines[start:]:
+        m = re.match(r'^igctf \d+ (\w+) (-?\d+) team \d+ flag \d+(?: carry (\d+) dist (\d+))?', l)
+        if m:
+            ev[m.group(1)] = ev.get(m.group(1), 0) + 1
+            if m.group(1) == 'capture' and m.group(3):
+                capcarry.append(int(m.group(3)))
+        m = re.match(r'^igctf summary (.*)$', l)
+        if m:
+            res['ctf'] = kv(m.group(1))
+        m = re.match(r'^igctf client (\d+) (.*) name (.*)$', l)
+        if m:
+            res.setdefault('ctfcl', {})[int(m.group(1))] = kv(m.group(2))
+    if 'ctf' in res:
+        res['ctfev'] = ev
+        res['capcarry'] = capcarry
     for l in lines[start:]:
         m = botduel.RE_ENDED.match(l)
         if m:
@@ -307,7 +330,30 @@ METRICS = [
 
 
 # Per match rather than per bot: the brain's revenge events (IG-8).
+def _ctfsum(r, k):
+    return sum(c.get(k, 0) for c in r.get('ctfcl', {}).values())
+
+
+def _ctf(fn):
+    return lambda r, fr: fn(r, fr) if 'ctf' in r else None
+
+
 MATCH_METRICS = [
+    # CTF (ig_ctfstats.c); None outside CTF, and such rows are left out of the report
+    ('caps', 'CTF captures/10 min', _ctf(lambda r, fr: (r['ctf']['caps1'] + r['ctf']['caps2']) / (fr * FRAME_S / 600))),
+    ('takes', 'CTF flag pickups/10 min', _ctf(lambda r, fr: (r['ctfev'].get('take', 0) + r['ctfev'].get('repickup', 0)) / (fr * FRAME_S / 600))),
+    ('capshare', 'CTF pickups captured %', _ctf(lambda r, fr: 100.0 * r['ctfev'].get('capture', 0) / (r['ctfev'].get('take', 0) + r['ctfev'].get('repickup', 0))
+                                                if r['ctfev'].get('take', 0) + r['ctfev'].get('repickup', 0) else None)),
+    ('capcarry', 'CTF carry to capture s', _ctf(lambda r, fr: botduel.mean([x * FRAME_S for x in r['capcarry']]) if r['capcarry'] else None)),
+    ('carryspeed', 'CTF carrier units/s', _ctf(lambda r, fr: _ctfsum(r, 'carrydist') / (_ctfsum(r, 'carryframes') * FRAME_S) if _ctfsum(r, 'carryframes') else None)),
+    ('home', 'CTF flag at home %', _ctf(lambda r, fr: 100.0 * (r['ctf']['home1'] + r['ctf']['home2']) / (2 * fr))),
+    ('unguarded', 'CTF home flag unguarded %', _ctf(lambda r, fr: 100.0 * (r['ctf']['unguarded1'] + r['ctf']['unguarded2']) / (r['ctf']['home1'] + r['ctf']['home2'])
+                                                   if r['ctf']['home1'] + r['ctf']['home2'] else None)),
+    ('helped', 'CTF carrier with a teammate %', _ctf(lambda r, fr: 100.0 * _ctfsum(r, 'helpframes') / _ctfsum(r, 'carryframes') if _ctfsum(r, 'carryframes') else None)),
+    ('chased', 'CTF carrier with an enemy near %', _ctf(lambda r, fr: 100.0 * _ctfsum(r, 'chaseframes') / _ctfsum(r, 'carryframes') if _ctfsum(r, 'carryframes') else None)),
+    ('lost', 'CTF carriers killed/10 min', _ctf(lambda r, fr: r['ctfev'].get('lost', 0) / (fr * FRAME_S / 600))),
+    ('returns', 'CTF returns by players/10 min', _ctf(lambda r, fr: r['ctfev'].get('return', 0) / (fr * FRAME_S / 600))),
+    ('autoret', 'CTF flags back on their own/10 min', _ctf(lambda r, fr: r['ctfev'].get('autoreturn', 0) / (fr * FRAME_S / 600))),
     ('revenge', 'grudges/bot/min', lambda r, fr: r.get('revenge', 0) / max(1, len(r['clients'])) / (fr * FRAME_S / 60)),
     ('sling', 'slingshots/bot/min', lambda r, fr: r.get('sling', 0) / max(1, len(r['clients'])) / (fr * FRAME_S / 60)),
     ('fighthook', 'fight hooks/bot/min', lambda r, fr: r.get('fighthook', 0) / max(1, len(r['clients'])) / (fr * FRAME_S / 60)),
@@ -377,6 +423,8 @@ def cmd_report(args, paths):
             lines += ['| metric | mean | 95% interval |', '|---|---|---|']
         for key, head, _ in METRICS + MATCH_METRICS:
             xs = [m.get(key) for m in ms]
+            if all(x is None for x in xs) and not (base and mp in base and any(m.get(key) is not None for m in base[mp])):
+                continue	# a metric this mode does not have (CTF's outside CTF, rail accuracy in CTF)
             mu = botduel.mean(xs)
             lo, hi = botduel.bootstrap_ci(xs, rng)
             if base and mp in base:
@@ -423,7 +471,7 @@ def main():
     p.add_argument('--frames', type=int, default=6000, help='the window, in frames (default 6000 = 10 min)')
     p.add_argument('--bots', type=int, default=5)
     p.add_argument('--skill', type=int, default=4)
-    p.add_argument('--cfg', default='instagib.cfg', help='server config, relative to the gamedir')
+    p.add_argument('--cfg', default='instagib.cfg', help='server config, relative to the gamedir, or a file path (copied in)')
     p.add_argument('--set', nargs=2, action='append', default=[], metavar=('CVAR', 'VALUE'),
                    help='set after the config (repeatable): the feature switch under test')
     p.add_argument('--label', default='')

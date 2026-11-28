@@ -93,6 +93,7 @@ Groups (the server repo's groups/*.cfg, since 2026-11-28): movement (bot movemen
 | 38 | `ig_botstrafeplan` | strafe chains plan ahead | movement | folded: ig_botplan | q2rdm11 lava 0.52 -> 0.335/bot-min; >400 u/s -1 pt |
 | 39 | `ig_botarcsafe` | flight check before let-go / hop | movement | retired, removed in ig-0.5 | neutral; replaced by the planner (IG-40) |
 | 49 | `ig_links` (libvar, experiment) | measured link times: bots' own area-to-area times priced into the routing | -- | retired, removed in ig-0.5 | 28 maps: per-route pricing frags -0.35/min, -8 u/s; per-area speed factors level, no gain; momentum jumps not more often |
+| 50 | `sv igstats` CTF lines (tool) | the CTF benchmark: flag events and per-window flag, base and carrier tallies | -- | tool | 14 maps baseline: 5.3 caps/10 min, 17% of pickups captured, carriers 250 u/s |
 | 48 | `ig_botplanclimb` | climbs as planner moves: fired on the run, let go by the sim | hook | folded: ig_botplan (ig-0.5, Billy approved it 2026-11-28) | 4 maps: standstill fires 71 -> 15%, speed at the fire 0 -> 285 u/s, climbs landing up top ~280 -> ~390; 28 maps level; LMCTF: hooks that climbed -2.7 pts, so OSP only |
 | 47 | `ig_botfastjumps` | momentum jumps: gaps cleared only with speed, offered when fast, planned from 250 u/s; Billy's lip slingshot before them | movement | folded: ig_botnav (ig-0.5, Billy approved it 2026-11-28) | q2rdm11 walkway end jumped 46 -> 86%; ztn2dm3 ledge: column hits 91 -> 0%, lip slingshots 0.2 -> 0.88/try; 28 maps level; taken 0.02/bot-min in fights |
 | 46 | `ig_botgapjumps` | routes jump gaps: bspc's gap jumps priced at their flight, missing ones added | movement | folded: ig_botnav | q2rdm11 pad-to-walkway drill 4/144 -> 165/165 finished; route from the pad landing 9.5 -> 3.3 s; 28 maps x 4: everything level |
@@ -1230,6 +1231,22 @@ behaviour), so the roster as a whole hooks somewhat more.
     speed 0.5/1.0/1.5 s on against the real one. 28 maps roaming: median 28 units off at 0.5 s, 56 at 1.0 s, 98 at
     1.5 s. `ig_plandebug 5`: every option and its cost while flying fast (`igopts`).
   - 28 maps x 4 fighting with all of the above: level (frags 4.60/4.58, 336 u/s, no map significant).
+
+## IG-50: the CTF benchmark (tool, 2026-11-29)
+
+- **What:** src/ig/ig_ctfstats.c counts CTF inside the `sv igstats` window (CTF rules only, nothing written to the
+  game): `igctf <frame> take|repickup|capture|return|lost|autoreturn <client> team <t> flag <f> [carry <frames> dist
+  <units>]` from one-line `// IG:` hooks at Threewave's five flag events (src/ctf/g_ctf.c); at `sv igstats`, an
+  `igctf summary` (frames each flag was home, home and unguarded -- no living teammate within 800 --, carried,
+  dropped; captures) and `igctf client` lines (takes, caps, returns, lost, carry frames and distance, frames a
+  teammate / an enemy was within 512 of it carrying, frames it was near its own carrier). tools/igbench.py: `--cfg`
+  takes a file path (the server repo's ctf.cfg is copied in), the harness also zeroes `minimumplayers` and
+  `capturelimit`, and the report gains CTF rows (left out where a mode has no such data).
+- **Baseline** (2026-11-29, stock movement -- ctf.cfg: planner and map knowledge off, no hook; 14 maps x 4 seeds,
+  10 bots, skill 3, 10 min; work/ctfbench/baseline-2026-11-29.md): captures 5.3/10 min (every map has some), 17% of
+  flag pickups end in a capture, carriers killed 31.5/10 min, carry to a capture 39 s (q2ctf6 95 s), carrier speed
+  250 u/s (instagib bots 339, Billy ~417), a flag at home 31% of the time and unguarded 40% of that, a teammate
+  within 512 of the carrier 53% of the carry.
 
 ## IG-48: `ig_botplanclimb` -- climbs as planner moves, fired on the run (folded into `ig_botplan`)
 

@@ -18,6 +18,11 @@ int IG_StartBlaster(void);
 // IG-4: `sv igstats` (ig_stats.c).
 bool IG_ServerCommand(const char *cmd);
 void IG_StatsFrame(void);
+// ig_ctfstats.c: CTF counters in the igstats window (CTF-PLAN.md, the benchmark)
+void IG_CtfStatsReset(void);
+void IG_CtfStatsFrame(void);
+void IG_CtfStatsReport(void);
+void IG_CtfEvent(const char *kind, edict_t *player, int flagteam);
 void IG_StatsPush(edict_t *other);
 
 // IG-6: the Q3 bots' hook (ig_bot.c).  bot_library_t is bot/bl_main.h's.

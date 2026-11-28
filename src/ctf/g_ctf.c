@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "g_local.h"
 #include "bot/p_observer.h"
 #include "bot/bl_redirgi.h"
+#include "ig/ig.h" // IG: the CTF benchmark's flag events
 #include "tourney/osp_hooks.h"
 #include "m_player.h"
 
@@ -920,6 +921,7 @@ bool CTFPickup_Flag(edict_t *ent, edict_t *other)
             if (other->client->pers.inventory[ITEM_INDEX(enemy_flag_item)]) {
                 gi.bprintf(PRINT_HIGH, "%s captured the %s flag!\n",
                            other->client->pers.netname, CTFOtherTeamName(ctf_team));
+                IG_CtfEvent("capture", other, ctf_team == CTF_TEAM1 ? CTF_TEAM2 : CTF_TEAM1); // IG: CTF benchmark
                 other->client->pers.inventory[ITEM_INDEX(enemy_flag_item)] = 0;
 
                 ctfgame.last_flag_capture = level.time;
@@ -967,6 +969,7 @@ bool CTFPickup_Flag(edict_t *ent, edict_t *other)
         // hey, its not home.  return it by teleporting it back
         gi.bprintf(PRINT_HIGH, "%s returned the %s flag!\n",
                    other->client->pers.netname, CTFTeamName(ctf_team));
+        IG_CtfEvent("return", other, ctf_team); // IG: CTF benchmark
         other->client->resp.score += CTF_RECOVERY_BONUS;
         other->client->resp.ctf_lastreturnedflag = level.time;
         gi.sound(ent, CHAN_RELIABLE + CHAN_NO_PHS_ADD + CHAN_VOICE, gi.soundindex("ctf/flagret.wav"), 1, ATTN_NONE, 0);
@@ -978,6 +981,7 @@ bool CTFPickup_Flag(edict_t *ent, edict_t *other)
     // hey, its not our flag, pick it up
     gi.bprintf(PRINT_HIGH, "%s got the %s flag!\n",
                other->client->pers.netname, CTFTeamName(ctf_team));
+    IG_CtfEvent((ent->spawnflags & DROPPED_ITEM) ? "repickup" : "take", other, ctf_team); // IG: CTF benchmark
     other->client->resp.score += CTF_FLAG_BONUS;
 
     other->client->pers.inventory[ITEM_INDEX(flag_item)] = 1;
@@ -1027,10 +1031,12 @@ void CTFDropFlagThink(edict_t *ent)
         CTFResetFlag(CTF_TEAM1);
         gi.bprintf(PRINT_HIGH, "The %s flag has returned!\n",
                    CTFTeamName(CTF_TEAM1));
+        IG_CtfEvent("autoreturn", NULL, CTF_TEAM1); // IG: CTF benchmark
     } else if (strcmp(ent->classname, "item_flag_team2") == 0) {
         CTFResetFlag(CTF_TEAM2);
         gi.bprintf(PRINT_HIGH, "The %s flag has returned!\n",
                    CTFTeamName(CTF_TEAM2));
+        IG_CtfEvent("autoreturn", NULL, CTF_TEAM2); // IG: CTF benchmark
     }
 }
 
@@ -1044,11 +1050,13 @@ void CTFDeadDropFlag(edict_t *self)
         self->client->pers.inventory[ITEM_INDEX(flag1_item)] = 0;
         gi.bprintf(PRINT_HIGH, "%s lost the %s flag!\n",
                    self->client->pers.netname, CTFTeamName(CTF_TEAM1));
+        IG_CtfEvent("lost", self, CTF_TEAM1); // IG: CTF benchmark
     } else if (self->client->pers.inventory[ITEM_INDEX(flag2_item)]) {
         dropped = Drop_Item(self, flag2_item);
         self->client->pers.inventory[ITEM_INDEX(flag2_item)] = 0;
         gi.bprintf(PRINT_HIGH, "%s lost the %s flag!\n",
                    self->client->pers.netname, CTFTeamName(CTF_TEAM2));
+        IG_CtfEvent("lost", self, CTF_TEAM2); // IG: CTF benchmark
     }
 
     if (dropped) {
