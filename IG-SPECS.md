@@ -27,7 +27,7 @@ as a **kill switch** for tests, set with `ig_botlibvars` (pushed last, it wins):
 | `ig_padreach`, `ig_roamgoal`, `ig_gapjumps` (`ig_gapjumpreprice`) | pad routes, fair roam goals, gap jumps | 43, 44, 46 |
 
 Tuning values are not switches: their code defaults are the tuned values (27913's, folded in ig-0.5:
-`ig_planpadsling 1`, `ig_planreleasewallmul 1.5`, `ig_planwallsoon 2`, `ig_planpadair 0`, `ig_repokill 0.2`,
+`ig_planpadsling 1`, `ig_planreleasewallmul 1.5`, `ig_planwallsoon 2`, `ig_repokill 0.2`,
 `ig_repomisschance 0.5`, `ig_fighthookchance 0.25`, `ig_fighthookcooldown 4`); overrides belong in benches.
 Proof of the fold (28 maps x 4 seeds, fighting): the folded build with `ig_botplan 1 ig_botnav 1` against the
 pre-fold build with every trial switch and tuning value of 27913 -- all figures equal (frags 4.58/4.58,
@@ -1121,9 +1121,9 @@ behaviour), so the roster as a whole hooks somewhat more.
   bots, 16 seeds, off vs on: twin-pad flights landing up on the ledge 56 -> 76% (24/43 vs 19/25); view vs
   travel 49 -> 26 deg (flights with no hook: 49 -> 10 deg). Still: the view turns ~150 deg/s on hook-free
   flights (the turn at the launch). On 27913.
-  **Air control dropped (2026-11-26):** Billy, with both on: bots missed the landing more often than before; with the view only (`ig_planpadair 0`): "jump pads look a lot better". The bench had shown no
+  **Air control dropped (2026-11-26):** Billy, with both on: bots missed the landing more often than before; with the view only he found the pads much better. The bench had shown no
   loss (hook-free flights landing within 160 units: old 84%, both 88%, view only 86%, 12 seeds), so the miss is
-  one the bench does not count. IG_PlanPadAir stays in the code, default 0; the stock steering is back.
+  one the bench does not count. The stock steering is back; IG_PlanPadAir removed 2026-11-28.
 - **Pad flights everywhere (2026-11-27, libvar `ig_planpadfight` 1):** Billy: bots hit the pads but steered away from the landing and missed more often than not. The drill (a
   clean run-up, no fight) landed q2rdm11's twin pads 100%; in fights only 56% of hook-free flights made the
   ledge, the air steering 114 deg off the landing on the misses. Two causes: the fight node runs no travel, so the
@@ -1157,8 +1157,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   from each grounded area's centre, 16 directions to the floor's edge, a floor at the same height
   40-`ig_gapjumpmax` 260 units on, same cluster, no route between the two areas yet, the same floor
   test and flight: a TRAVEL_JUMP route, the narrowest per pair of areas, appended as IG-43's are (no
-  route number changes). Debug: `ig_gapjumpdebug 1` lists both; 2/3 with `ig_gapjumpwatchx/y` print
-  every rejected edge and area near a point. `ig_botroutemomentum` (be_ig_route.c, x0.6 the walking
+  route number changes). Debug: `ig_gapjumpdebug 1` lists both (the watch-point levels 2/3 removed 2026-11-28). `ig_botroutemomentum` (be_ig_route.c, x0.6 the walking
   time of a straight crossing up to 20 degrees of turn, unchanged from 70) is built but not measured.
 - **Why:** Billy (2026-11-25): bots should find fast lines like his q2rdm11 pad-and-walkway route
   themselves (wants such lines found automatically). The route
@@ -1190,8 +1189,8 @@ behaviour), so the roster as a whole hooks somewhat more.
   routes seldom pass them. Kept, off; the next idea is local -- see the opportunity near the bot, not in the route.
 - **Removed (2026-11-28, Billy: asked to keep it tidy):** be_ig_links.c, its hooks, the `.links`
   files (never installed), `server/tools/linktable.py`, igbench's `$IGLINKS`; with it IG-46's route momentum
-  (`ig_botroutemomentum`, be_ig_route.c's pricing and the start-leg hook): tried twice, no gain. be_ig_route.c keeps
-  only the pad drill's route debug print. Rule since: a per-map file type only where the data cannot be computed at
+  (`ig_botroutemomentum`, be_ig_route.c's pricing and the start-leg hook): tried twice, no gain. be_ig_route.c kept only the pad drill's route debug print
+  (removed 2026-11-28 with it). Rule since: a per-map file type only where the data cannot be computed at
   map load, one type per feature, its loader and tool named in its spec entry -- today only `<map>.climbs`.
 
 - **2026-11-28, ztn2dm5 drill and Billy's ztn2dm3 stair recording** (`work/hook-live/billy-ztn2dm3-stair-ceiling-2026-11-28.log`):
@@ -1201,6 +1200,9 @@ behaviour), so the roster as a whole hooks somewhat more.
     that log undercounts. Counted as airborne crossings of the gap, the ztn2dm5 drill (start -700 940 344, goal
     -1053 260 248) crosses in ~50% of runs at ~700 u/s; the rest: ~22% too fast and heading ~25 deg too far west
     (the west-side line, often into the wall), 8% hooked across, 8% slow, 7% the ramp.
+  - *Clean-up (2026-11-28):* removed the switched-off pad-flight air control (IG_PlanPadAir), `ig_fastjumpnoacross`,
+    the pad dump (`ig_paddumpx/y`), the gap-jump watch point, the drill's hard-coded walkway route print and with it
+    be_ig_route.c; 28 maps x 4: identical (frags 4.60/4.60, 336 u/s).
   - *Tried, removed:* lip anchors along the jump's own line (250/400 past the take-off): 50 -> 53%, within noise;
     a coast that hops its landings (the planner's look-ahead after a let-go): predicts 1.5 s far better on ztn2dm3
     (136 -> 57 units off, speed bias -610 -> +3) but chose worse (28 maps: -4 u/s, time over 400 -1.3 points).
@@ -1245,7 +1247,7 @@ behaviour), so the roster as a whole hooks somewhat more.
   take-off keeps the speed (no run-up back-off). Before a momentum jump, Billy's lip slingshot
   (BOT-TRICKS T27, `ig_fastjumplip`): steep floor anchors (20-32 down) and low ceiling anchors (10-18 up)
   short of the edge, and a hook held past the edge costs `ig_fastjumphookacross` 1 s per 50 ms.
-  Debug: `ig_fastjumplog`, `ig_gapjumpdebug`, `ig_plandebug 2` (igfj, iglook), `ig_routedebugfast`.
+  Debug: `ig_fastjumplog`, `ig_gapjumpdebug`, `ig_plandebug 2` (igfj, iglook).
 - **Why:** Billy (2026-11-26): bots should bots should use their momentum to jump the gap (q2rdm11's walkway end)
   and find such spots on every map; then (2026-11-27) a slingshot should make the momentum, not a pull
   straight across to the far wall ("predictable"); his recording
