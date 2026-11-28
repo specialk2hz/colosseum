@@ -1257,6 +1257,13 @@ behaviour), so the roster as a whole hooks somewhat more.
   same). OSP with the commit: level. Left: 12% of the planner's LMCTF climbs let go rising and fall back (OSP 9%);
   at 1 s the planner expects them 34 units higher than they get. Climbs landing are slower with LMCTF: median
   4.8 s stock, 3.2 s the planner's, against OSP's 4.1/3.2.
+- **Climbs through a fight's start (2026-11-28, libvar `ig_planfightclimb` 1):** tagging every place the brain lets
+  go of the hook showed 71-73% of the climbs let go earlier than planned (both hooks) were IGX_FightFlight: a fight
+  starting mid-flight dropped the planner's hook whenever that was safe -- right for a slingshot, but a climb fell
+  back. Now a climb goes on: the fight node runs the planner toward the goal it was climbing to (kept 5 s), which
+  lets go when its simulation says so. 4 maps x 4: planner climbs landing (8 s) LMCTF 58 -> 70%, OSP 75 -> 85%;
+  LMCTF never bit 11 -> 3%. Climb height bias at 1.0 s: LMCTF +32 -> +16, OSP +24 -> 0 (position off 69/65 ->
+  39/37). 28 maps x 4: level; hooks that climbed LMCTF 37.6 -> 38.9%, OSP 39.8 -> 41.5% (sig.), upper +1 pt.
 - **Stall fix (2026-11-27):** Billy saw a bot (Grunt) sit in the twin-pad room before falling back to a stop-and-hook
   climb: the stock travel stood down whenever the planner had seen the climb, also on thinks the planner did not move
   the bot, and the give-up clock restarted when the route flipped between two climbs. Now the planner owns a climb
